@@ -1,0 +1,25 @@
+name: Node.js CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: volta-cli/action@v4
+
+      - run: pnpm ci --no-audit
+        working-directory: backend
+      - run: pnpm run lint --if-present
+        working-directory: backend
+      - run: pnpm run prettier:check --if-present
+        working-directory: backend
+      - run: pnpm test
+        working-directory: backend
+      - run: pnpm run build --if-present
+        working-directory: backend
