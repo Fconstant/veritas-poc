@@ -1,6 +1,9 @@
 name: Node.js CI
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'backend/**'
 
 jobs:
   build:
@@ -9,8 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: volta-cli/action@v4
-      - run: npm ci --no-audit
-      - run: npm run lint --if-present
-      - run: npm run prettier:check --if-present
-      - run: npm test
-      - run: npm run build --if-present
+
+      - run: pnpm ci --no-audit
+        working-directory: backend
+      - run: pnpm run lint --if-present
+        working-directory: backend
+      - run: pnpm run prettier:check --if-present
+        working-directory: backend
+      - run: pnpm test
+        working-directory: backend
+      - run: pnpm run build --if-present
+        working-directory: backend
