@@ -1,14 +1,13 @@
+import 'dotenv/config'
 
 import express from "express";
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import { FACT_CHECK_REQUEST_SCHEMA } from './types.js';
-import { factCheck } from './factCheck.js';
-import dotenv from 'dotenv'
+import { factCheckService } from './service/factCheckService.js';
 import { DEFAULT_ADVANCED_MODEL, DEFAULT_FAST_MODEL } from './llm/config.js';
-
-dotenv.config()
+import * as Consts from './constants.js';
 
 // Express app setup
 const app = express();
@@ -33,12 +32,12 @@ app.post('/fact-check', async (req, res) => {
       return
     }
 
-    if (request.text.length > 5000) {
+    if (request.text.length > Consts.MAX_TEXT_LENGTH) {
       res.status(400).json({ error: 'Text too long (max 5000 characters)' });
       return;
     }
 
-    const result = await factCheck(request);
+    const result = await factCheckService(request);
     res.json(result);
   } catch (error) {
     console.error('Fact-check error:', error);
@@ -84,7 +83,9 @@ const DEFAULT_PORT = 3000;
 const PORT = Number(process.env.PORT ?? DEFAULT_PORT);
 
 app.listen(PORT, () => {
-  console.log(`Political fact-checker API running on port ${PORT.toString()}`);
-  console.log(`Fast model: ${DEFAULT_FAST_MODEL.provider}/${DEFAULT_FAST_MODEL.model}`);
-  console.log(`Advanced model: ${DEFAULT_ADVANCED_MODEL.provider}/${DEFAULT_ADVANCED_MODEL.model}`);
+  console.log(`Veritas API running on port ${PORT.toString()}`);
+  const fastModel = DEFAULT_FAST_MODEL;
+  const advancedModel = DEFAULT_ADVANCED_MODEL;
+  console.log(`Fast model: ${fastModel.provider}/${fastModel.model}, API Key loaded? ${String(!!fastModel.apiKey)}`);
+  console.log(`Advanced model: ${advancedModel.provider}/${advancedModel.model}, API Key loaded? ${String(!!advancedModel.apiKey)}`);
 });

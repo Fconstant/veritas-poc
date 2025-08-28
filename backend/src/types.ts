@@ -10,7 +10,7 @@ export const FACT_CHECK_REQUEST_SCHEMA = z.object({
 });
 
 export const FACT_CHECK_RESULT_SCHEMA = z.object({
-  originalText: z.string(),
+  originalText: z.string().optional(),
   veracity: z.enum(['TRUE', 'FALSE', 'PARTIALLY_TRUE', 'UNVERIFIABLE', 'MISLEADING']),
   confidence: z.number().min(0).max(1),
   reasoning: z.string().min(1, 'Reasoning cannot be empty'),
@@ -18,10 +18,15 @@ export const FACT_CHECK_RESULT_SCHEMA = z.object({
   flags: z.array(z.string()),
 });
 
+export const INTERNAL_FACT_CHECK_RESULT_SCHEMA = FACT_CHECK_RESULT_SCHEMA.omit({
+  originalText: true,
+});
+
 export const LLM_CONFIG_SCHEMA = z.object({
   provider: z.enum(['openai', 'anthropic', 'mistral', 'google']),
   model: z.string().min(1, 'Model name cannot be empty'),
   temperature: z.number().min(0).max(2),
+  apiKey: z.string().optional(),
 });
 
 export const SEARCH_RESULT_SCHEMA = z.object({
@@ -33,5 +38,6 @@ export const SEARCH_RESULT_SCHEMA = z.object({
 // Inferred types from schemas
 export type FactCheckRequest = z.infer<typeof FACT_CHECK_REQUEST_SCHEMA>;
 export type FactCheckResult = z.infer<typeof FACT_CHECK_RESULT_SCHEMA>;
+export type InternalFactCheckResult = z.infer<typeof INTERNAL_FACT_CHECK_RESULT_SCHEMA>;
 export type LLMConfig = z.infer<typeof LLM_CONFIG_SCHEMA>;
 export type SearchResult = z.infer<typeof SEARCH_RESULT_SCHEMA>;

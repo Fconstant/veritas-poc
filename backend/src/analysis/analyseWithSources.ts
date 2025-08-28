@@ -1,7 +1,8 @@
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { FACT_CHECK_RESULT_SCHEMA, FactCheckResult, SEARCH_RESULT_SCHEMA, SearchResult } from './types.js';
+import { FACT_CHECK_RESULT_SCHEMA, FactCheckResult, SEARCH_RESULT_SCHEMA, SearchResult } from '../types.js';
 import { analyzeStatement } from './analyseStatement.js';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import * as Consts from '../constants.js';
 
 // Web search function
 const getWebSearchQuery = (query: string): SearchResult[] => {
@@ -29,7 +30,7 @@ export const analyzeWithSources = async (
   const basicAnalysis = await analyzeStatement(text, model);
 
   // If confidence is low, search for external sources
-  if (basicAnalysis.confidence < 70) {
+  if (basicAnalysis.confidence < Consts.CONFIDENCE_CUTOFF) {
     const searchResults = getWebSearchQuery(text.slice(0, 100));
 
     if (searchResults.length > 0) {

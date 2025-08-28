@@ -1,5 +1,5 @@
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { FACT_CHECK_RESULT_SCHEMA, FactCheckResult } from './types.js';
+import { InternalFactCheckResult, INTERNAL_FACT_CHECK_RESULT_SCHEMA } from '../types.js';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import z from 'zod';
 
@@ -11,31 +11,37 @@ Your task:
 3. Provide confidence score (0-100)
 4. Give clear reasoning
 5. Identify potential red flags
+6. The response should be concise and answered in the original language of the statement/user.
 
-Respond in JSON format:
-${JSON.stringify(z.toJSONSchema(FACT_CHECK_RESULT_SCHEMA))}
+CRITICAL: Your response must be ONLY valid JSON. Do not include any markdown formatting, code blocks, or explanatory text. Start your response directly with { and end with }. No \`\`\`json blocks or any other formatting.
+
+Expected JSON structure:
+${JSON.stringify(z.toJSONSchema(INTERNAL_FACT_CHECK_RESULT_SCHEMA).properties, null, 2)}
 `;
 
 // Core fact-checking logic
 export const analyzeStatement = async (
   text: string,
   model: BaseChatModel
-): Promise<Omit<FactCheckResult, 'originalText'>> => {
+): Promise<InternalFactCheckResult> => {
 
   const response = await model.invoke([
     new SystemMessage(systemPrompt),
     new HumanMessage(`Analyze this statement: "${text}"`)
   ]);
 
+  console.log('LLM Response: ', response.content);
+
   try {
-    const result = JSON.parse(response.content as string) as FactCheckResult;
+    const result = INTERNAL_FACT_CHECK_RESULT_SCHEMA.parse(JSON.parse(response.content as string));
     return {
       veracity: result.veracity,
       confidence: result.confidence,
       reasoning: result.reasoning,
       flags: result.flags,
     };
-  } catch {
+  } catch(err) {
+    console.error(err);
     return {
       veracity: 'UNVERIFIABLE',
       confidence: 0,
