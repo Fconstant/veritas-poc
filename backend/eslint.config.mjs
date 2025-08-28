@@ -14,7 +14,7 @@ export default tseslint.config(
   eslint.configs.recommended,
   eslintConfigPrettier,
   {
-    extends: [...tseslint.configs.recommended],
+    extends: [...tseslint.configs.strictTypeChecked],
 
     files: ['**/*.ts', '**/*.mts'],
 
@@ -23,7 +23,7 @@ export default tseslint.config(
     },
 
     rules: {
-      '@typescript-eslint/explicit-function-return-type': 'warn',
+      "@typescript-eslint/no-non-null-assertion": "off",
     },
 
     languageOptions: {
