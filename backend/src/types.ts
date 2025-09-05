@@ -3,27 +3,22 @@ import { z } from 'zod';
 
 // Zod schemas
 export const FACT_CHECK_REQUEST_SCHEMA = z.object({
-  text: z.string().min(1, 'Text cannot be empty'),
-  speaker: z.string().optional(),
-  context: z.string().optional(),
-  useAdvancedModel: z.boolean().optional(),
+  content: z.string().min(1, 'Text cannot be empty'),
 });
 
 export const FACT_CHECK_RESULT_SCHEMA = z.object({
-  originalText: z.string().optional(),
-  veracity: z.enum(['TRUE', 'FALSE', 'PARTIALLY_TRUE', 'UNVERIFIABLE', 'MISLEADING']),
+  extractedClaim: z.string().optional(),
+
+  verdict: z.enum("TRUE,FALSE,PARTIALLY_TRUE,UNVERIFIABLE,MISLEADING".split(',')),
   confidence: z.number().min(0).max(1),
   reasoning: z.string().min(1, 'Reasoning cannot be empty'),
   sources: z.array(z.url()).optional(),
-  flags: z.array(z.string()),
 });
 
-export const INTERNAL_FACT_CHECK_RESULT_SCHEMA = FACT_CHECK_RESULT_SCHEMA.omit({
-  originalText: true,
-});
+export const INTERNAL_FACT_CHECK_RESULT_SCHEMA = FACT_CHECK_RESULT_SCHEMA;
 
 export const LLM_CONFIG_SCHEMA = z.object({
-  provider: z.enum(['openai', 'anthropic', 'mistral', 'google']),
+  provider: z.enum([ 'openai', 'google' ]),
   model: z.string().min(1, 'Model name cannot be empty'),
   temperature: z.number().min(0).max(2),
   apiKey: z.string().optional(),

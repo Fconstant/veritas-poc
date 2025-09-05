@@ -57,6 +57,7 @@
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "langchain": "^0.3.31",
+    "socket.io": "^4.8.1",
     "tslib": "~2.8",
     "winston": "^3.17.0",
     "zod": "^4.1.4"

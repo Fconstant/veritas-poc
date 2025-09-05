@@ -19,7 +19,11 @@
     "noImplicitThis": false,
     "strict": true,
     "strictNullChecks": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": "src",
+    "paths": {
+      "#/*": ["./*"]
+    }
   },
   "include": ["src", "__tests__"],
   "ts-node": {

@@ -3,11 +3,11 @@ import { InternalFactCheckResult, INTERNAL_FACT_CHECK_RESULT_SCHEMA } from '../t
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import z from 'zod';
 
-const systemPrompt = `You are an expert fact-checker analyzing political statements.
+const SYSTEM_PROMPT = `You are an expert fact-checker and debunking expert analyzing political statements.
 
 Your task:
 1. Evaluate the veracity of the given statement
-2. Classify as: TRUE, FALSE, PARTIALLY_TRUE, UNVERIFIABLE, or MISLEADING
+2. Classify as: TRUE, FALSE, PARTIALLY_TRUE, UNVERIFIABLE, MISLEADING, or LACK_OF_BASIS
 3. Provide confidence score (0-100)
 4. Give clear reasoning
 5. Identify potential red flags
@@ -23,10 +23,10 @@ ${JSON.stringify(z.toJSONSchema(INTERNAL_FACT_CHECK_RESULT_SCHEMA).properties, n
 export const analyzeStatement = async (
   text: string,
   model: BaseChatModel
-): Promise<InternalFactCheckResult> => {
+): Promise<InternalFactCheckResult | undefined> => {
 
   const response = await model.invoke([
-    new SystemMessage(systemPrompt),
+    new SystemMessage(SYSTEM_PROMPT),
     new HumanMessage(`Analyze this statement: "${text}"`)
   ]);
 
@@ -34,19 +34,10 @@ export const analyzeStatement = async (
 
   try {
     const result = INTERNAL_FACT_CHECK_RESULT_SCHEMA.parse(JSON.parse(response.content as string));
-    return {
-      veracity: result.veracity,
-      confidence: result.confidence,
-      reasoning: result.reasoning,
-      flags: result.flags,
-    };
+    return result;
   } catch(err) {
+    // TODO: Add proper error handling
     console.error(err);
-    return {
-      veracity: 'UNVERIFIABLE',
-      confidence: 0,
-      reasoning: 'Failed to parse LLM response',
-      flags: ['PROCESSING_ERROR'],
-    };
   }
+  return undefined;
 };
