@@ -1,3 +1,6 @@
 
-export const CONFIDENCE_CUTOFF = 0.1;
-export const MAX_TEXT_LENGTH = 5000;
+export const MAX_TEXT_LENGTH = 20000;
+export const DEFAULT_NEED_RESEARCH_THRESHOLD = process.env['APP_DEFAULT_RESEARCH_THRESHOLD']
+  ? Number(process.env['APP_DEFAULT_RESEARCH_THRESHOLD'])
+  : 0.5;
+;

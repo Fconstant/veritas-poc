@@ -2,14 +2,13 @@ import 'dotenv/config';
 
 import { DEFAULT_ADVANCED_MODEL, DEFAULT_FAST_MODEL } from '#/llm/config.js';
 import { factCheckService } from '#/service/factCheckService.js';
-import { FACT_CHECK_REQUEST_SCHEMA, FactCheckRequest } from '#/types.js';
-import { handleErrorResponse } from '#/utils/errors.js';
-import { createWebSocketServer, handleWebSocketError, UpdateStatusMessage } from '#/ws/index.js';
+import { FactCheckRequest } from './ws/types.js';
+import { createWebSocketServer, handleWebSocketError } from '#/ws/index.js';
 import compression from 'compression';
 import cors from 'cors';
-import express from "express";
+import express from 'express';
 import helmet from 'helmet';
-import { createServer } from "http";
+import { createServer } from 'http';
 
 // Express app setup
 const app = express();
@@ -25,15 +24,15 @@ app.get('/health', (_, res) => {
 });
 
 // Single fact-check endpoint
-app.post('/fact-check', async (req, res) => {
-  const request = FACT_CHECK_REQUEST_SCHEMA.parse(req.body);
-  try {
-    const result = await factCheckService(request);
-    res.json(result);
-  } catch (error) {
-    handleErrorResponse(error, res);
-  }
-});
+// app.post('/fact-check', async (req, res) => {
+//   const request = FACT_CHECK_REQUEST_SCHEMA.parse(req.body);
+//   try {
+//     const result = await factCheckService(request);
+//     res.json(result);
+//   } catch (error) {
+//     handleErrorResponse(error, res);
+//   }
+// });
 
 // Cache management endpoints
 // app.get('/cache/stats', (req, res) => {
@@ -56,37 +55,55 @@ const httpServer = createServer(app);
 
 // Initialize WebSocket server
 createWebSocketServer(httpServer, (socket) => {
-  console.log('Client connected:', socket.id);
+  console.log('Client connected: ', socket.id);
 
+  let currentFingerprint = '';
   // Handle fact check requests
-  socket.on('REQUEST_FACT_CHECK', async (data: FactCheckRequest) => {
-    try {
-      console.log('Received fact check request:', data);
+  socket.on(
+    'REQUEST_FACT_CHECK',
+    async (content: string, data: FactCheckRequest) => {
+      currentFingerprint = data.fingerprint;
+      try {
+        console.log(
+          'Received fact check request: ',
+          content.substring(0, Math.min(25, content.length)) + "...",
+          data,
+        );
+        const fingerprint = data.fingerprint;
 
-      // Send status update
-      const statusMessage: UpdateStatusMessage = {
-        type: 'UPDATE_STATUS',
-        data: { status: 'processing', message: 'Processing fact check request...' }
-      };
-      socket.emit('UPDATE_STATUS', statusMessage.data);
+        socket.emit('UPDATE_STATUS', {
+          status: 'PROCESSING',
+          message: 'Started processing fact check request...',
+          fingerprint,
+        });
 
-      const result = await factCheckService(data);
+        const factCheckGenerator = factCheckService(content, data);
+        for await (const result of factCheckGenerator) {
+          if (currentFingerprint !== data.fingerprint) {
+            break;
+          }
+          socket.emit('FACT_CHECK_RESULT', result);
+        }
 
-      socket.emit('FACT_CHECK_RESULT', result);
-
-      // Send completion status
-      const completionMessage: UpdateStatusMessage = {
-        type: 'UPDATE_STATUS',
-        data: { status: 'completed', message: 'Fact check completed' }
-      };
-      socket.emit('UPDATE_STATUS', completionMessage.data);
-
-    } catch (error) {
-      console.error('Error processing fact check:', error);
-      handleWebSocketError(error, socket);
-    }
-  });
-
+        if ((await factCheckGenerator.next()).done) {
+          socket.emit('UPDATE_STATUS', {
+            status: 'FINISHED',
+            message: 'Fact check completed',
+            fingerprint: data.fingerprint,
+          });
+        } else {
+          socket.emit('UPDATE_STATUS', {
+            status: 'INTERRUPTED',
+            message: 'Fact check interrupted for unknown reason',
+            fingerprint,
+          });
+        }
+      } catch (error) {
+        console.error('Error processing fact check:', error);
+        handleWebSocketError(error, socket, data.fingerprint);
+      }
+    },
+  );
 });
 
 httpServer.listen(PORT, () => {
@@ -94,6 +111,10 @@ httpServer.listen(PORT, () => {
   console.log(`WebSocket server initialized`);
   const fastModel = DEFAULT_FAST_MODEL;
   const advancedModel = DEFAULT_ADVANCED_MODEL;
-  console.log(`Fast model: ${fastModel.provider}/${fastModel.model}, API Key loaded? ${String(!!fastModel.apiKey)}`);
-  console.log(`Advanced model: ${advancedModel.provider}/${advancedModel.model}, API Key loaded? ${String(!!advancedModel.apiKey)}`);
+  console.log(
+    `Fast model: ${fastModel.provider}/${fastModel.model}, API Key loaded? ${String(!!fastModel.apiKey)}`,
+  );
+  console.log(
+    `Advanced model: ${advancedModel.provider}/${advancedModel.model}, API Key loaded? ${String(!!advancedModel.apiKey)}`,
+  );
 });

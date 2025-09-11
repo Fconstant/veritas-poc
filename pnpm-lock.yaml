@@ -23,6 +23,12 @@ importers:
       '@langchain/google-genai':
         specifier: ^0.2.16
         version: 0.2.16(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))
+      '@langchain/openai':
+        specifier: ^0.6.11
+        version: 0.6.11(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))(ws@8.18.3)
+      '@langchain/tavily':
+        specifier: ^0.1.5
+        version: 0.1.5(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))
       compression:
         specifier: ^1.8.1
         version: 1.8.1
@@ -1322,11 +1328,17 @@ packages:
     peerDependencies:
       '@langchain/core': '>=0.3.58 <0.4.0'
 
-  '@langchain/openai@0.6.9':
-    resolution: {integrity: sha512-Dl+YVBTFia7WE4/jFemQEVchPbsahy/dD97jo6A9gLnYfTkWa/jh8Q78UjHQ3lobif84j2ebjHPcDHG1L0NUWg==}
+  '@langchain/openai@0.6.11':
+    resolution: {integrity: sha512-BkaudQTLsmdt9mF6tn6CrsK2TEFKk4EhAWYkouGTy/ljJIH/p2Nz9awIOGdrQiQt6AJ5mvKGupyVqy3W/jim2Q==}
     engines: {node: '>=18'}
     peerDependencies:
       '@langchain/core': '>=0.3.68 <0.4.0'
+
+  '@langchain/tavily@0.1.5':
+    resolution: {integrity: sha512-6C8hb3d6YjlGJPdPFfaNlrUS0h6blQx4cRzCKeDdCvixcghzV8llAmuzvJSmAyALprFfvKtj+1NJb4ttj1iZ/A==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@langchain/core': '>=0.3.58 <0.4.0'
 
   '@langchain/textsplitters@0.1.0':
     resolution: {integrity: sha512-djI4uw9rlkAb5iMhtLED+xJebDdAG935AdP4eRTB02R7OB/act55Bj9wsskhZsvuyQRpO4O1wQOp85s6T6GWmw==}
@@ -6085,7 +6097,7 @@ snapshots:
       '@browserbasehq/stagehand': 1.14.0(@playwright/test@1.55.0)(deepmerge@4.3.1)(dotenv@17.2.1)(openai@5.12.2(ws@8.18.3)(zod@4.1.4))(zod@4.1.4)
       '@ibm-cloud/watsonx-ai': 1.6.11
       '@langchain/core': 0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4))
-      '@langchain/openai': 0.6.9(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))(ws@8.18.3)
+      '@langchain/openai': 0.6.11(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))(ws@8.18.3)
       '@langchain/weaviate': 0.2.2(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))
       binary-extensions: 2.3.0
       expr-eval: 2.0.2
@@ -6151,7 +6163,7 @@ snapshots:
       '@langchain/core': 0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4))
       uuid: 11.1.0
 
-  '@langchain/openai@0.6.9(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))(ws@8.18.3)':
+  '@langchain/openai@0.6.11(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))(ws@8.18.3)':
     dependencies:
       '@langchain/core': 0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4))
       js-tiktoken: 1.0.21
@@ -6159,6 +6171,11 @@ snapshots:
       zod: 3.25.76
     transitivePeerDependencies:
       - ws
+
+  '@langchain/tavily@0.1.5(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))':
+    dependencies:
+      '@langchain/core': 0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4))
+      zod: 3.25.76
 
   '@langchain/textsplitters@0.1.0(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))':
     dependencies:
@@ -8859,7 +8876,7 @@ snapshots:
   langchain@0.3.31(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))(@langchain/google-genai@0.2.16(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4))))(axios@1.11.0)(openai@5.12.2(ws@8.18.3)(zod@4.1.4))(ws@8.18.3):
     dependencies:
       '@langchain/core': 0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4))
-      '@langchain/openai': 0.6.9(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))(ws@8.18.3)
+      '@langchain/openai': 0.6.11(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))(ws@8.18.3)
       '@langchain/textsplitters': 0.1.0(@langchain/core@0.3.72(openai@5.12.2(ws@8.18.3)(zod@4.1.4)))
       js-tiktoken: 1.0.21
       js-yaml: 4.1.0

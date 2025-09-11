@@ -7,6 +7,13 @@ export class ValidationError extends Error {
   }
 }
 
+export class ParsingError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ParsingError';
+  }
+}
+
 export const handleErrorResponse = (error: unknown, expressRes: Response) => {
   if (error instanceof ValidationError) {
     expressRes.status(400).json({ error: error.message });

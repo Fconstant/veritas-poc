@@ -1,38 +1,46 @@
-import { analyzeWithSources } from '#/analysis/analyseWithSources.js';
-import { getCache, getCacheKey, hasCache, setCache } from '#/cache.js';
-import { DEFAULT_FAST_MODEL } from '#/llm/config.js';
-import { createLLM } from '#/llm/factory.js';
-import { FACT_CHECK_RESULT_SCHEMA, FactCheckRequest, FactCheckResult } from '#/types.js';
+import { FactCheckRequest } from '#/ws/types.js';
 import { ValidationError } from '#/utils/errors.js';
 import * as Consts from '#/constants.js';
+import { applyChunking } from '#/chunking/index.js';
+import { basicAnalysis, deepResearch } from '#/analysis/index.js';
+import { createConversationMemory } from '#/memory/createConversationMemory.js';
 
 // Main fact-checking function
-export const factCheckService = async (factCheckReq: FactCheckRequest): Promise<FactCheckResult> => {
-
-  if (factCheckReq.content.trim().length === 0) {
+export async function* factCheckService(content: string, factCheckReq: FactCheckRequest) {
+  if (content.trim().length === 0) {
     throw new ValidationError('Text is required');
   }
 
-  if (factCheckReq.content.length > Consts.MAX_TEXT_LENGTH) {
-    throw new ValidationError(`Text too long (max ${Consts.MAX_TEXT_LENGTH.toFixed(0)} characters)`);
+  if (content.length > Consts.MAX_TEXT_LENGTH) {
+    throw new ValidationError(
+      `Text too long (max ${Consts.MAX_TEXT_LENGTH.toFixed(0)} characters)`,
+    );
   }
 
-  const cacheKey = getCacheKey(factCheckReq.content);
+  // TODO: apply proper caching
+  // const cacheKey = factCheckReq.fingerprint;
+  // if (hasCache(cacheKey)) {
+  //   return getCache(cacheKey)!;
+  // }
 
-  if (hasCache(cacheKey)) {
-    return getCache(cacheKey)!;
-  }
+  const chunks = await applyChunking(content);
+  const memory = createConversationMemory();
 
-  const modelConfig = DEFAULT_FAST_MODEL;
-  const model = createLLM(modelConfig);
-
-  const analysis = await analyzeWithSources(factCheckReq.content, model);
-
-  const result = FACT_CHECK_RESULT_SCHEMA.parse({
-    originalText: factCheckReq.content,
-    ...analysis,
+  const basicAnalysisGenerator = basicAnalysis({
+    factCheckReq,
+    chunks,
+    memory,
   });
-
-  setCache(cacheKey, result);
-  return result;
-};
+  const threshold =
+    factCheckReq.researchThreshold ?? Consts.DEFAULT_NEED_RESEARCH_THRESHOLD;
+  for await (const result of basicAnalysisGenerator) {
+    if (result.data.reasoningConfidence <= threshold) {
+      const { sources, summary } = await deepResearch(
+        result.data.extractedClaim,
+      );
+      yield { ...result, reasoning: summary, sources } as typeof result;
+    } else {
+      yield result;
+    }
+  }
+}
