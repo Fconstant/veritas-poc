@@ -16,11 +16,10 @@ const Logo: React.FC<LogoProps> = ({ className, size = 'md' }) => {
   return (
     <h1
       className={cn(
-        'font-serif font-bold text-[var(--veritas-purple-primary)]',
+        'font-[var(--font-inria-serif)] font-bold text-[var(--veritas-purple-primary)]',
         sizeClasses[size],
         className
       )}
-      style={{ fontFamily: 'var(--font-inria-serif)' }}
     >
       Veritas
     </h1>

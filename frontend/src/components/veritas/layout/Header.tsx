@@ -1,31 +1,40 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import Logo from '../common/Logo';
-import AlphaBadge from '../common/AlphaBadge';
-import Tagline from '../common/Tagline';
 
 interface HeaderProps {
   className?: string;
-  showTagline?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ className, showTagline = true }) => {
+const Header: React.FC<HeaderProps> = ({ className }) => {
   return (
     <header
       className={cn(
-        'flex flex-col items-center gap-4 py-8 px-4',
-        'bg-background border-b border-[var(--veritas-gray-border)]',
+        'flex items-center justify-between px-6 py-4 relative w-full',
+        'bg-background border-b border-[#d6d8db]',
         className
       )}
     >
-      <div className="flex items-center gap-3">
-        <Logo size="lg" />
-        <AlphaBadge />
+      {/* Logo e Badge à esquerda */}
+      <div className="flex items-end gap-2">
+        <a 
+          href="/" 
+          aria-label="Veritas Home"
+          className="font-[var(--font-inria-serif)] font-bold text-[24px] leading-[28px] text-[#102148] whitespace-nowrap"
+        >
+          Veritas
+        </a>
+        <span 
+          aria-label="Alpha v0.1"
+          className="bg-[#dedfe3] px-1.5 py-1 rounded-[4px] font-[var(--font-inter)] font-normal text-[12px] leading-normal text-[#102148] opacity-90 tracking-[0.24px] whitespace-nowrap"
+        >
+          Alpha v0.1
+        </span>
       </div>
       
-      {showTagline && (
-        <Tagline size="lg" className="text-center" />
-      )}
+      {/* Tagline à direita */}
+      <p className="font-[var(--font-inter)] font-normal text-[14px] leading-normal text-[#737a8b] opacity-90 tracking-[0.28px] whitespace-nowrap">
+        Automatize a verificação de fatos
+      </p>
     </header>
   );
 };

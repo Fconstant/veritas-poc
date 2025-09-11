@@ -6,6 +6,5 @@ export default {
 } satisfies StoryDefault;
 
 export const Default: Story = () => <Header />;
-export const WithoutTagline: Story = () => <Header showTagline={false} />;
 
 
