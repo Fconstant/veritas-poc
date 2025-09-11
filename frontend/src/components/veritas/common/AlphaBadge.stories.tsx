@@ -6,6 +6,4 @@ export default {
 } satisfies StoryDefault;
 
 export const Default: Story = () => <AlphaBadge />;
-export const Outline: Story = () => <AlphaBadge variant="outline" />;
-
 

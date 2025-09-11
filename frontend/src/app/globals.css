@@ -94,6 +94,9 @@
   --font-sans: Inter, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Inria Serif, serif;
   --font-mono: JetBrains Mono, monospace;
+  /* Fallbacks for Ladle/Vite when next/font variables are not injected */
+  --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inria-serif: "Inria Serif", serif;
   --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
@@ -158,6 +161,9 @@
   --font-sans: Inter, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Inria Serif, serif;
   --font-mono: JetBrains Mono, monospace;
+  /* Fallbacks for Ladle/Vite when next/font variables are not injected */
+  --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inria-serif: "Inria Serif", serif;
   --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);

@@ -6,7 +6,5 @@ export default {
 } satisfies StoryDefault;
 
 export const Default: Story = () => <Tagline />;
-export const Large: Story = () => <Tagline size="lg" />;
-export const Small: Story = () => <Tagline size="sm" />;
 
 

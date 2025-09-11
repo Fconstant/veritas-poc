@@ -16,7 +16,7 @@ const Logo: React.FC<LogoProps> = ({ className, size = 'md' }) => {
   return (
     <h1
       className={cn(
-        'font-[var(--font-inria-serif)] font-bold text-[var(--veritas-purple-primary)]',
+        'font-serif font-bold text-[#102148]',
         sizeClasses[size],
         className
       )}

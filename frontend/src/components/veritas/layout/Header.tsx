@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         <a 
           href="/" 
           aria-label="Veritas Home"
-          className="font-[var(--font-inria-serif)] font-bold text-[24px] leading-[28px] text-[#102148] whitespace-nowrap"
+          className="font-serif font-bold text-[24px] leading-[28px] text-[#102148] whitespace-nowrap"
         >
           Veritas
         </a>

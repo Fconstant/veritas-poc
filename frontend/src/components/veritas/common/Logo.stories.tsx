@@ -6,7 +6,5 @@ export default {
 } satisfies StoryDefault;
 
 export const Default: Story = () => <Logo />;
-export const Large: Story = () => <Logo size="lg" />;
-export const Small: Story = () => <Logo size="sm" />;
 
 
