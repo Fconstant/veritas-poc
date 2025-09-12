@@ -46,16 +46,37 @@ export default function Property1Enabled() {
 
 ### Cores e Estados
 
-#### Estado Enabled (Ativo)
+#### Estado Default (sem texto, sem foco)
 - **Background**: #f8f8f8 (cinza muito claro)
-- **Border**: #351397 (roxo escuro)
+- **Borda**: Gradiente com opacidade 0.20
 - **Label text**: #6e678a (cinza médio)
 - **Character limit text**: rgba(110,103,138,0.7) (cinza médio com 70% opacidade)
 - **Placeholder text**: #383838 (cinza escuro) com 50% opacidade
 
-#### Estado Disabled (Desabilitado)
+#### Estado Focused (sem texto, com foco)
 - **Background**: #f8f8f8 (cinza muito claro)
-- **Border**: Nenhuma (sem gradiente)
+- **Borda**: Gradiente com opacidade 0.50
+- **Label text**: #6e678a (cinza médio)
+- **Character limit text**: rgba(110,103,138,0.7) (cinza médio com 70% opacidade)
+- **Placeholder text**: #383838 (cinza escuro) com 50% opacidade
+
+#### Estado Entered (com texto)
+- **Background**: #ffffff (branco)
+- **Borda**: Gradiente com opacidade 1.0
+- **Label text**: #6e678a (cinza médio)
+- **Character limit text**: rgba(110,103,138,0.7) (cinza médio com 70% opacidade)
+- **Text content**: #383838 (cinza escuro)
+
+#### Estado Error (excede limite de caracteres)
+- **Background**: #ffffff (branco)
+- **Borda**: Gradiente vermelho (rgba(239,68,68,0.5) a rgba(220,38,38,0.5))
+- **Label text**: #cb1f1f (vermelho)
+- **Character limit text**: #cb1f1f (vermelho) + texto "exceeded"
+- **Text content**: #383838 (cinza escuro)
+
+#### Estado Disabled (campo desabilitado)
+- **Background**: #f8f8f8 (cinza muito claro)
+- **Borda**: Nenhuma (sem gradiente)
 - **Label text**: #6e678a (cinza médio)
 - **Character limit text**: rgba(110,103,138,0.7) (cinza médio com 70% opacidade)
 - **Text content**: #383838 (cinza escuro) com 65% opacidade
@@ -63,84 +84,45 @@ export default function Property1Enabled() {
 - **Cursor**: not-allowed
 
 ### Tipografia
-- **Label font**: Inter Medium, 16px
-- **Character limit font**: Inter Medium, 14px
-- **Placeholder font**: Merriweather Regular, 16px
-- **Text content font**: Merriweather Regular, 16px
-- **Placeholder line height**: 28px
-- **Text line height**: 28px
+- **Label font**: Inter Medium, 16px, line-height 24px
+- **Character limit font**: Inter Medium, 14px, line-height 24px
+- **Text content font**: Merriweather Regular, 16px, line-height 28px
+- **Placeholder font**: Merriweather Regular, 16px, line-height 28px
 - **Letter spacing**: 0.14px
-
-## Estrutura do Componente
-
-### Layout Principal
-- **Container principal**: `flex flex-col gap-2` - Layout vertical com espaçamento de 8px
-- **Header**: `flex items-end justify-between` - Label à esquerda, contador à direita
-- **TextArea**: `bg-[#f8f8f8] h-48 p-[12px] rounded-[8px]` - Área de texto com altura fixa
-
-### Elementos Visuais
-1. **Label**: Texto "Label" em Inter Medium, 16px, cor #6e678a
-2. **Character Counter**: "1024 characters limit" em Inter Medium, 14px, cor rgba(110,103,138,0.7)
-3. **Border**: Borda roxa #351397 com 1px de espessura
-4. **Placeholder**: Texto em Merriweather Regular, 14px, cor #383838 com 50% opacidade
 
 ## Implementação TypeScript
 
 ```typescript
-interface TextAreaProps {
-  // Conteúdo
-  value?: string;
-  placeholder?: string;
-  label?: string;
-  maxLength?: number;
-  
-  // Comportamento
-  disabled?: boolean;
-  readOnly?: boolean;
-  required?: boolean;
-  
-  // Estilo
-  className?: string;
-  
-  // Eventos
-  onChange?: (value: string) => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
-  
-  // Acessibilidade
-  id?: string;
-  name?: string;
-  ariaLabel?: string;
+type NativeTextareaAttrs = React.TextareaHTMLAttributes<HTMLTextAreaElement>
+
+interface TextAreaProps extends Omit<NativeTextareaAttrs, "value" | "onChange"> {
+  value?: string
+  placeholder?: string
+  label?: string
+  maxLength?: number
+  disabled?: boolean
+  readOnly?: boolean
+  required?: boolean
+  className?: string
+  onChange?: (value: string) => void
+  onFocus?: () => void
+  onBlur?: () => void
+  id?: string
+  name?: string
+  ariaLabel?: string
 }
 ```
 
 ## Componente React Implementado
 
 ```tsx
-import React, { useState } from 'react';
-import { cn } from '@/lib/utils';
+import * as React from "react"
+import { cn } from "@/lib/utils"
 
-interface TextAreaProps {
-  value?: string;
-  placeholder?: string;
-  label?: string;
-  maxLength?: number;
-  disabled?: boolean;
-  readOnly?: boolean;
-  required?: boolean;
-  className?: string;
-  onChange?: (value: string) => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
-  id?: string;
-  name?: string;
-  ariaLabel?: string;
-}
-
-const TextArea: React.FC<TextAreaProps> = ({
-  value = '',
-  placeholder = 'Placeholder text...',
-  label = 'Label',
+const Textarea: React.FC<TextAreaProps> = ({
+  value = "",
+  placeholder = "Placeholder text...",
+  label = "Label",
   maxLength = 1024,
   disabled = false,
   readOnly = false,
@@ -152,38 +134,80 @@ const TextArea: React.FC<TextAreaProps> = ({
   id,
   name,
   ariaLabel,
+  ...rest
 }) => {
-  const [currentValue, setCurrentValue] = useState(value);
-  
+  const [currentValue, setCurrentValue] = React.useState<string>(value)
+  const [isFocused, setIsFocused] = React.useState<boolean>(false)
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    setCurrentValue(newValue);
-    onChange?.(newValue);
-  };
+    const newValue = e.target.value
+    setCurrentValue(newValue)
+    onChange?.(newValue)
+  }
+
+  const handleFocus = () => {
+    setIsFocused(true)
+    onFocus?.()
+  }
+
+  const handleBlur = () => {
+    setIsFocused(false)
+    onBlur?.()
+  }
+
+  // Opacidade do gradiente por estado:
+  // - Default: 0.2
+  // - Focused (sem texto): 0.5
+  // - Entered (com texto): 1.0
+  const gradientOpacity = currentValue.length > 0 ? 1 : (isFocused ? 0.5 : 0.2)
+  const isError = !disabled && currentValue.length > maxLength
+  const containerFill = disabled ? "#f8f8f8" : (currentValue.length > 0 ? "#ffffff" : "#f8f8f8")
+  const containerBackground = disabled
+    ? undefined
+    : (isError 
+      ? `linear-gradient(${containerFill},${containerFill}) padding-box, linear-gradient(90deg, rgba(239,68,68,0.5) 0%, rgba(220,38,38,0.5) 100%) border-box`
+      : `linear-gradient(${containerFill},${containerFill}) padding-box, linear-gradient(90deg, rgba(53,19,151,${gradientOpacity}) 0%, rgba(8,133,185,${gradientOpacity}) 100%) border-box`)
 
   return (
-    <div className={cn(
-      'content-stretch flex flex-col gap-2 items-start justify-start relative size-full',
-      className
-    )}>
+    <div
+      className={cn(
+        "content-stretch flex flex-col gap-2 items-start justify-start relative size-full",
+        className
+      )}
+    >
       {/* Header com Label e Contador */}
       <div className="content-stretch flex items-end justify-between relative shrink-0 w-full">
         <div className="content-stretch flex gap-2 items-center justify-center relative shrink-0">
-          <div className="flex flex-col font-[\'Inter:Medium\',_sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[#6e678a] text-[16px] text-nowrap">
-            <p className="leading-[normal] whitespace-pre">{label}</p>
+          <div className={cn(
+            "flex flex-col font-['Inter:Medium',_sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-nowrap",
+            isError ? "text-red-500" : "text-[#6e678a]"
+          )}>
+            <p className="leading-[24px] whitespace-pre">{label}</p>
           </div>
         </div>
-        <div className="flex flex-col font-[\'Inter:Medium\',_sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-[rgba(110,103,138,0.7)] text-nowrap">
-          <p className="leading-[normal] whitespace-pre">{maxLength} characters limit</p>
+        <div className="flex flex-col font-['Inter:Medium',_sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-sm text-nowrap">
+          <p className={cn(
+            "leading-[24px] whitespace-pre",
+            isError ? "text-red-500" : "text-[rgba(110,103,138,0.7)]"
+          )}>
+            {isError
+              ? `${currentValue.length}/${maxLength} character limit exceeded`
+              : `${currentValue.length}/${maxLength} character limit`}
+          </p>
         </div>
       </div>
-      
+
       {/* TextArea Container */}
-      <div className="bg-[#f8f8f8] box-border content-stretch flex flex-col gap-2 h-48 items-start justify-start p-[12px] relative rounded-[8px] shrink-0 w-full">
-        <div 
-          aria-hidden="true" 
-          className="absolute border border-[#351397] border-solid inset-0 pointer-events-none rounded-[8px]" 
-        />
+      <div
+        className={cn(
+          "box-border content-stretch flex flex-col gap-2 h-48 items-start justify-start p-[12px] relative rounded-[8px] shrink-0 w-full",
+          disabled && "cursor-not-allowed"
+        )}
+        style={{
+          border: disabled ? "none" : "1px solid transparent",
+          background: containerBackground ?? "#f8f8f8",
+        }}
+      >
         <textarea
           id={id}
           name={name}
@@ -192,45 +216,83 @@ const TextArea: React.FC<TextAreaProps> = ({
           disabled={disabled}
           readOnly={readOnly}
           required={required}
-          maxLength={maxLength}
           onChange={handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           aria-label={ariaLabel || label}
-          className="font-[\'Merriweather:Regular\',_sans-serif] leading-[28px] min-w-full not-italic text-[#383838] text-[14px] tracking-[0.14px] bg-transparent border-none outline-none resize-none w-full h-full"
-          style={{ width: "min-content" }}
+          data-slot="textarea"
+          className={cn(
+            "leading-[28px] min-w-full not-italic tracking-[0.14px] bg-transparent border-none outline-none resize-none w-full h-full text-[#383838] placeholder:text-[#383838] placeholder:opacity-50",
+            disabled && "opacity-[0.65] cursor-not-allowed"
+          )}
+          style={{ width: "min-content", fontSize: "16px", fontFamily: "Merriweather, serif" }}
+          {...rest}
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TextArea;
+export { Textarea }
 ```
 
-## Características Específicas da Spec
+## Características Específicas da Implementação
 
-### Layout e Estrutura
-- **Container principal**: Flexbox vertical com gap de 8px
-- **Header**: Flexbox horizontal com justify-between para label e contador
-- **TextArea**: Altura fixa de 192px (h-48) com padding de 12px
-- **Border**: Borda absoluta posicionada sobre o container
+### Estados Dinâmicos
+O componente gerencia automaticamente todos os estados:
 
-### Fontes e Tipografia
-- **Label**: Inter Medium, 16px, cor #6e678a, Line heigh: 24px
-- **Contador**: Inter Medium, 14px, cor rgba(110,103,138,0.7)
-- **Placeholder**: Merriweather Regular, 14px, cor #383838 com 50% opacidade
-- **Line height**: 28px para o placeholder
+1. **Default**: Gradiente com opacidade 0.20, background #f8f8f8
+2. **Focused**: Gradiente com opacidade 0.50 (ao clicar)
+3. **Entered**: Gradiente com opacidade 1.0 + background branco (ao digitar)
+4. **Error**: Gradiente vermelho quando excede 1024 caracteres
+5. **Disabled**: Sem gradiente + opacidade 0.65 + cursor not-allowed
 
-### Cores do Sistema
-- **Background**: #f8f8f8 (cinza muito claro)
-- **Border**: #351397 (roxo escuro)
-- **Label**: #6e678a (cinza médio)
-- **Contador**: rgba(110,103,138,0.7) (cinza médio com 70% opacidade)
-- **Placeholder**: #383838 (cinza escuro) com 50% opacidade
+### Lógica de Gradiente
+```tsx
+const gradientOpacity = currentValue.length > 0 ? 1 : (isFocused ? 0.5 : 0.2)
+```
+
+### Lógica de Background
+```tsx
+const containerFill = disabled ? "#f8f8f8" : (currentValue.length > 0 ? "#ffffff" : "#f8f8f8")
+```
+
+### Lógica de Error
+```tsx
+const isError = !disabled && currentValue.length > maxLength
+```
+
+### CSS Custom (globals.css)
+```css
+/* Força Merriweather no textarea placeholder */
+textarea[data-slot="textarea"]::placeholder {
+  font-family: Merriweather, serif !important;
+  font-size: 16px !important;
+}
+
+/* Estado disabled - placeholder com opacidade reduzida */
+textarea[data-slot="textarea"]:disabled::placeholder {
+  opacity: 0.65 !important;
+}
+```
+
+### Font Implementation
+- **Fonte**: Merriweather aplicada via inline style `fontFamily: "Merriweather, serif"`
+- **Tamanho**: 16px aplicado via inline style `fontSize: "16px"`
+- **Line-height**: 28px via Tailwind `leading-[28px]`
+- **Tracking**: 0.14px via Tailwind `tracking-[0.14px]`
+
+### Acessibilidade
+- **aria-label**: Usa label como fallback
+- **data-slot**: Para CSS targeting
+- **disabled**: Aplica cursor not-allowed
+- **required**: Suporte nativo HTML5
 
 ## Referências
 
 - [Figma Design - TextArea Component](https://www.figma.com/design/QyHxg2phuY29PoHaxF631K/Veritas---FactChecker-Agent?node-id=242-6935&m=dev)
+- [Ladle Stories - TextArea Component](http://localhost:61000/?story=ui--textarea)
 - **Node ID**: 242:6935
 - **Component Name**: Property1Enabled
+- **Estados**: Default, Focused, Entered, Error, Disabled
+- **Stories**: Interactive, Disabled

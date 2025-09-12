@@ -23,6 +23,9 @@ alwaysApply: true
 3. Document all colors, fonts, dimensions, spacing
 4. Document component structure, variants, states and behavior
 5. Include TypeScript interface
+6. Document dynamic states and gradient logic
+7. Include Ladle stories link
+8. Document CSS custom properties if used
 
 ### 3. Implementation Phase
 1. Follow the `.md` documentation EXACTLY
@@ -149,14 +152,47 @@ export default Component;
 #### 3. Ladle Stories
 ```tsx
 import type { Story, StoryDefault } from "@ladle/react";
-import Component from "./Component";
+import { useState } from "react";
+import { Component } from "./Component";
 
 export default {
-  title: "veritas/category/Component",
+  title: "ui/Component", // or "veritas/category/Component"
 } satisfies StoryDefault;
 
-export const Default: Story = () => <Component />;
-export const WithProps: Story = () => <Component prop="value" />;
+// Interactive story for components with dynamic states
+export const Interactive: Story = () => {
+  const [value, setValue] = useState("");
+
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Component Interativo</h3>
+        <p className="text-sm text-muted-foreground">
+          Este componente gerencia automaticamente todos os estados
+        </p>
+      </div>
+
+      <Component
+        value={value}
+        onChange={setValue}
+        // other props
+      />
+
+      <div className="text-xs text-muted-foreground">
+        <p><strong>Estado atual:</strong> {value.length === 0 ? 'Default' : 'Entered'}</p>
+      </div>
+    </div>
+  );
+};
+
+// Static stories for specific states
+export const Disabled: Story = () => (
+  <Component disabled />
+);
+
+export const Error: Story = () => (
+  <Component error />
+);
 ```
 
 ### Asset Management
@@ -206,13 +242,19 @@ frontend/
 - [ ] Use correct spacing from Figma
 - [ ] Implement TypeScript interface
 - [ ] Add proper accessibility attributes
+- [ ] Implement dynamic states (focus, error, disabled)
+- [ ] Add gradient borders with dynamic opacity
+- [ ] Use inline styles for critical font sizes
+- [ ] Add data-slot attributes for CSS targeting
 
 ### After Implementation
-- [ ] Create Ladle stories
+- [ ] Create Ladle stories for all states
 - [ ] Test all variants and states
 - [ ] Verify pixel-perfect match with Figma
+- [ ] Add CSS custom properties if needed
 - [ ] Export from appropriate index.ts
 - [ ] Update component documentation
+- [ ] Include Ladle link in documentation
 
 ## Common Patterns
 
@@ -244,6 +286,59 @@ className="px-6 py-4 gap-2"
 
 // Use hardcoded values from Figma
 className="p-[12px]"
+```
+
+### Dynamic States & Gradients
+**CRITICAL**: Many components have dynamic states with gradient borders
+
+#### 1. State Management Pattern
+```tsx
+const [currentValue, setCurrentValue] = React.useState<string>(value)
+const [isFocused, setIsFocused] = React.useState<boolean>(false)
+
+// Dynamic gradient opacity based on state
+const gradientOpacity = currentValue.length > 0 ? 1 : (isFocused ? 0.5 : 0.2)
+```
+
+#### 2. Gradient Background Implementation
+```tsx
+const containerBackground = disabled
+  ? undefined  // No gradient for disabled
+  : (isError 
+    ? `linear-gradient(${containerFill},${containerFill}) padding-box, linear-gradient(90deg, rgba(239,68,68,0.5) 0%, rgba(220,38,38,0.5) 100%) border-box`
+    : `linear-gradient(${containerFill},${containerFill}) padding-box, linear-gradient(90deg, rgba(53,19,151,${gradientOpacity}) 0%, rgba(8,133,185,${gradientOpacity}) 100%) border-box`)
+
+// Apply via inline style
+style={{
+  border: disabled ? "none" : "1px solid transparent",
+  background: containerBackground ?? "#f8f8f8",
+}}
+```
+
+#### 3. Error State Logic
+```tsx
+const isError = !disabled && currentValue.length > maxLength
+
+// Apply error styling conditionally
+className={cn(
+  "base-classes",
+  isError && "text-red-500"
+)}
+```
+
+#### 4. Disabled State Pattern
+```tsx
+// Container: cursor-not-allowed
+className={cn(
+  "base-classes",
+  disabled && "cursor-not-allowed"
+)}
+
+// Input element: opacity + cursor
+className={cn(
+  "base-classes",
+  disabled && "opacity-[0.65] cursor-not-allowed"
+)}
 ```
 
 ### Font Implementation
@@ -346,6 +441,54 @@ className="font-[var(--font-inter)] text-[12px]"
 ```css
 --font-merriweather: Merriweather, "Times New Roman", serif;
 ```
+
+**Problem**: Font size being overridden by Tailwind classes
+**Solution**: Use inline styles for critical font sizes:
+```tsx
+style={{ fontSize: "16px", fontFamily: "Merriweather, serif" }}
+```
+
+**Problem**: Font not appearing in placeholder
+**Solution**: Use CSS custom properties with !important:
+```css
+textarea[data-slot="textarea"]::placeholder {
+  font-family: Merriweather, serif !important;
+  font-size: 16px !important;
+}
+```
+
+### CSS Custom Properties for Components
+**CRITICAL**: Use CSS custom properties for component-specific styling
+
+#### 1. Component-Specific CSS Rules
+```css
+/* Location: frontend/src/app/globals.css */
+
+/* Component-specific targeting using data attributes */
+textarea[data-slot="textarea"]::placeholder {
+  font-family: Merriweather, serif !important;
+  font-size: 16px !important;
+}
+
+textarea[data-slot="textarea"]:disabled::placeholder {
+  opacity: 0.65 !important;
+}
+```
+
+#### 2. Data Attributes for CSS Targeting
+```tsx
+// Add data-slot to components for CSS targeting
+<textarea
+  data-slot="textarea"
+  className="..."
+/>
+```
+
+#### 3. !important Usage Guidelines
+- **Use sparingly**: Only for critical overrides
+- **Component-specific**: Target specific components, not global
+- **Font enforcement**: When Tailwind classes conflict with Figma specs
+- **State-specific**: For disabled, error, or special states
 
 ## Error Prevention
 - **NEVER** assume colors, fonts, or spacing
