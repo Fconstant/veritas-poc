@@ -43,21 +43,21 @@ export const Interactive: Story = () => {
         <div className="flex gap-2">
           <Button
             onClick={() => setStatus("verifying")}
-            variant={status === "verifying" ? "default" : "outline"}
+            variant={status === "verifying" ? "filled" : "outlined"}
             size="sm"
           >
             Verificando
           </Button>
           <Button
             onClick={() => setStatus("error")}
-            variant={status === "error" ? "destructive" : "outline"}
+            variant={status === "error" ? "filled" : "outlined"}
             size="sm"
           >
             Erro
           </Button>
           <Button
             onClick={() => setStatus("done")}
-            variant={status === "done" ? "default" : "outline"}
+            variant={status === "done" ? "filled" : "outlined"}
             size="sm"
           >
             Completo

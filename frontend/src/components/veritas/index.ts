@@ -3,6 +3,5 @@
 
 export * from './Header';
 export * from './common';
-export * from './verification';
 export * from './results';
 export * from './pages';

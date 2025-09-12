@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { CheckCircle, AlertCircle, Info } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface HomePageToastProps {
   type: 'success' | 'error' | 'info';
@@ -62,15 +63,15 @@ const HomePageToast: React.FC<HomePageToastProps> = ({
           </p>
         </div>
         
-        <button
+        <Button
+          variant="link"
+          size="sm"
           onClick={onClose}
-          className="flex-shrink-0 ml-2 text-gray-400 hover:text-gray-600 transition-colors"
+          className="flex-shrink-0 ml-2 text-gray-400 hover:text-gray-600 transition-colors p-1"
         >
           <span className="sr-only">Fechar</span>
-          <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+          <X className="size-4" />
+        </Button>
       </div>
     </div>
   );

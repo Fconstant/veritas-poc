@@ -134,7 +134,7 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
 
         {/* Action Button */}
         <Button
-          variant="outline"
+          variant="outlined"
           size="sm"
           onClick={config.onButtonClick}
           disabled={disabled}

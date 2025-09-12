@@ -42,7 +42,7 @@ export const Interactive: Story = () => {
         <div className="flex gap-2">
           <Button
             onClick={() => setIsOpen(true)}
-            variant="outline"
+            variant="outlined"
             size="sm"
           >
             Abrir Dialog
