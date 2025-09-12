@@ -276,9 +276,10 @@ O componente apresenta um design fixo com ícone de alerta:
 - **Warning**: AlertTriangle em roxo (#8A5CDA)
 
 ### Botões Contextuais
-- **Close**: Botão de texto simples (ação secundária) - posicionado à esquerda
-- **Cancel/Confirm**: Botão com borda (ação primária) - posicionado à direita
+- **Close**: Componente Button com variante `link` (ação secundária) - posicionado à esquerda
+- **Cancel/Confirm**: Componente Button com variante `outlined` (ação primária) - posicionado à direita
 - **Layout**: Ambos os botões ocupam 100% da largura disponível com gap entre eles
+- **Tamanho**: Ambos usam `size="sm"` (32px de altura)
 
 ### Font Implementation
 - **Mensagem**: Inter Regular, 16px via CSS variable

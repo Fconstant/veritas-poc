@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { AlertTriangle } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   Dialog as DialogPrimitive,
   DialogContent,
@@ -59,20 +60,23 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
         {/* Actions Section */}
         <DialogFooter className="flex items-center w-full gap-2">
-          <button
+          <Button
+            variant="link"
+            size="sm"
             onClick={onCancel || onClose}
-            className="flex-1 px-3 py-2 text-[#8a5cda] text-[14px] font-[var(--font-inter)] font-semibold leading-[24px] hover:bg-gray-100 rounded-lg transition-colors"
+            className="flex-1"
           >
             {cancelText}
-          </button>
+          </Button>
           
-          <button
+          <Button
+            variant="outlined"
+            size="sm"
             onClick={onConfirm || onClose}
-            className="flex-1 px-3 py-2 rounded-lg text-[#8a5cda] text-[14px] font-[var(--font-inter)] font-semibold leading-[24px] hover:bg-[#351397]/5 transition-colors relative"
+            className="flex-1"
           >
-            <div aria-hidden="true" className="absolute border border-[#351397] border-solid inset-0 pointer-events-none rounded-lg" />
             {confirmText}
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </DialogPrimitive>

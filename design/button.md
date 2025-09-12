@@ -13,8 +13,12 @@ O componente Button possui 3 variantes principais:
 3. **Link** - Botão sem borda, apenas texto
 
 ### Sizes
-- **SM (Small)**: 32px altura, padding `px-3 py-1`
-- **MD (Medium)**: 48px altura, padding `px-4 py-3`
+- **SM (Small)**: 
+  - Filled/Outlined: 32px altura, padding `px-3 py-1`
+  - Link: padding `px-1 py-0.5` (sem altura fixa)
+- **Default**: 
+  - Filled/Outlined: 48px altura, padding `px-4 py-3`
+  - Link: padding `px-1.5 py-1` (sem altura fixa)
 
 ### States
 Cada variante possui 3 estados:
@@ -36,18 +40,18 @@ Cada variante possui 3 estados:
 
 ### Link Variant
 - **Enabled**: Background `transparent`, Text `#8a5cda`, Icon `#8a5cda`
-- **Hovered**: Background `transparent`, Text `#5d13dd`, Icon `#5d13dd`
-- **Disabled**: Background `transparent`, Text `#9d6eed`, Icon `#9d6eed`, Opacity `0.5`
+- **Hovered**: Background `#f6f6f6`, Text `#5d13dd`, Icon `#5d13dd`, **Underline**
+- **Disabled**: Background `transparent`, Text `#8a5cda`, Icon `#8a5cda`, Opacity `0.5`
 
 ## Typography
 - **Font**: Inter Semi Bold (`font-semibold`)
 - **SM Size**: `text-[14px]` com `leading-[24px]`
-- **MD Size**: `text-[16px]` com `leading-[24px]`
+- **Default Size**: `text-[16px]` com `leading-[24px]`
 
 ## Layout
 - **Border Radius**: `rounded-[8px]`
 - **Gap**: `gap-2` entre ícone e texto
-- **Icon Size**: `size-4` para SM, `size-6` para MD
+- **Icon Size**: `size-4` para SM, `size-6` para Default
 - **Border**: `border-[#351397]` para variantes outlined
 
 ## Component Structure
@@ -55,7 +59,7 @@ Cada variante possui 3 estados:
 ```tsx
 interface ButtonProps {
   variant?: "filled" | "outlined" | "link";
-  size?: "sm" | "md";
+  size?: "sm" | "default";
   disabled?: boolean;
   icon?: React.ReactNode;
   children?: React.ReactNode;
@@ -91,9 +95,9 @@ interface ButtonProps {
 
 ## Ladle Stories
 Criar stories para todas as combinações de variantes, tamanhos e estados:
-- Filled SM/MD (Enabled, Hovered, Disabled)
-- Outlined SM/MD (Enabled, Hovered, Disabled)  
-- Link SM/MD (Enabled, Hovered, Disabled)
+- Filled SM/Default (Enabled, Hovered, Disabled)
+- Outlined SM/Default (Enabled, Hovered, Disabled)  
+- Link SM/Default (Enabled, Hovered, Disabled)
 
 ## Accessibility
 - Adicionar `aria-disabled` para estados disabled

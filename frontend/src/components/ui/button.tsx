@@ -15,29 +15,35 @@ const buttonVariants = cva(
         // Outlined (Figma: Outlined Enabled/Hovered/Disabled)
         outlined:
           "border border-[#351397] bg-transparent text-[#8a5cda] hover:bg-[#f6f6f6] hover:text-[#5d13dd] disabled:opacity-50 disabled:text-[#9d6eed]",
-        // Link (Figma: Link SM/MD)
+        // Link (Figma: Link SM/Default) - Padding específico e hover com fundo
         link:
-          "bg-transparent text-[#8a5cda] hover:text-[#5d13dd] disabled:text-[#9d6eed] disabled:opacity-50 focus-visible:ring-0 focus-visible:ring-offset-0",
-        // Legacy variants for compatibility
-        default:
-          "bg-[#844ae9] text-white border border-[#351397] hover:bg-[#5d13dd] disabled:opacity-45",
-        destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 dark:bg-destructive/60 dark:hover:bg-destructive/70 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
-        outline:
-          "border border-[#351397] bg-transparent text-[#8a5cda] hover:bg-[#f6f6f6] hover:text-[#5d13dd] disabled:opacity-50 disabled:text-[#9d6eed]",
+          "bg-transparent text-[#8a5cda] hover:text-[#5d13dd] hover:bg-[#f6f6f6] hover:underline disabled:text-[#8a5cda] disabled:opacity-50 focus-visible:ring-0 focus-visible:ring-offset-0",
       },
       size: {
-        // SM: 32px height, MD: 48px height (Figma)
+        // SM: 32px height para filled/outlined
         sm: "h-8 px-3 py-1 text-[14px] leading-[24px] [&_svg]:size-4",
-        md: "h-12 px-4 py-3 text-[16px] leading-[24px] [&_svg]:size-6",
-        // Legacy sizes for compatibility
+        // Default: 48px height para filled/outlined  
         default: "h-12 px-4 py-3 text-[16px] leading-[24px] [&_svg]:size-6",
         icon: "size-12",
       },
     },
+    compoundVariants: [
+      // Link SM - Padding específico do Figma
+      {
+        variant: "link",
+        size: "sm",
+        class: "px-1 py-0.5 text-[14px] leading-normal [&_svg]:size-4",
+      },
+      // Link Default - Padding específico do Figma
+      {
+        variant: "link", 
+        size: "default",
+        class: "px-1.5 py-1 text-[16px] leading-normal [&_svg]:size-6",
+      },
+    ],
     defaultVariants: {
       variant: "filled",
-      size: "md",
+      size: "default",
     },
   }
 )
