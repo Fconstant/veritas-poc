@@ -203,10 +203,43 @@ export const Error: Story = () => (
 
 ### Icon System
 **Library**: Lucide React
+**CRITICAL**: **NEVER use raw SVG files for icons - ALWAYS use Lucide React components**
+
 **Usage**: 
 ```tsx
-import { Play, Check, X } from "lucide-react";
+import { Play, Check, X, ArrowRight, Search } from "lucide-react";
 <Play className="size-4" />
+<Check className="size-5 text-green-500" />
+<ArrowRight className="size-6" />
+```
+
+**Icon Implementation Rules**:
+- ✅ **ALWAYS** use Lucide React components
+- ✅ Import specific icons: `import { IconName } from "lucide-react"`
+- ✅ Use Tailwind classes for sizing: `size-4`, `size-5`, `size-6`
+- ✅ Use Tailwind classes for colors: `text-primary`, `text-red-500`
+- ❌ **NEVER** use raw SVG files from `/public/` or inline SVG
+- ❌ **NEVER** create custom SVG components
+- ❌ **NEVER** use other icon libraries (Heroicons, Feather, etc.)
+
+**Common Lucide Icons for Veritas**:
+```tsx
+// Navigation & Actions
+import { ArrowRight, ArrowLeft, ArrowUp, ArrowDown } from "lucide-react";
+import { Play, Pause, Stop, RefreshCw } from "lucide-react";
+import { Search, Filter, SortAsc, SortDesc } from "lucide-react";
+
+// Status & Feedback
+import { Check, X, AlertCircle, Info, CheckCircle } from "lucide-react";
+import { Loader2, AlertTriangle, Shield, ShieldCheck } from "lucide-react";
+
+// Content & Media
+import { FileText, Image, Video, Link, Copy } from "lucide-react";
+import { Download, Upload, Share, ExternalLink } from "lucide-react";
+
+// UI Elements
+import { Menu, X as Close, Plus, Minus, Edit } from "lucide-react";
+import { Settings, User, Bell, Heart, Star } from "lucide-react";
 ```
 
 ### Project Structure
@@ -496,6 +529,7 @@ textarea[data-slot="textarea"]:disabled::placeholder {
 - **ALWAYS** document before implementing
 - **ALWAYS** test with Ladle stories
 - **ALWAYS** verify pixel-perfect match
+- **NEVER** use raw SVG files for icons - **ALWAYS** use Lucide React components
 
 ## References
 - [Figma MCP Tools](https://figma.com/design/QyHxg2phuY29PoHaxF631K/Veritas---FactChecker-Agent)
