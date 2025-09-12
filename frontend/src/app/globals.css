@@ -97,6 +97,7 @@
   /* Fallbacks for Ladle/Vite when next/font variables are not injected */
   --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
   --font-inria-serif: "Inria Serif", serif;
+  --font-merriweather: Merriweather, serif;
   --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
@@ -182,4 +183,15 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Força Merriweather no textarea placeholder */
+textarea[data-slot="textarea"]::placeholder {
+  font-family: Merriweather, serif !important;
+  font-size: 16px !important;
+}
+
+/* Estado disabled - placeholder com opacidade reduzida */
+textarea[data-slot="textarea"]:disabled::placeholder {
+  opacity: 0.65 !important;
 }

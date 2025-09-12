@@ -1,0 +1,260 @@
+---
+description: Design System Rules for Figma-to-Code Integration using MCP
+globs: ["frontend/src/components/**/*"]
+alwaysApply: true
+---
+
+# Design System Rules - Figma MCP Integration
+
+## Core Principle
+**ALWAYS extract specs directly from Figma using MCP tools - NO generic assumptions or generic design patterns.**
+
+## Workflow Process
+
+### 1. Figma Analysis Phase
+1. **Extract Code**: Use `mcp_figma_get_code` with correct nodeId
+2. **Get Screenshot**: Use `mcp_figma_get_screenshot` for visual context
+3. **Get Metadata**: Use `mcp_figma_get_metadata` for dimensions/structure
+4. **Get Variables**: Use `mcp_figma_get_variable_defs` for design tokens
+
+### 2. Documentation Phase
+1. Create `.md` file in `design/` directory
+2. Include complete Figma spec code and the Figma link
+3. Document all colors, fonts, dimensions, spacing
+4. Document component structure, variants, states and behavior
+5. Include TypeScript interface
+
+### 3. Implementation Phase
+1. Follow the `.md` documentation EXACTLY
+2. Use Figma-extracted colors, fonts, spacing
+3. Implement pixel-perfect match
+4. Create Ladle stories for testing
+
+## Design System Structure
+
+### Token Definitions
+**Location**: `frontend/src/app/globals.css`
+
+```css
+:root {
+  /* Veritas-specific colors from Figma */
+  --veritas-purple-primary: #351397;
+  --veritas-purple-secondary: #844ae9;
+  --veritas-purple-light: #a855f7;
+  --veritas-blue-dark: #102148;
+  --veritas-gray-light: #f7f7f7;
+  --veritas-gray-border: #d7d4de;
+  
+  /* System colors mapped to Veritas */
+  --primary: var(--veritas-purple-primary);
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --border: var(--veritas-gray-border);
+  
+  /* Typography */
+  --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inria-serif: "Inria Serif", serif;
+  --font-merriweather: Merriweather, serif;
+}
+```
+
+### Component Architecture
+**Location**: `frontend/src/components/`
+
+```
+components/
+├── ui/                    # Generic UI components (shadcn/ui)
+│   ├── button.tsx
+│   ├── input.tsx
+│   ├── textarea.tsx
+│   └── *.stories.tsx
+└── veritas/              # Veritas-specific components
+    ├── layout/           # Header, Footer, Container, PurpleBorder
+    ├── common/           # Logo, AlphaBadge, Tagline
+    ├── verification/     # VerificationInput, VerificationButton
+    ├── results/          # ResultCard, TruthBadge, ConfidenceBar
+    └── pages/            # LandingPage, VerificationPage, ResultsPage
+```
+
+### Frameworks & Libraries
+- **UI Framework**: React 19 + Next.js 15
+- **Styling**: Tailwind CSS v4 + CSS Variables
+- **Component System**: shadcn/ui + Radix UI primitives
+- **Build System**: Next.js with Turbopack
+- **Package Manager**: pnpm
+- **Storybook**: Ladle for component development
+
+### Styling Approach
+**Methodology**: Tailwind CSS with CSS Variables + Utility Classes
+
+```tsx
+// Example from Header.tsx
+className={cn(
+  'flex items-center justify-between px-6 py-4 relative w-full',
+  'bg-background border-b border-[#d6d8db]',
+  className
+)}
+```
+
+**Key Patterns**:
+- Use `cn()` utility for class merging
+- CSS variables for design tokens
+- Hardcoded colors from Figma when needed
+- Responsive design with Tailwind breakpoints
+
+### Component Implementation Rules
+
+#### 1. TypeScript Interface
+```tsx
+interface ComponentProps {
+  // Content
+  value?: string;
+  placeholder?: string;
+  label?: string;
+  
+  // Behavior
+  disabled?: boolean;
+  required?: boolean;
+  
+  // Styling
+  className?: string;
+  
+  // Events
+  onChange?: (value: string) => void;
+  
+  // Accessibility
+  id?: string;
+  ariaLabel?: string;
+}
+```
+
+#### 2. Component Structure
+```tsx
+import React from 'react';
+import { cn } from '@/lib/utils';
+
+const Component: React.FC<ComponentProps> = ({
+  // props destructuring
+}) => {
+  return (
+    <div className={cn('base-classes', className)}>
+      {/* Component content */}
+    </div>
+  );
+};
+
+export default Component;
+```
+
+#### 3. Ladle Stories
+```tsx
+import type { Story, StoryDefault } from "@ladle/react";
+import Component from "./Component";
+
+export default {
+  title: "veritas/category/Component",
+} satisfies StoryDefault;
+
+export const Default: Story = () => <Component />;
+export const WithProps: Story = () => <Component prop="value" />;
+```
+
+### Asset Management
+**Location**: `frontend/public/`
+- Static assets (SVGs, images)
+- Next.js Image component for optimization
+- No CDN configuration (local development)
+
+### Icon System
+**Library**: Lucide React
+**Usage**: 
+```tsx
+import { Play, Check, X } from "lucide-react";
+<Play className="size-4" />
+```
+
+### Project Structure
+```
+frontend/
+├── src/
+│   ├── app/              # Next.js app router
+│   │   ├── globals.css   # Design tokens & global styles
+│   │   ├── layout.tsx    # Root layout with fonts
+│   │   └── page.tsx      # Home page
+│   ├── components/
+│   │   ├── ui/          # Generic components
+│   │   └── veritas/     # Veritas-specific components
+│   └── lib/
+│       └── utils.ts     # cn() utility function
+├── public/              # Static assets
+├── components.json      # shadcn/ui config
+└── package.json         # Dependencies
+```
+
+## Implementation Checklist
+
+### Before Implementation
+- [ ] Extract Figma code using MCP tools
+- [ ] Create design documentation in `design/` folder
+- [ ] Verify all colors, fonts, dimensions from Figma
+- [ ] Plan component props and behavior
+
+### During Implementation
+- [ ] Follow Figma specs exactly (no assumptions)
+- [ ] Use correct colors from Figma
+- [ ] Use correct fonts from Figma
+- [ ] Use correct spacing from Figma
+- [ ] Implement TypeScript interface
+- [ ] Add proper accessibility attributes
+
+### After Implementation
+- [ ] Create Ladle stories
+- [ ] Test all variants and states
+- [ ] Verify pixel-perfect match with Figma
+- [ ] Export from appropriate index.ts
+- [ ] Update component documentation
+
+## Common Patterns
+
+### Color Usage
+```tsx
+// Use CSS variables when available
+className="bg-primary text-primary-foreground"
+
+// Use hardcoded Figma colors when needed
+className="bg-[#351397] text-[#102148]"
+
+// Use Tailwind utilities for common patterns
+className="border-[#d6d8db]"
+```
+
+### Typography
+```tsx
+// Use font variables
+className="font-[var(--font-inter)]"
+
+// Use Tailwind font classes
+className="font-medium text-[16px] leading-[28px]"
+```
+
+### Spacing
+```tsx
+// Use Tailwind spacing
+className="px-6 py-4 gap-2"
+
+// Use hardcoded values from Figma
+className="p-[12px]"
+```
+
+## Error Prevention
+- **NEVER** assume colors, fonts, or spacing
+- **ALWAYS** extract from Figma first
+- **ALWAYS** document before implementing
+- **ALWAYS** test with Ladle stories
+- **ALWAYS** verify pixel-perfect match
+
+## References
+- [Figma MCP Tools](https://figma.com/design/QyHxg2phuY29PoHaxF631K/Veritas---FactChecker-Agent)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Ladle Documentation](https://ladle.dev/)

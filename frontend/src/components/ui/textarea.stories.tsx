@@ -6,42 +6,55 @@ export default {
   title: "ui/Textarea",
 } satisfies StoryDefault;
 
-export const Default: Story = () => (
-  <Textarea placeholder="Escreva sua mensagem..." />
-);
-
-export const Disabled: Story = () => (
-  <Textarea placeholder="Desabilitado" disabled />
-);
-
-export const Placeholder: Story = () => (
-  <Textarea placeholder="Ex.: Cole aqui um texto para análise" />
-);
-
-export const Error: Story = () => (
-  <div className="space-y-1.5">
-    <Textarea aria-invalid placeholder="Mensagem com erro" />
-    <p className="text-xs text-destructive">Mensagem de erro explicativa.</p>
-  </div>
-);
-
-export const WithCounter: Story = () => {
+export const Interactive: Story = () => {
   const [value, setValue] = useState("");
-  const max = 200;
-
+  
   return (
-    <div className="space-y-1.5">
-      <Textarea
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Com contador (máx. 200)"
-        maxLength={max}
-      />
-      <div className="flex justify-end">
-        <span className="text-xs text-muted-foreground">
-          {value.length}/{max}
-        </span>
+    <div className="space-y-6 max-w-2xl">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">TextArea Interativo</h3>
+        <p className="text-sm text-muted-foreground">
+          Este componente gerencia automaticamente todos os estados:
+        </p>
+        <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
+          <li><strong>Default:</strong> Gradiente com opacidade 0.20</li>
+          <li><strong>Focused:</strong> Gradiente com opacidade 0.50 (ao clicar)</li>
+          <li><strong>Entered:</strong> Gradiente com opacidade 0.05 (ao digitar)</li>
+          <li><strong>Error:</strong> Gradiente vermelho quando excede 1024 caracteres</li>
+        </ul>
       </div>
+      
+      <Textarea 
+        label="Label"
+        placeholder="Placeholder text..."
+        maxLength={1024}
+        value={value}
+        onChange={setValue}
+      />
+      
+      <div className="text-xs text-muted-foreground">
+        <p><strong>Estado atual:</strong> {value.length === 0 ? 'Default' : value.length > 1024 ? 'Error' : 'Entered'}</p>
+        <p><strong>Caracteres:</strong> {value.length}/1024</p>
+      </div>
+    </div>
+  );
+};
+
+export const Disabled: Story = () => {
+  const [value] = useState("Text entered...");
+  
+  return (
+    <div className="space-y-4">
+      <Textarea 
+        label="Label"
+        placeholder="Placeholder text..."
+        maxLength={1024}
+        value={value}
+        disabled
+      />
+      <p className="text-xs text-muted-foreground">
+        Estado Disabled - Campo desabilitado com texto
+      </p>
     </div>
   );
 };
