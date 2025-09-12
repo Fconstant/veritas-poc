@@ -10,7 +10,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
     <header
       className={cn(
         'flex items-center justify-between px-6 py-4 relative w-full',
-        'bg-background border-b border-[#d6d8db]',
+        'border-b border-[#d6d8db]',
         className
       )}
     >
