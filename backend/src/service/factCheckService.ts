@@ -1,12 +1,19 @@
-import { FactCheckRequest } from '#/ws/types.js';
+import { FactCheckRequest, ServerToClientEvents } from '#/ws/types.js';
 import { ValidationError } from '#/utils/errors.js';
 import * as Consts from '#/constants.js';
 import { applyChunking } from '#/chunking/index.js';
 import { basicAnalysis, deepResearch } from '#/analysis/index.js';
 import { createConversationMemory } from '#/memory/createConversationMemory.js';
 
+type EventsPayload = Parameters<
+  ServerToClientEvents["FACT_CHECK_RESULT" | "CHUNK_COUNT"]
+>[0];
+
 // Main fact-checking function
-export async function* factCheckService(content: string, factCheckReq: FactCheckRequest) {
+export async function* factCheckService(
+  content: string,
+  factCheckReq: FactCheckRequest,
+): AsyncGenerator<EventsPayload> {
   if (content.trim().length === 0) {
     throw new ValidationError('Text is required');
   }
@@ -24,6 +31,11 @@ export async function* factCheckService(content: string, factCheckReq: FactCheck
   // }
 
   const chunks = await applyChunking(content);
+
+  yield {
+    meta: { fingerprint: factCheckReq.fingerprint },
+    data: { chunkCount: chunks.length },
+  };
   const memory = createConversationMemory();
 
   const basicAnalysisGenerator = basicAnalysis({

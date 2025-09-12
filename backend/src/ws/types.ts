@@ -45,9 +45,17 @@ export const UPDATE_STATUS_SCHEMA = buildResponseSchema(
   METADATA_SCHEMA,
 );
 
+export const CHUNK_COUNT_SCHEMA = buildResponseSchema(
+  z.object({
+    chunkCount: z.number().gte(0),
+  }),
+  METADATA_SCHEMA,
+);
+
 export type FactCheckRequest = z.infer<typeof FACT_CHECK_REQUEST_SCHEMA>;
 export type FactCheckResult = z.infer<typeof FACT_CHECK_RESULT_SCHEMA>;
 export type UpdateStatus = z.infer<typeof UPDATE_STATUS_SCHEMA>;
+export type ChunkCount = z.infer<typeof CHUNK_COUNT_SCHEMA>;
 
 // socket.io types
 export type ClientToServerEvents = {
@@ -57,4 +65,5 @@ export type ClientToServerEvents = {
 export type ServerToClientEvents = {
   FACT_CHECK_RESULT: (data: FactCheckResult) => void;
   UPDATE_STATUS: (data: UpdateStatus) => void;
+  CHUNK_COUNT: (data: ChunkCount) => void;
 };

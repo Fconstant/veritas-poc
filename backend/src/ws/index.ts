@@ -12,13 +12,15 @@ export type * from './types.js';
 // Socket.io server setup
 export function createWebSocketServer(
   httpServer: HttpServer,
-  onConnection: (socket: Socket) => void,
+  onConnection: (
+    socket: Socket<ClientToServerEvents, ServerToClientEvents>,
+  ) => void,
 ) {
-  const io = new Server<ServerToClientEvents, ClientToServerEvents>(
+  const io = new Server<ClientToServerEvents, ServerToClientEvents>(
     httpServer,
     {
       cors: {
-        origin: '*', // Configure this properly for production
+        origin: '*', // TODO: Configure this properly for production
         methods: ['GET', 'POST'],
       },
     },
