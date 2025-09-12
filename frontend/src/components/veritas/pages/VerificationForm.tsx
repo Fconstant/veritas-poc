@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Play } from 'lucide-react';
+import { Play, Loader2 } from 'lucide-react';
 
 interface VerificationFormProps {
   className?: string;
@@ -11,6 +11,7 @@ interface VerificationFormProps {
   onTextChange?: (text: string) => void;
   disabled?: boolean;
   value?: string;
+  loading?: boolean;
 }
 
 const VerificationForm: React.FC<VerificationFormProps> = ({
@@ -19,36 +20,38 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
   onCheckFacts,
   onTextChange,
   disabled = false,
-  value = ""
+  value = "",
+  loading = false
 }) => {
+  const hasText = value.trim().length > 0;
+  const isProcessing = disabled || loading;
+
   return (
     <div className={cn(
-      "backdrop-blur-[1.5px] backdrop-filter box-border content-stretch flex flex-col gap-4 items-start justify-start p-[16px] relative rounded-[16px] size-full bg-[#f2f2f2]",
+      "backdrop-blur-[1.5px] backdrop-filter flex flex-col gap-6 p-4 md:p-6 relative rounded-[16px] w-full bg-[#f2f2f2] border border-[#351397] shadow-[0px_20px_80px_0px_rgba(137,44,219,0.2)]",
       className
     )}>
-      <div aria-hidden="true" className="absolute border border-[#351397] border-solid inset-0 pointer-events-none rounded-[16px] shadow-[0px_20px_80px_0px_rgba(137,44,219,0.2)]" />
-      
       {/* TextArea */}
-      <div className="content-stretch flex flex-col gap-2 items-start justify-start relative shrink-0 w-[539px]">
+      <div className="flex flex-col gap-2 w-full">
         <Textarea
           label="Let's check the facts for..."
           placeholder="Entre o texto que deseja conferir as afirmações aqui..."
           maxLength={1024}
           value={value}
           onChange={onTextChange}
-          disabled={disabled}
+          disabled={isProcessing}
           className="w-full"
         />
       </div>
       
       {/* Action Buttons */}
-      <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
+      <div className="flex flex-col sm:flex-row gap-3 w-full">
         <Button
           variant="outlined"
           size="default"
           onClick={onUseExample}
-          disabled={disabled}
-          className="px-4 py-3"
+          disabled={isProcessing}
+          className="flex-1 sm:flex-none px-4 py-3"
         >
           Use Example
         </Button>
@@ -57,13 +60,24 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           variant="filled"
           size="default"
           onClick={onCheckFacts}
-          disabled={disabled}
-          className="px-4 py-3"
+          disabled={!hasText || isProcessing}
+          className="flex-1 sm:flex-none px-4 py-3"
         >
-          <Play className="size-6" />
-          Check Facts
+          {loading ? (
+            <Loader2 className="size-5 animate-spin" />
+          ) : (
+            <Play className="size-5" />
+          )}
+          {loading ? 'Checking...' : 'Check Facts'}
         </Button>
       </div>
+      
+      {/* Helper text */}
+      {hasText && (
+        <div className="text-xs text-[#6e678a] opacity-70 text-center">
+          Ready to verify {value.length} characters
+        </div>
+      )}
     </div>
   );
 };

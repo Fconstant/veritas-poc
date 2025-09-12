@@ -1,5 +1,5 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { HeroSection } from "./HeroSection";
+import HeroSection from "./HeroSection";
 
 export default {
   title: "veritas/pages/HeroSection",

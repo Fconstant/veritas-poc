@@ -1,6 +1,6 @@
 import type { Story, StoryDefault } from "@ladle/react";
 import { useState } from "react";
-import { VerificationForm } from "./VerificationForm";
+import VerificationForm from "./VerificationForm";
 
 export default {
   title: "veritas/pages/VerificationForm",
@@ -9,7 +9,7 @@ export default {
 // Story interativa
 export const Interactive: Story = () => {
   const [textValue, setTextValue] = useState("");
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUseExample = () => {
     const exampleText = "O presidente anunciou hoje que a economia cresceu 5% no último trimestre, segundo dados do IBGE. Esta é a maior taxa de crescimento dos últimos 10 anos e representa um marco histórico para o país.";
@@ -18,24 +18,24 @@ export const Interactive: Story = () => {
 
   const handleCheckFacts = () => {
     if (textValue.trim()) {
-      setIsDisabled(true);
+      setIsLoading(true);
       console.log('Verificando fatos para:', textValue);
       
       // Simular loading
       setTimeout(() => {
-        setIsDisabled(false);
+        setIsLoading(false);
         console.log('Verificação concluída');
-      }, 2000);
+      }, 3000);
     }
   };
 
   return (
-    <div className="w-[571px] p-4 bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
+    <div className="w-full max-w-[571px] p-4 bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
       <VerificationForm
         onUseExample={handleUseExample}
         onCheckFacts={handleCheckFacts}
         onTextChange={setTextValue}
-        disabled={isDisabled}
+        loading={isLoading}
         value={textValue}
       />
     </div>
@@ -58,17 +58,17 @@ export const WithText: Story = () => {
   );
 };
 
-// Story desabilitada
-export const Disabled: Story = () => {
+// Story com loading
+export const Loading: Story = () => {
   const [textValue, setTextValue] = useState("Texto para verificação...");
 
   return (
-    <div className="w-[571px] p-4 bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
+    <div className="w-full max-w-[571px] p-4 bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
       <VerificationForm
         onUseExample={() => {}}
         onCheckFacts={() => {}}
         onTextChange={setTextValue}
-        disabled={true}
+        loading={true}
         value={textValue}
       />
     </div>

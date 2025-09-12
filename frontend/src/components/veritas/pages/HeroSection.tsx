@@ -9,45 +9,51 @@ interface HeroSectionProps {
 const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
   return (
     <div className={cn(
-      "content-stretch flex flex-col items-start justify-between relative size-full",
+      "flex flex-col items-start justify-between relative w-full min-h-[315px]",
       className
     )}>
       {/* Título e Subtítulo */}
-      <div className="content-stretch flex flex-col gap-4 items-start justify-start leading-[0] not-italic relative shrink-0 w-full">
+      <div className="flex flex-col gap-4 items-start justify-start w-full mb-8">
         {/* Título Principal */}
-        <div className="flex flex-col font-extralight justify-center relative shrink-0 text-[#381257] text-[64px] tracking-[0.64px] w-full">
-          <p className="leading-[80px] mb-0">Paste text. </p>
-          <p className="leading-[80px]">
-            <span>Get it</span>
-            <span className="font-bold"> </span>
-            <span className="font-bold text-[#731fb8]">fact-checked</span>
-            <span>.</span>
-          </p>
+        <div className="flex flex-col font-extralight justify-center relative text-[#381257] w-full">
+          <h1 className="text-[48px] md:text-[56px] lg:text-[64px] leading-[1.1] tracking-[0.64px] mb-2">
+            Paste text.{' '}
+            <span className="block">
+              Get it{' '}
+              <span className="font-bold text-[#731fb8]">fact-checked</span>.
+            </span>
+          </h1>
         </div>
         
         {/* Subtítulo */}
-        <div className="flex flex-col font-normal justify-center opacity-70 relative shrink-0 text-[#47415f] text-[20px] tracking-[0.2px] w-full">
-          <p className="leading-[32px]">We verify claims, and return citations — privacy-first.</p>
+        <div className="flex flex-col font-normal justify-center opacity-70 relative text-[#47415f] w-full">
+          <p className="text-[16px] md:text-[18px] lg:text-[20px] leading-[1.4] tracking-[0.2px] max-w-lg">
+            We verify claims, and return citations — privacy-first.
+          </p>
         </div>
       </div>
       
       {/* Features Badge */}
-      <div className="box-border content-stretch flex gap-2 items-center justify-start px-3 py-2 relative rounded-[16px] shrink-0">
-        <div className="overflow-clip relative shrink-0 size-5">
-          <FileText className="size-5 text-[#731fb8]" />
+      <div className="flex flex-wrap gap-2 items-center justify-start px-3 py-2 rounded-[16px] bg-white/50 backdrop-blur-sm border border-[#351397]/10">
+        <div className="flex items-center gap-2">
+          <FileText className="size-4 md:size-5 text-[#731fb8] flex-shrink-0" />
+          <span className="font-normal text-[#6e678a] text-[12px] md:text-[14px] whitespace-nowrap">
+            Text Files
+          </span>
         </div>
-        <div className="flex flex-col font-normal justify-center leading-[0] not-italic relative shrink-0 text-[#6e678a] text-[14px] text-nowrap">
-          <p className="leading-[24px] whitespace-pre">
-            <span>Text Files </span>
-            <span className="text-[#9a94ad]">and</span>
-          </p>
+        
+        <span className="text-[#9a94ad] text-[12px] md:text-[14px] mx-1">and</span>
+        
+        <div className="flex items-center gap-2">
+          <Volume2 className="size-4 md:size-5 text-[#731fb8] flex-shrink-0" />
+          <span className="font-normal text-[#6e678a] text-[12px] md:text-[14px] whitespace-nowrap">
+            Audio
+          </span>
         </div>
-        <div className="overflow-clip relative shrink-0 size-5">
-          <Volume2 className="size-5 text-[#731fb8]" />
-        </div>
-        <div className="flex flex-col font-normal justify-center leading-[0] not-italic relative shrink-0 text-[#6e678a] text-[14px] text-nowrap">
-          <p className="leading-[24px] whitespace-pre">Audio are coming soon</p>
-        </div>
+        
+        <span className="font-normal text-[#6e678a] text-[12px] md:text-[14px] ml-1">
+          are coming soon
+        </span>
       </div>
     </div>
   );
