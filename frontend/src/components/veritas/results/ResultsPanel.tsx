@@ -81,12 +81,14 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       );
     }
 
-    if (results.length === 0 && status !== 'loading') {
+    if (results.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center h-64 text-center">
           <CheckCircle className="size-12 text-muted-foreground mb-4" />
           <p className="text-muted-foreground">
-            Nenhum resultado encontrado
+            {status === 'complete' 
+              ? 'Nenhum resultado encontrado' 
+              : 'Processando resultados...'}
           </p>
         </div>
       );

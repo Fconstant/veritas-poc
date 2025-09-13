@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import ProcessedTextPanel from '../results/ProcessedTextPanel';
 import ResultsPanel from '../results/ResultsPanel';
 import { ResultData } from '../results/ResultCard';
+import { factCheckService } from '@/lib/services/factCheckService';
+import { VerificationState, FactCheckResult } from '@/lib/types/api';
 
 interface ResultsPageProps {
   text?: string;
@@ -17,76 +19,150 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   onNewVerification,
   className
 }) => {
-  const [resultsStatus, setResultsStatus] = useState<'loading' | 'partial' | 'complete' | 'error'>('loading');
-  const [results, setResults] = useState<ResultData[]>([]);
+  const [verificationState, setVerificationState] = useState<VerificationState>({
+    status: 'idle',
+    results: []
+  });
   const [showResultsPanel, setShowResultsPanel] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Simular carregamento inicial
-  useEffect(() => {
-    // Mostrar painel de resultados após 1-2 segundos
-    const timer = setTimeout(() => {
-      setShowResultsPanel(true);
-    }, 1500);
+  // Converte FactCheckResult do backend para ResultData do componente
+  const convertToResultData = useCallback((result: FactCheckResult): ResultData => {
+    // Determina o status baseado nas flags
+    let status: ResultData['status'] = 'verified';
+    if (result.data.flags?.includes('MISLEADING')) {
+      status = 'unverified';
+    } else if (result.data.flags?.includes('UNVERIFIABLE') || result.data.flags?.includes('INCONCLUSIVE')) {
+      status = 'pending';
+    }
 
-    return () => clearTimeout(timer);
+    return {
+      id: `${result.meta.fingerprint}-${result.meta.chunk}-${result.meta.seq}`,
+      text: result.data.extractedClaim,
+      confidence: result.data.reasoningConfidence,
+      status,
+      sources: result.data.sources,
+      explanation: result.data.reasoning
+    };
   }, []);
 
-  // Simular recebimento de resultados
+  // Converte o estado de verificação para o estado do painel de resultados
+  const getResultsPanelStatus = useCallback((): 'loading' | 'partial' | 'complete' | 'error' => {
+    // Se não há resultados, sempre mostra loading
+    if (verificationState.results.length === 0) {
+      return 'loading';
+    }
+
+    switch (verificationState.status) {
+      case 'connecting':
+      case 'processing':
+        return 'loading';
+      case 'finished':
+        return 'complete';
+      case 'error':
+      case 'interrupted':
+        return 'error';
+      case 'idle':
+      default:
+        return 'partial';
+    }
+  }, [verificationState.status, verificationState.results.length]);
+
+  // Converte os resultados do backend para o formato do componente
+  const convertedResults = verificationState.results.map(convertToResultData);
+
+  // Inicializa a conexão com o backend
   useEffect(() => {
-    if (!showResultsPanel) return;
+    if (isInitialized) return;
 
-    // Simular primeiro resultado após 3 segundos
-    const firstResultTimer = setTimeout(() => {
-      setResultsStatus('partial');
-      setResults([
-        {
-          id: '1',
-          text: 'Este é um texto de exemplo para demonstração',
-          confidence: 0.95,
-          status: 'verified',
-          sources: ['https://example.com/source1'],
-          explanation: 'Esta afirmação foi verificada através de múltiplas fontes confiáveis.'
+    const initializeConnection = async () => {
+      try {
+        console.log('🔌 Inicializando conexão com o backend...');
+        
+        // Testa a conexão
+        const isConnected = await factCheckService.testConnection();
+        if (!isConnected) {
+          console.error('❌ Falha ao conectar com o backend');
+          setVerificationState(prev => ({
+            ...prev,
+            status: 'error',
+            error: 'Não foi possível conectar com o servidor. Verifique se o backend está rodando.'
+          }));
+          return;
         }
-      ]);
-    }, 3000);
 
-    // Simular segundo resultado após 5 segundos
-    const secondResultTimer = setTimeout(() => {
-      setResults(prev => [
-        ...prev,
-        {
-          id: '2',
-          text: 'da página de resultados',
-          confidence: 0.87,
-          status: 'verified',
-          sources: ['https://example.com/source2'],
-          explanation: 'Confirmado por fontes oficiais.'
-        }
-      ]);
-    }, 5000);
+        console.log('✅ Conexão com o backend estabelecida');
+        
+        // Sincroniza com o estado atual do serviço
+        const currentState = factCheckService.getState();
+        setVerificationState(currentState);
+        
+        setIsInitialized(true);
 
-    // Simular resultado final após 7 segundos
-    const finalResultTimer = setTimeout(() => {
-      setResultsStatus('complete');
-      setResults(prev => [
-        ...prev,
-        {
-          id: '3',
-          text: 'O texto será processado e verificado',
-          confidence: 0.92,
-          status: 'verified',
-          sources: ['https://example.com/source3'],
-          explanation: 'Processo de verificação concluído com sucesso.'
-        }
-      ]);
-    }, 7000);
+        // Mostra o painel de resultados após 1-2 segundos
+        setTimeout(() => {
+          setShowResultsPanel(true);
+        }, 1500);
 
-    return () => {
-      clearTimeout(firstResultTimer);
-      clearTimeout(secondResultTimer);
-      clearTimeout(finalResultTimer);
+      } catch (error) {
+        console.error('❌ Erro ao inicializar conexão:', error);
+        setVerificationState(prev => ({
+          ...prev,
+          status: 'error',
+          error: error instanceof Error ? error.message : 'Erro desconhecido'
+        }));
+      }
     };
-  }, [showResultsPanel]);
+
+    initializeConnection();
+  }, [isInitialized]);
+
+  // Escuta mudanças no estado da verificação
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    const unsubscribe = factCheckService.onStateChange((state) => {
+      setVerificationState(state);
+    });
+
+    return unsubscribe;
+  }, [isInitialized]);
+
+  // Inicia a verificação automaticamente quando a página carrega
+  useEffect(() => {
+    if (!isInitialized || !showResultsPanel) return;
+
+    const startVerification = async () => {
+      try {
+        // Se já há resultados, não inicia nova verificação
+        const currentState = factCheckService.getState();
+        if (currentState.results.length > 0) {
+          console.log('📊 Usando resultados existentes:', currentState.results.length);
+          return;
+        }
+
+        console.log('🚀 Iniciando verificação de fatos...');
+        console.log('📝 Texto:', text);
+        
+        const fingerprint = await factCheckService.requestFactCheck(text, {
+          researchThreshold: 0.5
+        });
+        
+        console.log('🔑 Fingerprint gerado:', fingerprint);
+      } catch (error) {
+        console.error('❌ Erro ao iniciar verificação:', error);
+        setVerificationState(prev => ({
+          ...prev,
+          status: 'error',
+          error: error instanceof Error ? error.message : 'Erro ao iniciar verificação'
+        }));
+      }
+    };
+
+    // Aguarda um pouco antes de iniciar a verificação
+    const timer = setTimeout(startVerification, 2000);
+    return () => clearTimeout(timer);
+  }, [isInitialized, showResultsPanel, text]);
 
   const handleNewVerification = () => {
     if (onNewVerification) {
@@ -113,8 +189,8 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
           {showResultsPanel && (
             <div className="bg-white rounded-lg border border-[#d6d8db] shadow-sm">
               <ResultsPanel
-                status={resultsStatus}
-                results={results}
+                status={getResultsPanelStatus()}
+                results={convertedResults}
               />
             </div>
           )}

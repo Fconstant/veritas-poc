@@ -94,15 +94,22 @@ unsubscribe();
 ### Configuração Avançada
 
 ```typescript
-// Configurar URL do backend
-const customService = new FactCheckService('https://api.veritas.com');
+// 1) Configurar URL do backend via env (recomendado)
+// .env.local
+// NEXT_PUBLIC_BACKEND_URL=https://api.seuservidor.com
 
-// Usar configurações personalizadas
-import { API_CONFIG } from '@/lib/config/api';
+// 2) Ou instanciar com URL customizada
+const customService = new FactCheckService('https://api.seuservidor.com');
 
-// Modificar configurações padrão
-API_CONFIG.DEFAULT_RESEARCH_THRESHOLD = 0.8;
+// 3) Definir threshold por requisição (preferível a mutar config)
+await factCheckService.requestFactCheck(texto, {
+  researchThreshold: 0.8,
+});
 ```
+
+Observações:
+- `API_CONFIG` é imutável; use env vars ou parâmetros de chamada.
+- `requestFactCheck` garante a conexão automaticamente; `testConnection()` é opcional para diagnósticos.
 
 ## Estrutura de Dados
 
@@ -170,8 +177,16 @@ interface ChunkCount {
 # .env.local
 PORT=3001
 NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
-NEXT_PUBLIC_GEMINI_API_KEY=sua-chave-gemini
-NEXT_PUBLIC_TAVILY_API_KEY=sua-chave-tavily
+
+# (opcionais) ajustes de cliente
+NEXT_PUBLIC_DEFAULT_RESEARCH_THRESHOLD=0.5
+NEXT_PUBLIC_WEBSOCKET_TIMEOUT=10000
+NEXT_PUBLIC_MAX_RETRY_ATTEMPTS=3
+NEXT_PUBLIC_RETRY_DELAY=1000
+
+# (opcionais) API Keys expostas no cliente
+# NEXT_PUBLIC_GEMINI_API_KEY=sua-chave-gemini
+# NEXT_PUBLIC_TAVILY_API_KEY=sua-chave-tavily
 ```
 
 ### Configuração do Backend

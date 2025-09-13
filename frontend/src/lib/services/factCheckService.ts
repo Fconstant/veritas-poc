@@ -210,10 +210,9 @@ export class FactCheckService {
     }
 
     try {
-      // Testa conectividade primeiro
-      const isConnected = await this.testConnection();
-      if (!isConnected) {
-        throw new Error('Não foi possível conectar com o backend. Verifique se o servidor está rodando.');
+      // Garante conexão com o backend (auto-conectável)
+      if (!this.isConnected()) {
+        await this.connect();
       }
 
       // Gera novo fingerprint
@@ -235,8 +234,11 @@ export class FactCheckService {
         apiKeys: options.apiKeys
       };
 
-      // Envia a requisição
-      this.socket!.emit('REQUEST_FACT_CHECK', content, request);
+      // Envia a requisição (garantir socket inicializado)
+      if (!this.socket) {
+        throw new Error('Conexão com o backend não está disponível.');
+      }
+      this.socket.emit('REQUEST_FACT_CHECK', content, request);
 
       return this.currentFingerprint;
     } catch (error) {
