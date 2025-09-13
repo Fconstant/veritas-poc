@@ -168,7 +168,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
       
       {/* Container Principal de Conteúdo */}
       <div className="relative z-20 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-20">
-        <div className="w-full max-w-7xl mx-auto">
+        <div className="w-full max-w-[1280px] mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             
             {/* Seção Hero - Lado Esquerdo */}

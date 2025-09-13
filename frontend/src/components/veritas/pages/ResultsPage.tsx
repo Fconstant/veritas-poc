@@ -182,9 +182,11 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   return (
     <div className={cn('min-h-screen bg-background', className)}>
       {/* Header */}
-      <Header />
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+        <Header />
+      </div>
       
-      <div className="container mx-auto px-4 py-6">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-12rem)]">
           {/* Coluna Esquerda - Texto Processado */}
           <div className="bg-white rounded-lg border border-[#d6d8db] shadow-sm">
