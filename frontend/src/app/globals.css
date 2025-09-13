@@ -195,3 +195,13 @@ textarea[data-slot="textarea"]::placeholder {
 textarea[data-slot="textarea"]:disabled::placeholder {
   opacity: 0.65 !important;
 }
+
+/* Animação shimmer para skeleton loading */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
