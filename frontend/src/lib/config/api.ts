@@ -1,7 +1,7 @@
 // Configurações da API
 export const API_CONFIG = {
-  // URL do backend - pode ser configurada via variável de ambiente
-  BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000',
+  // URL do backend - configuração hardcoded para desenvolvimento
+  BACKEND_URL: 'http://localhost:3000',
   
   // Configurações padrão para verificação de fatos
   DEFAULT_RESEARCH_THRESHOLD: 0.5,

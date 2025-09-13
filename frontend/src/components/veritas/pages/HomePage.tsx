@@ -9,7 +9,6 @@ import VerificationForm from './VerificationForm';
 import HomePageToast from './HomePageToast';
 import { factCheckService } from '@/lib/services/factCheckService';
 import { VerificationState } from '@/lib/types/api';
-import DebugPanel from '@/components/debug/DebugPanel';
 
 interface HomePageProps {
   className?: string;
@@ -207,9 +206,6 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         isVisible={toast.isVisible}
         onClose={handleCloseToast}
       />
-      
-      {/* Debug Panel - Remover em produção */}
-      <DebugPanel />
     </div>
   );
 };
