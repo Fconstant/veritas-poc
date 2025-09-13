@@ -30,62 +30,12 @@ export const Interactive: Story = () => {
   };
 
   return (
-    <div className="w-full max-w-[571px] p-4 bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
+    <div className="w-full max-w-[571px] p-4">
       <VerificationForm
         onUseExample={handleUseExample}
         onCheckFacts={handleCheckFacts}
         onTextChange={setTextValue}
         loading={isLoading}
-        value={textValue}
-      />
-    </div>
-  );
-};
-
-// Story com texto pré-preenchido
-export const WithText: Story = () => {
-  const [textValue, setTextValue] = useState("Este é um exemplo de texto para verificação de fatos. O componente está funcionando corretamente.");
-
-  return (
-    <div className="w-[571px] p-4 bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
-      <VerificationForm
-        onUseExample={() => setTextValue("Novo texto de exemplo")}
-        onCheckFacts={() => console.log('Verificando:', textValue)}
-        onTextChange={setTextValue}
-        value={textValue}
-      />
-    </div>
-  );
-};
-
-// Story com loading
-export const Loading: Story = () => {
-  const [textValue, setTextValue] = useState("Texto para verificação...");
-
-  return (
-    <div className="w-full max-w-[571px] p-4 bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
-      <VerificationForm
-        onUseExample={() => {}}
-        onCheckFacts={() => {}}
-        onTextChange={setTextValue}
-        loading={true}
-        value={textValue}
-      />
-    </div>
-  );
-};
-
-// Story com texto longo (teste de limite)
-export const LongText: Story = () => {
-  const longText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ".repeat(20);
-  const [textValue, setTextValue] = useState(longText);
-
-  return (
-    <div className="w-[571px] p-4 bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
-      <VerificationForm
-        onUseExample={() => setTextValue(longText)}
-        onCheckFacts={() => console.log('Verificando texto longo:', textValue)}
-        onTextChange={setTextValue}
         value={textValue}
       />
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Header from '@/components/veritas/Header/Header';
 import HeroSection from './HeroSection';
@@ -9,9 +10,14 @@ import HomePageToast from './HomePageToast';
 
 interface HomePageProps {
   className?: string;
+  router?: {
+    push: (url: string) => void;
+  };
 }
 
-const HomePage: React.FC<HomePageProps> = ({ className }) => {
+const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) => {
+  const nextRouter = useRouter();
+  const router = propRouter || nextRouter;
   const [textValue, setTextValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [toast, setToast] = useState<{
@@ -24,103 +30,107 @@ const HomePage: React.FC<HomePageProps> = ({ className }) => {
     isVisible: false
   });
 
-  const handleUseExample = () => {
-    const exampleText = "O presidente anunciou hoje que a economia cresceu 5% no último trimestre, segundo dados do IBGE. Esta é a maior taxa de crescimento dos últimos 10 anos e representa um marco histórico para o país.";
+  const handleUseExample = useCallback(() => {
+    const exampleText = "Bolsonaro: Destinamos também a este estado maravilhoso aqui, mesmo sem comprovação científica, mais de 400 mil unidades de cloroquina para o tratamento precoce da população. Eu sou a prova viva de que deu certo. Muitos médicos defendem esse tratamento. Sabemos que mais de 100 mil pessoas morreram no Brasil. Caso tivessem sido tratadas lá atrás com esse medicamento, poderiam essas vidas terem sido evitadas.";
     setTextValue(exampleText);
-  };
+  }, []);
 
-  const handleCheckFacts = () => {
-    if (textValue.trim()) {
-      setIsLoading(true);
+  const handleCheckFacts = useCallback(async () => {
+    if (!textValue.trim()) {
+      setToast({
+        type: 'error',
+        message: 'Por favor, insira um texto para verificar.',
+        isVisible: true
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
       // Aqui seria feita a chamada para a API de verificação
       console.log('Verificando fatos para:', textValue);
       
-      // Simular loading
-      setTimeout(() => {
-        setIsLoading(false);
-        // Simular sucesso ou erro
-        const isSuccess = Math.random() > 0.3; // 70% de chance de sucesso
+      // Simular chamada à API
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Simular sucesso ou erro
+      const isSuccess = Math.random() > 0.3; // 70% de chance de sucesso
+      
+      if (isSuccess) {
+        setToast({
+          type: 'success',
+          message: 'Verificação concluída! Redirecionando para os resultados...',
+          isVisible: true
+        });
         
-        if (isSuccess) {
-          setToast({
-            type: 'success',
-            message: 'Verificação concluída! Redirecionando para os resultados...',
-            isVisible: true
-          });
-          
-          // Auto-hide toast after 3 seconds
-          setTimeout(() => {
-            setToast(prev => ({ ...prev, isVisible: false }));
-            // Aqui seria redirecionado para a página de resultados
-            // Exemplo: router.push('/results');
-          }, 3000);
-        } else {
-          setToast({
-            type: 'error',
-            message: 'Erro na verificação. Tente novamente.',
-            isVisible: true
-          });
-          
-          // Auto-hide toast after 5 seconds
-          setTimeout(() => {
-            setToast(prev => ({ ...prev, isVisible: false }));
-          }, 5000);
-        }
-      }, 3000);
+        // Auto-hide toast após 2 segundos e redirecionar
+        setTimeout(() => {
+          setToast(prev => ({ ...prev, isVisible: false }));
+          // Redirecionar para a página de resultados
+          router.push('/results');
+        }, 2000);
+      } else {
+        setToast({
+          type: 'error',
+          message: 'Erro na verificação. Tente novamente.',
+          isVisible: true
+        });
+        
+        // Auto-hide toast após 5 segundos
+        setTimeout(() => {
+          setToast(prev => ({ ...prev, isVisible: false }));
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Erro na verificação:', error);
+      setToast({
+        type: 'error',
+        message: 'Erro interno. Tente novamente mais tarde.',
+        isVisible: true
+      });
+      
+      setTimeout(() => {
+        setToast(prev => ({ ...prev, isVisible: false }));
+      }, 5000);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [textValue, router]);
 
-  const handleTextChange = (text: string) => {
+  const handleTextChange = useCallback((text: string) => {
     setTextValue(text);
-  };
+  }, []);
 
-  const handleCloseToast = () => {
+  const handleCloseToast = useCallback(() => {
     setToast(prev => ({ ...prev, isVisible: false }));
-  };
+  }, []);
 
   return (
     <div className={cn(
-      "bg-gradient-to-b from-[#f5f5f5] opacity-90 relative size-full to-[#eaeaea] min-h-screen overflow-hidden",
+      "bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea] relative w-full min-h-screen overflow-hidden",
       className
     )}>
-      {/* Top Bar */}
-      <div className="absolute top-0 left-0 right-0 z-10">
-        <div className="max-w-[1280px] mx-auto px-5">
+      {/* Barra Superior */}
+      <div className="absolute top-0 left-0 right-0 z-30">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <Header />
         </div>
       </div>
       
-      {/* Background Decoration */}
-      <div className="absolute bottom-0 left-0 right-0 h-[800px] pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-[#351397]/5 via-transparent to-transparent" />
-        {/* Decorative waves pattern */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#351397]/10 to-transparent opacity-30">
-          <svg 
-            className="absolute bottom-0 left-0 w-full h-full" 
-            viewBox="0 0 1440 120" 
-            preserveAspectRatio="none"
-          >
-            <path 
-              d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" 
-              fill="currentColor" 
-              className="text-[#351397]/20"
-            />
-          </svg>
-        </div>
-      </div>
       
-      {/* Main Content Container */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-5 py-20">
+      {/* Container Principal de Conteúdo */}
+      <div className="relative z-20 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-20">
         <div className="w-full max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             
-            {/* Hero Section - Left Side */}
-            <div className="order-2 lg:order-1">
+            {/* Seção Hero - Lado Esquerdo */}
+            <div className="order-1 lg:order-1">
               <HeroSection className="max-w-[629px] mx-auto lg:mx-0" />
             </div>
             
-            {/* Verification Form - Right Side */}
-            <div className="order-1 lg:order-2">
+            {/* Formulário de Verificação - Lado Direito */}
+            <div className="order-2 lg:order-2">
               <div className="max-w-[571px] mx-auto lg:mx-0">
                 <VerificationForm
                   onUseExample={handleUseExample}
@@ -136,13 +146,13 @@ const HomePage: React.FC<HomePageProps> = ({ className }) => {
         </div>
       </div>
       
-      {/* Mobile/Tablet specific adjustments */}
+      {/* Ajustes específicos para Mobile/Tablet */}
       <div className="lg:hidden">
-        {/* Additional spacing for mobile */}
-        <div className="h-20" />
+        {/* Espaçamento adicional para mobile */}
+        <div className="h-16" />
       </div>
       
-      {/* Toast Notification */}
+      {/* Notificação Toast */}
       <HomePageToast
         type={toast.type}
         message={toast.message}

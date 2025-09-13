@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Play, Loader2 } from 'lucide-react';
+import { WandSparkles, Loader2 } from 'lucide-react';
 
 interface VerificationFormProps {
   className?: string;
@@ -28,15 +28,15 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
 
   return (
     <div className={cn(
-      "backdrop-blur-[1.5px] backdrop-filter flex flex-col gap-6 p-4 md:p-6 relative rounded-[16px] w-full bg-[#f2f2f2] border border-[#351397] shadow-[0px_20px_80px_0px_rgba(137,44,219,0.2)]",
+      "backdrop-blur-[1.5px] backdrop-filter flex flex-col gap-4 p-4 relative rounded-[16px] w-full bg-[#f2f2f2] border border-[bg-violet-900/20] shadow-[0px_20px_80px_0px_rgba(137,44,219,0.2)]",
       className
     )}>
       {/* TextArea */}
       <div className="flex flex-col gap-2 w-full">
         <Textarea
-          label="Let's check the facts for..."
-          placeholder="Entre o texto que deseja conferir as afirmações aqui..."
-          maxLength={1024}
+          label="Verificar os fatos de..."
+          placeholder="Entre o texto que deseja verificar aqui..."
+          maxLength={5000}
           value={value}
           onChange={onTextChange}
           disabled={isProcessing}
@@ -45,15 +45,15 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
       </div>
       
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 w-full">
+      <div className="flex justify-between items-center w-full gap-4">
         <Button
           variant="outlined"
           size="default"
           onClick={onUseExample}
           disabled={isProcessing}
-          className="flex-1 sm:flex-none px-4 py-3"
+          className="px-4 py-3"
         >
-          Use Example
+          Usar Exemplo
         </Button>
         
         <Button
@@ -61,23 +61,16 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           size="default"
           onClick={onCheckFacts}
           disabled={!hasText || isProcessing}
-          className="flex-1 sm:flex-none px-4 py-3"
+          className="px-4 py-3"
         >
           {loading ? (
             <Loader2 className="size-5 animate-spin" />
           ) : (
-            <Play className="size-5" />
+            <WandSparkles className="size-5" />
           )}
-          {loading ? 'Checking...' : 'Check Facts'}
+          {loading ? 'Verificando...' : 'Verificar Fatos'}
         </Button>
       </div>
-      
-      {/* Helper text */}
-      {hasText && (
-        <div className="text-xs text-[#6e678a] opacity-70 text-center">
-          Ready to verify {value.length} characters
-        </div>
-      )}
     </div>
   );
 };

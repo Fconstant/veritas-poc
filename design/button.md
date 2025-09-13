@@ -34,9 +34,11 @@ Cada variante possui 3 estados:
 - **Disabled**: Background `#844ae9`, Text `white` (opacity 0.45), Icon `white` (opacity 0.45)
 
 ### Outlined Variant
-- **Enabled**: Background `transparent`, Border `#351397`, Text `#8a5cda`, Icon `#8a5cda`
-- **Hovered**: Background `#f6f6f6`, Border `#351397`, Text `#5d13dd`, Icon `#5d13dd`
-- **Disabled**: Background `transparent`, Border `#351397`, Text `#9d6eed`, Icon `#9d6eed`, Opacity `0.5`
+- **Enabled**: Background `transparent`, Border `rgba(53,19,151,0.5)` (degradê 50% opacidade), Text `#8a5cda`, Icon `#8a5cda`
+- **Hovered**: Background `#f6f6f6`, Border `rgba(53,19,151,1)` (degradê 100% opacidade), Text `#5d13dd`, Icon `#5d13dd`
+- **Disabled**: Background `transparent`, Border `rgba(53,19,151,0.5)`, Text `#9d6eed`, Icon `#9d6eed`, Opacity `0.5`
+
+**Nota**: A borda do botão outlined é um degradê horizontal com opacidade de 50% no estado enabled e 100% no estado hovered.
 
 ### Link Variant
 - **Enabled**: Background `transparent`, Text `#8a5cda`, Icon `#8a5cda`
@@ -81,6 +83,19 @@ interface ButtonProps {
 }
 ```
 
+### Borda Degradê - Outlined Variant
+A variante outlined usa uma técnica especial para criar bordas degradê:
+
+```tsx
+// Estado Enabled (50% opacidade)
+background: `linear-gradient(white, white) padding-box, linear-gradient(90deg, rgba(53,19,151,0.5) 0%, rgba(53,19,151,0.5) 100%) border-box`
+
+// Estado Hovered (100% opacidade + fundo #f6f6f6)  
+background: `linear-gradient(#f6f6f6, #f6f6f6) padding-box, linear-gradient(90deg, rgba(53,19,151,1) 0%, rgba(53,19,151,1) 100%) border-box`
+```
+
+**Técnica**: Usa `padding-box` para o fundo branco e `border-box` para o degradê da borda.
+
 ### Tailwind Classes
 - Use `font-semibold` para Inter Semi Bold
 - Use `rounded-[8px]` para border radius
@@ -92,6 +107,7 @@ interface ButtonProps {
 - Implementar estados hover com `:hover` pseudo-class
 - Implementar estados disabled com `disabled:` prefix
 - Usar opacity para estados disabled quando necessário
+- **Outlined**: Usar estilos inline para borda degradê com eventos `onMouseEnter`/`onMouseLeave`
 
 ## Ladle Stories
 Criar stories para todas as combinações de variantes, tamanhos e estados:

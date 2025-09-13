@@ -1,6 +1,13 @@
 import type { Story, StoryDefault } from "@ladle/react";
 import HomePage from "./HomePage";
 
+// Mock do router para o Ladle
+const mockRouter = {
+  push: (url: string) => {
+    console.log(`Mock router push: ${url}`);
+  },
+};
+
 export default {
   title: "veritas/pages/HomePage",
 } satisfies StoryDefault;
@@ -8,27 +15,14 @@ export default {
 // Story completa da Home Page
 export const Default: Story = () => (
   <div className="w-full h-screen overflow-hidden">
-    <HomePage />
-  </div>
-);
-
-// Story com container responsivo
-export const Responsive: Story = () => (
-  <div className="w-full h-screen overflow-hidden">
-    <HomePage />
+    <HomePage router={mockRouter} />
   </div>
 );
 
 // Story mobile
 export const Mobile: Story = () => (
   <div className="w-[375px] h-screen overflow-hidden mx-auto border border-gray-300">
-    <HomePage />
+    <HomePage router={mockRouter} />
   </div>
 );
 
-// Story tablet
-export const Tablet: Story = () => (
-  <div className="w-[768px] h-screen overflow-hidden mx-auto border border-gray-300">
-    <HomePage />
-  </div>
-);

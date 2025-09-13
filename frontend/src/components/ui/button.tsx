@@ -12,12 +12,12 @@ const buttonVariants = cva(
         // Filled (Figma: Filled Enabled/Hovered/Disabled)
         filled:
           "bg-[#844ae9] text-white border border-[#351397] hover:bg-[#5d13dd] disabled:opacity-45",
-        // Outlined (Figma: Outlined Enabled/Hovered/Disabled)
+        // Outlined (Figma: Outlined Enabled/Hovered/Disabled) - Borda degradê com opacidade
         outlined:
-          "border border-[#351397] bg-transparent text-[#8a5cda] hover:bg-[#f6f6f6] hover:text-[#5d13dd] disabled:opacity-50 disabled:text-[#9d6eed]",
+          "bg-transparent text-[#8a5cda] hover:bg-[#f6f6f6] hover:text-[#5d13dd] disabled:opacity-50 disabled:text-[#9d6eed]",
         // Link (Figma: Link SM/Default) - Padding específico e hover com fundo
         link:
-          "bg-transparent text-[#8a5cda] hover:text-[#5d13dd] hover:bg-[#f6f6f6] hover:underline disabled:text-[#8a5cda] disabled:opacity-50 focus-visible:ring-0 focus-visible:ring-offset-0",
+          "bg-transparent text-[#8a5cda] hover:text-[#5d13dd] hover:bg-[#F3EDFD] hover:underline disabled:text-[#8a5cda] disabled:opacity-50 focus-visible:ring-0 focus-visible:ring-offset-0",
       },
       size: {
         // SM: 32px height para filled/outlined
@@ -59,6 +59,24 @@ const Button = React.forwardRef<React.ElementRef<"button">, ButtonProps>(
     const Comp = asChild ? Slot : ("button" as const)
     const isDisabled = Boolean(loading || disabled)
 
+    // Estilos inline para borda degradê do outlined
+    const getOutlinedStyles = () => {
+      if (variant !== "outlined") return {}
+      
+      return {
+        border: "1px solid transparent",
+        background: `linear-gradient(white, white) padding-box, linear-gradient(90deg, rgba(53,19,151,0.5) 0%, rgba(53,19,151,0.5) 100%) border-box`,
+      }
+    }
+
+    const getOutlinedHoverStyles = () => {
+      if (variant !== "outlined") return {}
+      
+      return {
+        background: `linear-gradient(#f6f6f6, #f6f6f6) padding-box, linear-gradient(90deg, rgba(53,19,151,1) 0%, rgba(53,19,151,1) 100%) border-box`,
+      }
+    }
+
     return (
       <Comp
         data-slot="button"
@@ -70,6 +88,22 @@ const Button = React.forwardRef<React.ElementRef<"button">, ButtonProps>(
           // Garantir estilos de disabled mesmo em asChild via aria-disabled
           "aria-disabled:pointer-events-none aria-disabled:opacity-50"
         )}
+        style={{
+          ...getOutlinedStyles(),
+          ...props.style,
+        }}
+        onMouseEnter={(e) => {
+          if (variant === "outlined" && !isDisabled) {
+            Object.assign(e.currentTarget.style, getOutlinedHoverStyles())
+          }
+          props.onMouseEnter?.(e)
+        }}
+        onMouseLeave={(e) => {
+          if (variant === "outlined" && !isDisabled) {
+            Object.assign(e.currentTarget.style, getOutlinedStyles())
+          }
+          props.onMouseLeave?.(e)
+        }}
         ref={ref}
         {...(!asChild
           ? { type: "button", disabled: isDisabled }

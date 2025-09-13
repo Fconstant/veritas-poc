@@ -20,21 +20,21 @@ export const Interactive: Story = () => {
           <li><strong>Default:</strong> Gradiente com opacidade 0.20</li>
           <li><strong>Focused:</strong> Gradiente com opacidade 0.50 (ao clicar)</li>
           <li><strong>Entered:</strong> Gradiente com opacidade 0.05 (ao digitar)</li>
-          <li><strong>Error:</strong> Gradiente vermelho quando excede 1024 caracteres</li>
+          <li><strong>Error:</strong> Gradiente vermelho quando excede 5000 caracteres</li>
         </ul>
       </div>
       
       <Textarea 
         label="Label"
         placeholder="Placeholder text..."
-        maxLength={1024}
+        maxLength={5000}
         value={value}
         onChange={setValue}
       />
       
       <div className="text-xs text-muted-foreground">
-        <p><strong>Estado atual:</strong> {value.length === 0 ? 'Default' : value.length > 1024 ? 'Error' : 'Entered'}</p>
-        <p><strong>Caracteres:</strong> {value.length}/1024</p>
+        <p><strong>Estado atual:</strong> {value.length === 0 ? 'Default' : value.length > 5000 ? 'Error' : 'Entered'}</p>
+        <p><strong>Caracteres:</strong> {value.length}/5000</p>
       </div>
     </div>
   );
@@ -48,7 +48,7 @@ export const Disabled: Story = () => {
       <Textarea 
         label="Label"
         placeholder="Placeholder text..."
-        maxLength={1024}
+        maxLength={5000}
         value={value}
         disabled
       />

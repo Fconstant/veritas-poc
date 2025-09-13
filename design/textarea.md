@@ -16,7 +16,7 @@ export default function Property1Enabled() {
           </div>
         </div>
         <div className="flex flex-col font-['Inter:Medium',_sans-serif] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-[rgba(110,103,138,0.7)] text-nowrap" data-node-id="242:6925">
-          <p className="leading-[normal] whitespace-pre">1024 characters limit</p>
+          <p className="leading-[normal] whitespace-pre">5000 characters limit</p>
         </div>
       </div>
       <div className="bg-[#f8f8f8] box-border content-stretch flex flex-col gap-2 h-48 items-start justify-start p-[12px] relative rounded-[8px] shrink-0 w-full" data-node-id="242:6930">
@@ -123,7 +123,7 @@ const Textarea: React.FC<TextAreaProps> = ({
   value = "",
   placeholder = "Placeholder text...",
   label = "Label",
-  maxLength = 1024,
+  maxLength = 5000,
   disabled = false,
   readOnly = false,
   required = false,
@@ -244,7 +244,7 @@ O componente gerencia automaticamente todos os estados:
 1. **Default**: Gradiente com opacidade 0.20, background #f8f8f8
 2. **Focused**: Gradiente com opacidade 0.50 (ao clicar)
 3. **Entered**: Gradiente com opacidade 1.0 + background branco (ao digitar)
-4. **Error**: Gradiente vermelho quando excede 1024 caracteres
+4. **Error**: Gradiente vermelho quando excede 5000 caracteres
 5. **Disabled**: Sem gradiente + opacidade 0.65 + cursor not-allowed
 
 ### Lógica de Gradiente

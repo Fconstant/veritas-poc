@@ -25,7 +25,7 @@ const Textarea: React.FC<TextAreaProps> = ({
   value = "",
   placeholder = "Placeholder text...",
   label = "Label",
-  maxLength = 1024,
+  maxLength = 5000,
   disabled = false,
   readOnly = false,
   required = false,
@@ -40,6 +40,11 @@ const Textarea: React.FC<TextAreaProps> = ({
 }) => {
   const [currentValue, setCurrentValue] = React.useState<string>(value)
   const [isFocused, setIsFocused] = React.useState<boolean>(false)
+
+  // Sincroniza o estado interno com a prop value quando ela muda externamente
+  React.useEffect(() => {
+    setCurrentValue(value)
+  }, [value])
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value

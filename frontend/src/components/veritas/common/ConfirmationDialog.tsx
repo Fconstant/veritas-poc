@@ -25,9 +25,9 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onClose,
   onCancel,
   onConfirm,
-  description = "Are you sure you want to cancel this verification? If you cancel, everything done so far will be lost.",
-  confirmText = "Cancel",
-  cancelText = "Close",
+  description = "Tem certeza de que deseja cancelar esta verificação? Se você cancelar, tudo que foi feito até agora será perdido.",
+  confirmText = "Cancelar",
+  cancelText = "Fechar",
   className,
 }) => {
 
@@ -60,23 +60,25 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
         {/* Actions Section */}
         <DialogFooter className="flex items-center w-full gap-2">
-          <Button
-            variant="link"
-            size="sm"
-            onClick={onCancel || onClose}
-            className="flex-1"
-          >
-            {cancelText}
-          </Button>
-          
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={onConfirm || onClose}
-            className="flex-1"
-          >
-            {confirmText}
-          </Button>
+          <div className="flex w-full items-center">
+            <Button
+              variant="link"
+              size="sm"
+              onClick={onCancel || onClose}
+              className="ml-0"
+            >
+              {cancelText}
+            </Button>
+            <div className="flex-1" />
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={onConfirm || onClose}
+              className="mr-0"
+            >
+              {confirmText}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </DialogPrimitive>
