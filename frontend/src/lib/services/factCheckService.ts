@@ -15,6 +15,7 @@ import {
 export class FactCheckService {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
   private currentFingerprint: string | null = null;
+  private processedText: string = '';
   private state: VerificationState = {
     status: 'idle',
     results: []
@@ -218,6 +219,9 @@ export class FactCheckService {
       // Gera novo fingerprint
       this.currentFingerprint = this.generateFingerprint();
 
+      // Armazena o texto processado
+      this.processedText = content;
+
       // Limpa resultados anteriores
       this.updateState({
         status: 'connecting',
@@ -259,6 +263,13 @@ export class FactCheckService {
   }
 
   /**
+   * Obtém o texto processado
+   */
+  public getProcessedText(): string {
+    return this.processedText;
+  }
+
+  /**
    * Limpa o estado atual
    */
   public reset(): void {
@@ -269,6 +280,7 @@ export class FactCheckService {
       error: undefined,
       message: undefined
     });
+    this.processedText = '';
   }
 
   /**

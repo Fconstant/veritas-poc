@@ -7,6 +7,7 @@ import ResultsPanel from '../results/ResultsPanel';
 import { ResultData } from '../results/ResultCard';
 import { factCheckService } from '@/lib/services/factCheckService';
 import { VerificationState, FactCheckResult } from '@/lib/types/api';
+import Header from '../Header/Header';
 
 interface ResultsPageProps {
   text?: string;
@@ -15,7 +16,7 @@ interface ResultsPageProps {
 }
 
 const ResultsPage: React.FC<ResultsPageProps> = ({
-  text = "Este é um texto de exemplo para demonstração da página de resultados. O texto será processado e verificado pelo sistema de fact-checking.",
+  text,
   onNewVerification,
   className
 }) => {
@@ -23,6 +24,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     status: 'idle',
     results: []
   });
+  const [processedText, setProcessedText] = useState<string>('');
   const [showResultsPanel, setShowResultsPanel] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -96,6 +98,10 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         // Sincroniza com o estado atual do serviço
         const currentState = factCheckService.getState();
         setVerificationState(currentState);
+        
+        // Obtém o texto processado do serviço ou usa o texto passado como prop
+        const serviceText = factCheckService.getProcessedText() || text || "Texto não disponível";
+        setProcessedText(serviceText);
         
         setIsInitialized(true);
 
@@ -175,12 +181,15 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
   return (
     <div className={cn('min-h-screen bg-background', className)}>
+      {/* Header */}
+      <Header />
+      
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-8rem)]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-12rem)]">
           {/* Coluna Esquerda - Texto Processado */}
           <div className="bg-white rounded-lg border border-[#d6d8db] shadow-sm">
             <ProcessedTextPanel
-              text={text}
+              text={processedText}
               onNewVerification={handleNewVerification}
             />
           </div>
