@@ -122,14 +122,15 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
       // Envia requisição para o backend
       const fingerprint = await factCheckService.requestFactCheck(textValue, {
         // researchThreshold usa o valor padrão da configuração
-        // apiKeys podem ser configuradas aqui se necessário
-        // apiKeys: {
-        //   gemini: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
-        //   tavily: process.env.NEXT_PUBLIC_TAVILY_API_KEY
-        // }
       });
 
       console.log('✅ Verificação iniciada com fingerprint:', fingerprint);
+
+      // Aguarda um pouco para garantir que o texto foi processado
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Redireciona direto para a página de resultados
+      router.push('/results');
       
     } catch (error) {
       console.error('❌ Erro ao iniciar verificação:', error);
@@ -143,7 +144,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         setToast(prev => ({ ...prev, isVisible: false }));
       }, 5000);
     }
-  }, [textValue]);
+  }, [textValue, router]);
 
   const handleTextChange = useCallback((text: string) => {
     setTextValue(text);
@@ -183,7 +184,6 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
                   onUseExample={handleUseExample}
                   onCheckFacts={handleCheckFacts}
                   onTextChange={handleTextChange}
-                  loading={verificationState.status === 'processing' || verificationState.status === 'connecting'}
                   value={textValue}
                 />
               </div>

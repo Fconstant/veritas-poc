@@ -26,6 +26,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   });
   const [processedText, setProcessedText] = useState<string>('');
   const [showResultsPanel, setShowResultsPanel] = useState(false);
+  const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Converte FactCheckResult do backend para ResultData do componente
@@ -101,11 +102,27 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         
         // Obtém o texto processado do serviço ou usa o texto passado como prop
         const serviceText = factCheckService.getProcessedText() || text || "Texto não disponível";
-        setProcessedText(serviceText);
         
+        // Se não há texto no serviço, aguarda um pouco e tenta novamente
+        if (!serviceText || serviceText === "Texto não disponível") {
+          console.log('⏳ Aguardando texto processado...');
+          setTimeout(() => {
+            const retryText = factCheckService.getProcessedText() || text || "Texto não disponível";
+            setProcessedText(retryText);
+            setIsInitialized(true);
+          }, 500);
+          return;
+        }
+        
+        setProcessedText(serviceText);
         setIsInitialized(true);
 
-        // Mostra o painel de resultados após 1-2 segundos
+        // Mostra o painel esquerdo primeiro (imagem 4)
+        setTimeout(() => {
+          setShowLeftPanel(true);
+        }, 500);
+
+        // Mostra o painel de resultados após 1-2 segundos (imagem 5)
         setTimeout(() => {
           setShowResultsPanel(true);
         }, 1500);
@@ -140,17 +157,24 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
     const startVerification = async () => {
       try {
-        // Se já há resultados, não inicia nova verificação
+        // Se já há resultados ou verificação em andamento, não inicia nova verificação
         const currentState = factCheckService.getState();
-        if (currentState.results.length > 0) {
-          console.log('📊 Usando resultados existentes:', currentState.results.length);
+        if (currentState.results.length > 0 || currentState.status === 'processing' || currentState.status === 'connecting') {
+          console.log('📊 Usando estado existente:', currentState.status, 'com', currentState.results.length, 'resultados');
+          return;
+        }
+
+        // Verifica se há texto processado disponível
+        const serviceText = factCheckService.getProcessedText();
+        if (!serviceText || serviceText.trim() === '') {
+          console.log('⚠️ Nenhum texto processado disponível, aguardando...');
           return;
         }
 
         console.log('🚀 Iniciando verificação de fatos...');
-        console.log('📝 Texto:', text);
+        console.log('📝 Texto:', serviceText);
         
-        const fingerprint = await factCheckService.requestFactCheck(text, {
+        const fingerprint = await factCheckService.requestFactCheck(serviceText, {
           researchThreshold: 0.5
         });
         
@@ -186,19 +210,21 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         <Header />
       </div>
       
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-12rem)]">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-4 lg:px-8 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 h-[calc(100vh-12rem)]">
           {/* Coluna Esquerda - Texto Processado */}
-          <div className="bg-white rounded-lg border border-[#d6d8db] shadow-sm">
-            <ProcessedTextPanel
-              text={processedText}
-              onNewVerification={handleNewVerification}
-            />
-          </div>
+          {showLeftPanel && (
+            <div className="rounded-lg pl-16 pr-16 transition-opacity duration-500">
+              <ProcessedTextPanel
+                text={processedText}
+                onNewVerification={handleNewVerification}
+              />
+            </div>
+          )}
 
           {/* Coluna Direita - Resultados */}
           {showResultsPanel && (
-            <div className="bg-white rounded-lg border border-[#d6d8db] shadow-sm">
+            <div className="rounded-lg border border-[#d6d8db] shadow-sm transition-opacity duration-500">
               <ResultsPanel
                 status={getResultsPanelStatus()}
                 results={convertedResults}

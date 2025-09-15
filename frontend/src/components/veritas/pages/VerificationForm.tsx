@@ -11,7 +11,6 @@ interface VerificationFormProps {
   onTextChange?: (text: string) => void;
   disabled?: boolean;
   value?: string;
-  loading?: boolean;
 }
 
 const VerificationForm: React.FC<VerificationFormProps> = ({
@@ -20,11 +19,9 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
   onCheckFacts,
   onTextChange,
   disabled = false,
-  value = "",
-  loading = false
+  value = ""
 }) => {
   const hasText = value.trim().length > 0;
-  const isProcessing = disabled || loading;
 
   return (
     <div className={cn(
@@ -39,7 +36,7 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           maxLength={5000}
           value={value}
           onChange={onTextChange}
-          disabled={isProcessing}
+          disabled={disabled}
           className="w-full"
         />
       </div>
@@ -50,7 +47,7 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           variant="outlined"
           size="default"
           onClick={onUseExample}
-          disabled={isProcessing}
+          disabled={disabled}
           className="px-4 py-3"
         >
           Usar Exemplo
@@ -60,15 +57,11 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           variant="filled"
           size="default"
           onClick={onCheckFacts}
-          disabled={!hasText || isProcessing}
+          disabled={!hasText || disabled}
           className="px-4 py-3"
         >
-          {loading ? (
-            <Loader2 className="size-5 animate-spin" />
-          ) : (
-            <WandSparkles className="size-5" />
-          )}
-          {loading ? 'Verificando...' : 'Verificar Fatos'}
+          <WandSparkles className="size-5" />
+          Verificar Fatos
         </Button>
       </div>
     </div>
