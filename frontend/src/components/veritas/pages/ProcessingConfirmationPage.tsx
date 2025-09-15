@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Header from '@/components/veritas/Header/Header';
-import AnimatedText from '@/components/ui/AnimatedText';
+import AnimatedDots from '@/components/ui/AnimatedDots';
 import { Loader2 } from 'lucide-react';
 
 interface ProcessingConfirmationPageProps {
@@ -76,7 +76,7 @@ const ProcessingConfirmationPage: React.FC<ProcessingConfirmationPageProps> = ({
 
             {/* Texto de Confirmação */}
             <div className="text-center space-y-2">
-              <AnimatedText 
+              <AnimatedDots 
                 text="Lendo Texto" 
                 className="text-[18px] font-medium text-[#102148] [font-family:var(--font-inter)]"
                 interval={500}

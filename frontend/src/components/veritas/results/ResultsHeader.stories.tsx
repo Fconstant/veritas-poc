@@ -33,7 +33,8 @@ export const Interactive: Story = () => {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Results-Header Interativo</h3>
         <p className="text-sm text-muted-foreground">
-          Teste todos os estados e ações do componente Results-Header
+          Teste todos os estados e ações do componente Results-Header. 
+          <strong>Nota:</strong> O estado "Verificando" agora inclui animação dos 3 pontos.
         </p>
       </div>
 
@@ -85,6 +86,38 @@ export const Interactive: Story = () => {
           <p><strong>Estado atual:</strong> {status}</p>
           <p><strong>Última ação:</strong> {lastAction || "Nenhuma"}</p>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// Story específica para demonstrar a animação dos pontos
+export const AnimatedDots: Story = () => {
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Animação dos Pontos</h3>
+        <p className="text-sm text-muted-foreground">
+          Demonstração da animação dos 3 pontos e do círculo pulsante no estado "Verificando"
+        </p>
+      </div>
+
+      <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+        <ResultsHeader
+          status="verifying"
+          onCancel={() => console.log("Cancel clicked")}
+        />
+      </div>
+
+      <div className="text-xs text-muted-foreground">
+        <p><strong>Características da animação:</strong></p>
+        <ul className="list-disc list-inside space-y-1">
+          <li>Texto "Verificando" com pontos animados (ciclo: . → .. → ...)</li>
+          <li>Intervalo de 500ms entre cada ponto</li>
+          <li>Círculo externo verde (#77e6a0) com animação fade (2s)</li>
+          <li>Círculo interno verde (#22c55e) estático</li>
+          <li>Botão "Cancel" com ícone X</li>
+        </ul>
       </div>
     </div>
   );

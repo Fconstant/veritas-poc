@@ -29,7 +29,16 @@ Use os trechos de pesquisa abaixo:
 
 Regras:
 - Seja objetivo, máximo 2 parágrafos.
-- Inclua sempre uma seção "Fontes" listando as URLs relevantes.
+- SEMPRE inclua uma seção "Fontes:" no final com as URLs encontradas nos resultados de pesquisa.
+- Liste cada URL em uma linha separada.
+- Use apenas URLs que começam com http:// ou https://
+
+Formato obrigatório:
+[Seu resumo aqui]
+
+Fontes:
+https://exemplo.com/fonte1
+https://exemplo.com/fonte2
 `);
 
 
@@ -46,13 +55,23 @@ const researchChain = RunnableSequence.from<DeepResearchInput, DeepResearchOutpu
   new StringOutputParser(),
   // Parser final para separar resumo e fontes
   (output: string) => {
+    console.log('🔍 Output do LLM para pesquisa:', output);
+    
     const [summaryPart, sourcesPart] = output.split("Fontes:");
     const sources = sourcesPart
       ? sourcesPart
           .split("\n")
           .map((s) => s.trim())
           .filter((s) => s.length > 0)
+          .filter((s) => s.startsWith('http')) // Filtrar apenas URLs válidas
       : [];
+    
+    console.log('📋 Parsing resultado:', {
+      summaryLength: summaryPart.trim().length,
+      sourcesCount: sources.length,
+      sources: sources
+    });
+    
     return {
       summary: summaryPart.trim(),
       sources,

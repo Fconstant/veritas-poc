@@ -27,85 +27,179 @@ const sampleResults: ResultData[] = [
 ];
 
 export const Loading: Story = () => (
-  <div className="h-96 border border-gray-200 rounded-lg">
+  <div className="w-[664px] rounded-lg">
     <ResultsPanel
       status="loading"
       results={[]}
+      onCancel={() => console.log("Cancel clicked")}
     />
   </div>
 );
 
 export const Partial: Story = () => (
-  <div className="h-96 border border-gray-200 rounded-lg">
+  <div className="w-[664px] rounded-lg">
     <ResultsPanel
       status="partial"
       results={sampleResults.slice(0, 1)}
+      onCancel={() => console.log("Cancel clicked")}
     />
   </div>
 );
 
 export const Complete: Story = () => (
-  <div className="h-96 border border-gray-200 rounded-lg">
+  <div className="w-[664px] rounded-lg">
     <ResultsPanel
       status="complete"
       results={sampleResults}
+      onCopyPlainText={() => console.log("Copy Plain Text clicked")}
     />
   </div>
 );
 
+export const Scrollable: Story = () => {
+  // Criar muitos resultados para demonstrar rolagem
+  const manyResults = Array.from({ length: 10 }, (_, i) => ({
+    id: `result-${i + 1}`,
+    text: `Este é o resultado número ${i + 1} para demonstrar o comportamento de rolagem quando há muitos resultados.`,
+    confidence: 0.85 + (i * 0.01),
+    status: 'verified' as const,
+    sources: [`https://example.com/source${i + 1}`],
+    explanation: `Esta é a explicação detalhada para o resultado ${i + 1}, incluindo análise e verificação das fontes.`
+  }));
+
+  return (
+    <div className="space-y-6 w-[664px]">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Comportamento de Rolagem</h3>
+        <p className="text-sm text-muted-foreground">
+          Demonstração do comportamento quando há muitos resultados e o painel precisa de rolagem
+        </p>
+      </div>
+
+      <div className="h-screen rounded-lg">
+        <ResultsPanel
+          status="complete"
+          results={manyResults}
+          onCopyPlainText={() => console.log("Copy Plain Text clicked")}
+        />
+      </div>
+
+      <div className="text-xs text-muted-foreground">
+        <p><strong>Estado:</strong> Complete (10 resultados)</p>
+        <p><strong>Comportamento:</strong> Rolagem automática quando necessário</p>
+        <p><strong>Altura máxima:</strong> Limitada à viewport disponível</p>
+      </div>
+    </div>
+  );
+};
+
 export const Error: Story = () => (
-  <div className="h-96 border border-gray-200 rounded-lg">
-    <ResultsPanel
-      status="error"
-      results={[]}
-    />
+  <div className="space-y-6 w-[664px]">
+    <div className="space-y-2">
+      <h3 className="text-lg font-semibold">Variante de Erro</h3>
+      <p className="text-sm text-muted-foreground">
+        Painel com estado de erro - borda vermelha, ícone AlertTriangle e botão "Try again"
+      </p>
+    </div>
+
+    <div className="rounded-lg">
+      <ResultsPanel
+        status="error"
+        results={[]}
+        onRetry={() => console.log("Retry clicked")}
+      />
+    </div>
+
+    <div className="text-xs text-muted-foreground">
+      <p><strong>Estado:</strong> Error</p>
+      <p><strong>Borda:</strong> Vermelha (#cb1f1f)</p>
+      <p><strong>Design:</strong> Baseado no Figma node 332-7483</p>
+    </div>
   </div>
 );
 
 export const Empty: Story = () => (
-  <div className="h-96 border border-gray-200 rounded-lg">
-    <ResultsPanel
-      status="complete"
-      results={[]}
-    />
+  <div className="space-y-6 w-[664px]">
+    <div className="space-y-2">
+      <h3 className="text-lg font-semibold">Nenhum Resultado Encontrado</h3>
+      <p className="text-sm text-muted-foreground">
+        Estado quando a verificação termina mas nenhum resultado é encontrado
+      </p>
+    </div>
+
+    <div className="rounded-lg">
+      <ResultsPanel
+        status="complete"
+        results={[]}
+        onCopyPlainText={() => console.log("Copy Plain Text clicked")}
+      />
+    </div>
+
+    <div className="text-xs text-muted-foreground">
+      <p><strong>Estado:</strong> Complete (sem resultados)</p>
+      <p><strong>Design:</strong> Card roxo claro com ícone CheckCircle</p>
+      <p><strong>Figma:</strong> Baseado no node 417-15635</p>
+    </div>
   </div>
 );
 
 export const Interactive: Story = () => {
   const [status, setStatus] = useState<'loading' | 'partial' | 'complete' | 'error'>('loading');
   const [results, setResults] = useState<ResultData[]>([]);
+  const [lastAction, setLastAction] = useState<string>("");
 
   const simulateLoading = () => {
     setStatus('loading');
     setResults([]);
+    setLastAction("Iniciando carregamento...");
     
     setTimeout(() => {
       setStatus('partial');
       setResults([sampleResults[0]]);
+      setLastAction("Carregamento parcial...");
     }, 2000);
     
     setTimeout(() => {
       setStatus('complete');
       setResults(sampleResults);
+      setLastAction("Carregamento completo!");
     }, 4000);
   };
 
   const simulateError = () => {
     setStatus('error');
     setResults([]);
+    setLastAction("Erro simulado");
   };
 
   const reset = () => {
     setStatus('loading');
     setResults([]);
+    setLastAction("Reset executado");
+  };
+
+  const handleCancel = () => {
+    setLastAction("Cancel clicked");
+    console.log("Cancel action triggered");
+  };
+
+  const handleRetry = () => {
+    setLastAction("Retry clicked");
+    setStatus('loading');
+    console.log("Retry action triggered");
+  };
+
+  const handleCopy = () => {
+    setLastAction("Copy Plain Text clicked");
+    console.log("Copy action triggered");
   };
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 w-[664px]">
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">ResultsPanel Interativo</h3>
         <p className="text-sm text-muted-foreground">
-          Simule diferentes estados do painel de resultados
+          Simule diferentes estados do painel de resultados. Agora usa o ResultsHeader integrado.
         </p>
       </div>
 
@@ -130,16 +224,20 @@ export const Interactive: Story = () => {
         </button>
       </div>
 
-      <div className="h-96 border border-gray-200 rounded-lg">
+      <div className="rounded-lg">
         <ResultsPanel
           status={status}
           results={results}
+          onCancel={handleCancel}
+          onRetry={handleRetry}
+          onCopyPlainText={handleCopy}
         />
       </div>
 
       <div className="text-xs text-muted-foreground">
         <p><strong>Status atual:</strong> {status}</p>
         <p><strong>Resultados:</strong> {results.length}</p>
+        <p><strong>Última ação:</strong> {lastAction || "Nenhuma"}</p>
       </div>
     </div>
   );

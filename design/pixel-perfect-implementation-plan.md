@@ -17,7 +17,7 @@ Este documento detalha o plano completo para implementar o fluxo de verificaçã
 - `ResultsPanel.tsx` - Painel de resultados
 - `ResultCard.tsx` - Card individual de resultado
 - `ConfirmationDialog.tsx` - Dialog de confirmação
-- `AnimatedText.tsx` - Componente de texto animado
+- `AnimatedDots.tsx` - Componente de texto animado com pontos
 - `LoadingSpinner.tsx` - Spinner de loading
 
 ### ❌ Componentes Faltando
@@ -55,7 +55,7 @@ Este documento detalha o plano completo para implementar o fluxo de verificaçã
 - Anima os três pontos ("Lendo Texto...")
 - Ciclo: "." → ".." → "..." → (reinicia)
 - Configurável para diferentes textos
-- Integração com AnimatedText existente
+- Integração com AnimatedDots existente
 
 #### 1.3 Criar PulsingIcon.tsx
 **Localização**: `frontend/src/components/ui/PulsingIcon.tsx`

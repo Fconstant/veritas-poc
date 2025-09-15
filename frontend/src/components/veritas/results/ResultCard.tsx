@@ -18,10 +18,20 @@ interface ResultCardProps {
   className?: string;
 }
 
+// ATENÇÃO: Componente desativado temporariamente.
+// Até que haja status por resultado, não renderizamos os cartões individuais.
+// Mantemos os tipos para compatibilidade e possíveis usos futuros.
 const ResultCard: React.FC<ResultCardProps> = ({
   result,
   className
 }) => {
+  return (
+    <Card className={cn('p-4 border-dashed border-[#d7d4de] text-muted-foreground', className)}>
+      ResultCard desativado — use o ResultsHeader para o status global.
+    </Card>
+  );
+
+  /* Implementação anterior mantida para referência
   const getStatusIcon = () => {
     switch (result.status) {
       case 'verified':
@@ -113,6 +123,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
       </div>
     </Card>
   );
+  */
 };
 
 export default ResultCard;

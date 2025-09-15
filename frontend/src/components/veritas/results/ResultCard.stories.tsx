@@ -1,6 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
 import { useState } from "react";
 import ResultCard, { ResultData } from "./ResultCard";
+// AVISO: ResultCard está desativado. As histórias abaixo são mantidas para referência
+// e podem ser removidas quando migrarmos definitivamente para status globais.
 
 export default {
   title: "veritas/results/ResultCard",
@@ -49,75 +51,21 @@ const sampleResults: ResultData[] = [
   }
 ];
 
-export const Verified: Story = () => (
+export const DisabledNotice: Story = () => (
   <div className="p-6 max-w-2xl">
     <ResultCard result={sampleResults[0]} />
   </div>
 );
 
-export const Unverified: Story = () => (
-  <div className="p-6 max-w-2xl">
-    <ResultCard result={sampleResults[3]} />
-  </div>
-);
+// As histórias específicas foram descontinuadas temporariamente.
 
-export const Pending: Story = () => (
-  <div className="p-6 max-w-2xl">
-    <ResultCard result={sampleResults[4]} />
-  </div>
-);
+// export const Pending ...
 
-export const Loading: Story = () => (
-  <div className="p-6 max-w-2xl">
-    <ResultCard 
-      result={{
-        id: 'loading',
-        text: '',
-        confidence: 0,
-        status: 'loading'
-      }} 
-    />
-  </div>
-);
+// export const Loading ...
 
-export const AllStates: Story = () => (
-  <div className="p-6 space-y-4 max-w-2xl">
-    <div>
-      <h3 className="text-sm font-medium mb-2">Loading State</h3>
-      <ResultCard 
-        result={{
-          id: 'loading',
-          text: '',
-          confidence: 0,
-          status: 'loading'
-        }} 
-      />
-    </div>
-    
-    <div>
-      <h3 className="text-sm font-medium mb-2">Verified State</h3>
-      <ResultCard result={sampleResults[0]} />
-    </div>
-    
-    <div>
-      <h3 className="text-sm font-medium mb-2">Unverified State</h3>
-      <ResultCard result={sampleResults[3]} />
-    </div>
-    
-    <div>
-      <h3 className="text-sm font-medium mb-2">Pending State</h3>
-      <ResultCard result={sampleResults[4]} />
-    </div>
-  </div>
-);
+// export const AllStates ...
 
-export const MultipleResults: Story = () => (
-  <div className="p-6 space-y-4 max-w-2xl">
-    {sampleResults.map((result) => (
-      <ResultCard key={result.id} result={result} />
-    ))}
-  </div>
-);
+// export const MultipleResults ...
 
 export const Interactive: Story = () => {
   const [results, setResults] = useState<ResultData[]>([]);
@@ -143,7 +91,7 @@ export const Interactive: Story = () => {
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">ResultCard Interativo</h3>
         <p className="text-sm text-muted-foreground">
-          Adicione diferentes tipos de resultados para testar os estados
+          Componente desativado — exibindo apenas o aviso acima
         </p>
       </div>
 
@@ -181,15 +129,9 @@ export const Interactive: Story = () => {
       </div>
 
       <div className="space-y-4">
-        {results.length === 0 ? (
-          <p className="text-muted-foreground text-center py-8">
-            Nenhum resultado adicionado ainda
-          </p>
-        ) : (
-          results.map((result) => (
-            <ResultCard key={result.id} result={result} />
-          ))
-        )}
+        <p className="text-muted-foreground text-center py-8">
+          ResultCard desativado no projeto atual
+        </p>
       </div>
 
       <div className="text-xs text-muted-foreground">

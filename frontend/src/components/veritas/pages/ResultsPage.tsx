@@ -39,14 +39,24 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
       status = 'pending';
     }
 
-    return {
+    const converted = {
       id: `${result.meta.fingerprint}-${result.meta.chunk}-${result.meta.seq}`,
       text: result.data.extractedClaim,
       confidence: result.data.reasoningConfidence,
       status,
-      sources: result.data.sources,
+      sources: result.data.sources || [], // Garantir que sempre seja um array
       explanation: result.data.reasoning
     };
+
+    console.log('🔄 Convertendo resultado:', {
+      original: result,
+      converted: converted,
+      sources: result.data.sources,
+      hasSources: !!result.data.sources,
+      sourcesLength: result.data.sources?.length || 0
+    });
+
+    return converted;
   }, []);
 
   // Converte o estado de verificação para o estado do painel de resultados
@@ -73,6 +83,12 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
   // Converte os resultados do backend para o formato do componente
   const convertedResults = verificationState.results.map(convertToResultData);
+  
+  // Debug: log dos resultados convertidos
+  console.log('📊 Resultados convertidos:', {
+    count: convertedResults.length,
+    results: convertedResults
+  });
 
   // Inicializa a conexão com o backend
   useEffect(() => {
@@ -189,9 +205,8 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
       }
     };
 
-    // Aguarda um pouco antes de iniciar a verificação
-    const timer = setTimeout(startVerification, 2000);
-    return () => clearTimeout(timer);
+    // Inicia a verificação imediatamente
+    startVerification();
   }, [isInitialized, showResultsPanel, text]);
 
   const handleNewVerification = () => {
@@ -204,7 +219,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   };
 
   return (
-    <div className={cn('min-h-screen bg-background', className)}>
+    <div className={cn('min-h-screen', className)} style={{ backgroundColor: 'var(--veritas-results-background)' }}>
       {/* Header */}
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         <Header />
@@ -224,7 +239,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
           {/* Coluna Direita - Resultados */}
           {showResultsPanel && (
-            <div className="rounded-lg border border-[#d6d8db] shadow-sm transition-opacity duration-500">
+            <div>
               <ResultsPanel
                 status={getResultsPanelStatus()}
                 results={convertedResults}
@@ -238,3 +253,5 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 };
 
 export default ResultsPage;
+
+

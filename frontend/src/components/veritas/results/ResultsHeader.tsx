@@ -2,6 +2,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { X, RotateCcw, Copy, CircleCheck, AlertCircle, Check } from "lucide-react"
+import AnimatedDots from "@/components/ui/AnimatedDots"
 
 type VerificationStatus = "verifying" | "error" | "done"
 
@@ -21,6 +22,7 @@ interface StatusConfig {
   buttonText: string
   buttonIcon: React.ReactNode
   onButtonClick?: () => void
+  useAnimatedDots?: boolean
 }
 
 const ResultsHeader: React.FC<ResultsHeaderProps> = ({
@@ -47,17 +49,21 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
     switch (status) {
       case "verifying":
         return {
-          text: "Verificando...",
+          text: "Verificando",
           textColor: "text-slate-900 opacity-70",
           icon: (
             <div className="relative shrink-0 size-6">
-              <div className="absolute bg-[#77e6a0] left-1/2 rounded-[9999px] size-6 top-1/2 translate-x-[-50%] translate-y-[-50%]" />
+              <div className="absolute bg-[#77e6a0] left-1/2 rounded-[9999px] size-6 top-1/2 translate-x-[-50%] translate-y-[-50%]" 
+                   style={{
+                     animation: 'fadePulse 1.5s ease-in-out infinite'
+                   }} />
               <div className="absolute bg-green-500 left-1/2 rounded-[9999px] size-3 top-1/2 translate-x-[-50%] translate-y-[-50%]" />
             </div>
           ),
           buttonText: "Cancel",
           buttonIcon: <X className="size-4" />,
           onButtonClick: onCancel,
+          useAnimatedDots: true,
         }
       
       case "error":
@@ -94,12 +100,13 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
       
       default:
         return {
-          text: "Verificando...",
+          text: "Verificando",
           textColor: "text-slate-900 opacity-70",
           icon: null,
           buttonText: "Cancel",
           buttonIcon: <X className="size-4" />,
           onButtonClick: onCancel,
+          useAnimatedDots: true,
         }
     }
   }
@@ -126,7 +133,15 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
                 "flex flex-col font-[var(--font-inter)] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-nowrap",
                 config.textColor
               )}>
-                <p className="leading-[20px] whitespace-pre">{config.text}</p>
+                {config.useAnimatedDots ? (
+                  <AnimatedDots 
+                    text={config.text} 
+                    className="leading-[20px] whitespace-pre"
+                    interval={500}
+                  />
+                ) : (
+                  <p className="leading-[20px] whitespace-pre">{config.text}</p>
+                )}
               </div>
             </div>
           </div>

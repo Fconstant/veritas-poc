@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { AlertTriangle } from "lucide-react"
+import { AlertTriangle, FileText, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog as DialogPrimitive,
@@ -9,11 +9,14 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 
+type ConfirmationDialogVariant = "cancel-verification" | "new-text"
+
 interface ConfirmationDialogProps {
   isOpen?: boolean
   onClose?: () => void
   onCancel?: () => void
   onConfirm?: () => void
+  variant?: ConfirmationDialogVariant
   description?: string
   confirmText?: string
   cancelText?: string
@@ -25,11 +28,50 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onClose,
   onCancel,
   onConfirm,
-  description = "Tem certeza de que deseja cancelar esta verificação? Se você cancelar, tudo que foi feito até agora será perdido.",
-  confirmText = "Cancelar",
-  cancelText = "Fechar",
+  variant = "cancel-verification",
+  description,
+  confirmText,
+  cancelText,
   className,
 }) => {
+  // Configurações específicas para cada variant
+  const getVariantConfig = (variant: ConfirmationDialogVariant) => {
+    switch (variant) {
+      case "new-text":
+        return {
+          icon: FileText,
+          iconColor: "text-[#8A5CDA]",
+          bgColor: "bg-[rgba(132,74,233,0.1)]",
+          defaultDescription: "Deseja adicionar um novo texto para verificação? O texto atual será substituído e toda a análise anterior será perdida.",
+          defaultConfirmText: "Novo Texto",
+          defaultCancelText: "Cancelar",
+        }
+      case "cancel-verification":
+      default:
+        return {
+          icon: AlertTriangle,
+          iconColor: "text-[#8A5CDA]",
+          bgColor: "bg-[rgba(132,74,233,0.1)]",
+          defaultDescription: "Tem certeza de que deseja cancelar esta verificação? Se você cancelar, tudo que foi feito até agora será perdido.",
+          defaultConfirmText: "Cancelar",
+          defaultCancelText: "Fechar",
+        }
+    }
+  }
+
+  const config = getVariantConfig(variant)
+  const IconComponent = config.icon
+
+  // Função para lidar com confirmação (redirecionar para home)
+  const handleConfirm = () => {
+    if (onConfirm) {
+      onConfirm()
+    }
+    // Redirecionar para home após confirmação
+    if (typeof window !== 'undefined') {
+      window.location.href = '/'
+    }
+  }
 
   return (
     <DialogPrimitive open={isOpen} onOpenChange={onClose}>
@@ -44,16 +86,16 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       >
         <div className="flex flex-col gap-6 items-center justify-start w-full">
           {/* Icon Section */}
-          <div className="flex items-center justify-center p-[24px] rounded-[15px] bg-[rgba(132,74,233,0.1)]">
-            <div className="flex items-center justify-center text-[#8A5CDA]">
-              <AlertTriangle className="size-12" />
+          <div className={cn("flex items-center justify-center p-[24px] rounded-[15px]", config.bgColor)}>
+            <div className={cn("flex items-center justify-center", config.iconColor)}>
+              <IconComponent className="size-12" />
             </div>
           </div>
           
           {/* Message Section */}
           <div className="w-full text-center">
             <DialogDescription className="text-[#383838] text-[16px] leading-[24px] tracking-[0.16px] font-[var(--font-inter)] font-normal">
-              {description}
+              {description || config.defaultDescription}
             </DialogDescription>
           </div>
         </div>
@@ -67,16 +109,16 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               onClick={onCancel || onClose}
               className="ml-0"
             >
-              {cancelText}
+              {cancelText || config.defaultCancelText}
             </Button>
             <div className="flex-1" />
             <Button
               variant="outlined"
               size="sm"
-              onClick={onConfirm || onClose}
+              onClick={handleConfirm}
               className="mr-0"
             >
-              {confirmText}
+              {confirmText || config.defaultConfirmText}
             </Button>
           </div>
         </DialogFooter>

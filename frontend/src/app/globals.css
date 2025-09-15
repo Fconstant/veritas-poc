@@ -51,6 +51,7 @@
   --veritas-blue-dark: #102148;
   --veritas-gray-light: #f7f7f7;
   --veritas-gray-border: #d7d4de;
+  --veritas-results-background: #F9FAFC;
   
   /* Cores de estado */
   --veritas-success: #10b981;
@@ -119,6 +120,7 @@
   --veritas-blue-dark: #1e293b;
   --veritas-gray-light: #1e293b;
   --veritas-gray-border: #4b5563;
+  --veritas-results-background: #0f172a;
   
   /* Cores de estado para dark */
   --veritas-success: #10b981;
@@ -203,5 +205,18 @@ textarea[data-slot="textarea"]:disabled::placeholder {
   }
   100% {
     background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Animação fadePulse para círculo de progresso */
+@keyframes fadePulse {
+  0% {
+    background-color: #77e6a0;
+  }
+  50% {
+    background-color: #f5f5f5;
+  }
+  100% {
+    background-color: #77e6a0;
   }
 }

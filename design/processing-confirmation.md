@@ -116,7 +116,7 @@ A label será "Lendo Texto..." - E os três pontos ao final, serão animados, mo
 ## Componentes Necessários
 1. **ProcessingConfirmationPage**: Página principal
 2. **LoadingSpinner**: Componente de loading com ícone Lucide
-3. **AnimatedText**: Texto com animação dos pontos
+3. **AnimatedDots**: Texto com animação dos pontos
 4. **DisabledTextArea**: Textarea no estado disabled
 
 ## Integração com WebSocket
