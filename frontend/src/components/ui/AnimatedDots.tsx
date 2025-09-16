@@ -32,7 +32,12 @@ const AnimatedDots: React.FC<AnimatedDotsProps> = ({
   }, [interval, maxDots]);
 
   return (
-    <span className={cn(className)}>
+    <span
+      className={cn(className)}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {text}
       <span className="inline-block min-w-[1em]">
         {dots}

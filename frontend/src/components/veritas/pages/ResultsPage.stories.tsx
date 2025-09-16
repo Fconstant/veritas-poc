@@ -79,3 +79,41 @@ export const Interactive: Story = () => {
     </div>
   );
 };
+
+export const WithModalConfirmation: Story = () => {
+  const [text, setText] = useState("Este é um texto de exemplo para demonstrar o modal de confirmação.");
+
+  const handleNewVerification = () => {
+    console.log('Nova verificação confirmada!');
+    setText("Novo texto para verificação: " + new Date().toLocaleTimeString());
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">ResultsPage com Modal de Confirmação</h3>
+        <p className="text-sm text-muted-foreground">
+          Demonstra o modal de confirmação que aparece ao clicar no botão "Novo"
+        </p>
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+          <p className="text-sm text-blue-800">
+            <strong>Como testar:</strong> Clique no botão "Novo" na coluna esquerda para ver o modal de confirmação.
+          </p>
+        </div>
+      </div>
+
+      <div className="h-screen">
+        <ResultsPage 
+          text={text}
+          onNewVerification={handleNewVerification}
+        />
+      </div>
+
+      <div className="text-xs text-muted-foreground">
+        <p><strong>Texto atual:</strong> {text}</p>
+        <p><strong>Caracteres:</strong> {text.length}</p>
+        <p><strong>Modal:</strong> Aparece automaticamente ao clicar em "Novo"</p>
+      </div>
+    </div>
+  );
+};

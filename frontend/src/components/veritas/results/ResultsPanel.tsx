@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
 import { ResultsHeader, VerificationStatus } from './ResultsHeader';
 // import ResultCard from './ResultCard';
 import type { ResultData } from './ResultCard';
@@ -16,6 +16,8 @@ interface ResultsPanelProps {
   onCancel?: () => void;
   onRetry?: () => void;
   onCopyPlainText?: () => void;
+  onResultClick?: (resultId: string) => void;
+  selectedResultId?: string;
 }
 
 const ResultsPanel: React.FC<ResultsPanelProps> = ({
@@ -24,7 +26,9 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   className,
   onCancel,
   onRetry,
-  onCopyPlainText
+  onCopyPlainText,
+  onResultClick,
+  selectedResultId
 }) => {
   // Mapear status do ResultsPanel para VerificationStatus do ResultsHeader
   const getVerificationStatus = (): VerificationStatus => {
@@ -67,6 +71,25 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       );
     }
 
+    if (status === 'error') {
+      // Estado de erro baseado no design do Figma
+      return (
+        <div className="flex flex-col gap-4 items-center justify-center">
+          {/* Card com fundo vermelho claro */}
+          <div className="bg-[rgba(212,74,74,0.15)] box-border flex gap-2 items-center justify-start p-6 relative rounded-[15px]">
+            <div className="overflow-clip relative shrink-0 size-12">
+              <AlertCircle className="size-12 text-[#d44a4a]" />
+            </div>
+          </div>
+          
+          {/* Texto */}
+          <div className="flex flex-col font-normal justify-center leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[#383838] text-[14px] text-nowrap">
+            <p className="leading-[24px] overflow-ellipsis overflow-hidden whitespace-pre">Erro na Verificação. Tente novamente.</p>
+          </div>
+        </div>
+      );
+    }
+
     if (results.length === 0) {
       if (status === 'complete') {
         // Estado "Nenhum resultado encontrado" baseado no design do Figma
@@ -100,75 +123,92 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
     return (
       <div className="space-y-4">
-        {results.map((result: any) => (
-          <div key={result.id} className="rounded-md border border-[#d6d8db] bg-white p-4">
-            {/* Claim Text */}
-            <div className="mb-3">
-              <p className="text-sm text-[#102148] leading-relaxed font-medium">
-                {result.text}
-              </p>
-            </div>
-
-            {/* Status and Confidence
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex items-center gap-2">
-                {result.status === 'verified' && (
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-xs text-green-600 font-medium">Verificado</span>
-                  </div>
-                )}
-                {result.status === 'unverified' && (
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                    <span className="text-xs text-red-600 font-medium">Não Verificado</span>
-                  </div>
-                )}
-                {result.status === 'pending' && (
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                    <span className="text-xs text-yellow-600 font-medium">Pendente</span>
-                  </div>
-                )}
-              </div>
-              <div className="text-xs text-gray-500">
-                {Math.round(result.confidence * 100)}% confiança
-              </div>
-            </div> */}
-
-            {/* Explanation */}
-            {result.explanation && (
-              <div className="mb-3">
-                <h4 className="text-xs font-semibold text-gray-700 mb-1">Análise:</h4>
-                <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 p-3 rounded">
-                  {result.explanation}
-                </p>
-              </div>
+        {results.map((result: any, index: number) => (
+          <div 
+            key={result.id}
+            id={`result-${result.id}`}
+            className={cn(
+              "rounded-lg border border-[#d6d8db] bg-white p-4 transition-all duration-200 cursor-pointer",
+              selectedResultId === result.id && "ring-2 ring-purple-500 ring-opacity-50 bg-purple-50",
+              "hover:shadow-md hover:border-purple-300"
             )}
-
-            {/* Sources */}
-            {result.sources && result.sources.length > 0 && (
-              <div>
-                <h4 className="text-xs font-semibold text-gray-700 mb-2">Fontes:</h4>
-                <div className="space-y-1">
-                  {result.sources.map((source: string, index: number) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                      <a 
-                        href={source} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-xs text-blue-600 hover:text-blue-800 underline truncate"
-                      >
-                        {source}
-                      </a>
-                    </div>
-                  ))}
+            onClick={() => onResultClick?.(result.id)}
+          >
+            {/* Claim Number */}
+            <div className="flex items-start gap-3">
+              <div className={cn(
+                "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-200",
+                selectedResultId === result.id 
+                  ? "bg-purple-500 text-white" 
+                  : "bg-gray-200 text-gray-600"
+              )}>
+                {index + 1}
+              </div>
+              
+              <div className="flex-1">
+                {/* Claim Text */}
+                <div className="mb-3">
+                  <p className="text-neutral-700 text-base font-normal font-['Inter'] leading-normal">
+                    {result.text}
+                  </p>
                 </div>
+
+                {/* Explanation */}
+                {result.explanation && (
+                  <div className="mb-3">
+                    <p className="text-sm text-gray-700 leading-normal bg-gray-50 p-2 rounded-lg">
+                      {result.explanation}
+                    </p>
+                  </div>
+                )}
+
+                {/* Sources */}
+                {result.sources && result.sources.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-semibold text-gray-700 mb-2">Fontes:</h4>
+                    <div className="space-y-1">
+                      {result.sources.map((source: string, sourceIndex: number) => (
+                        <div key={sourceIndex} className="flex items-center gap-2">
+                          <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                          <a 
+                            href={source} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-[#8A5CDA] hover:text-[#5d13dd] underline truncate"
+                          >
+                            <span className="truncate">{source}</span>
+                            <ExternalLink className="size-3 flex-shrink-0" />
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         ))}
+
+        {/* Skeleton card no final da lista durante verificação */}
+        {(status === 'loading' as string | 'partial' as string) && (
+          <div className="box-border flex flex-col gap-2 items-start justify-start pl-3 pr-4 py-4 relative rounded-[8px] w-full border border-[#351397]/30 bg-[#f9f9f9]">
+            <div className="flex gap-2 items-start justify-start relative shrink-0 w-full">
+              {/* Status dot skeleton */}
+              <div className="relative shrink-0 size-4">
+                <div className="absolute bg-[#e7ebeb] left-1/2 rounded-full size-4 top-1/2 translate-x-[-50%] translate-y-[-50%]" />
+                <div className="absolute bg-[#cbd0d5] left-1/2 rounded-full size-2 top-1/2 translate-x-[-50%] translate-y-[-50%]" />
+              </div>
+              
+              {/* Text skeleton */}
+              <div className="flex flex-col gap-3 grow items-start justify-start min-h-px min-w-px relative shrink-0">
+                {/* Primeira linha do skeleton */}
+                <div className="h-4 rounded-full shrink-0 w-full bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
+                {/* Segunda linha do skeleton */}
+                <div className="h-4 rounded-full shrink-0 w-72 bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -177,11 +217,18 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     <div
       className={cn(
         'flex flex-col bg-stone-50 rounded-2xl',
-        'shadow-[0px_20px_80px_0px_rgba(137,44,219,0.20),0px_4px_8px_0px_rgba(0,0,0,0.15)]',
+        // Sombra condicional baseada no status
+        status === 'loading' || status === 'partial' 
+          ? 'shadow-[0px_20px_80px_0px_rgba(137,44,219,0.20),0px_4px_8px_0px_rgba(0,0,0,0.15)]'
+          : 'shadow-[0px_4px_8px_0px_rgba(0,0,0,0.15)]',
         // Altura máxima garantida para nunca ultrapassar a viewport
-        'max-h-[calc(100vh-4rem)]',
+        'max-h-[calc(100vh-7rem)]',
         // Borda condicional baseada no status
-        status === 'error' ? 'border border-[#cb1f1f]' : 'border border-violet-900',
+        status === 'error' 
+          ? 'border border-[#cb1f1f]' 
+          : status === 'loading' || status === 'partial'
+            ? 'border border-violet-900'
+            : 'border border-violet-900/30',
         className
       )}
     >

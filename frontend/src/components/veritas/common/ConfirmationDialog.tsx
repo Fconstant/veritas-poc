@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { AlertTriangle, FileText, X } from "lucide-react"
@@ -42,7 +44,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           icon: FileText,
           iconColor: "text-[#8A5CDA]",
           bgColor: "bg-[rgba(132,74,233,0.1)]",
-          defaultDescription: "Deseja adicionar um novo texto para verificação? O texto atual será substituído e toda a análise anterior será perdida.",
+          defaultDescription: "Tem certeza de que deseja criar um novo texto? Se continuar, tudo o que foi feito até agora será perdido.",
           defaultConfirmText: "Novo Texto",
           defaultCancelText: "Cancelar",
         }
@@ -62,19 +64,19 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   const config = getVariantConfig(variant)
   const IconComponent = config.icon
 
-  // Função para lidar com confirmação (redirecionar para home)
+  // Lida com confirmação. A navegação deve ser feita pelo chamador.
   const handleConfirm = () => {
-    if (onConfirm) {
-      onConfirm()
-    }
-    // Redirecionar para home após confirmação
-    if (typeof window !== 'undefined') {
-      window.location.href = '/'
-    }
+    onConfirm?.()
   }
 
   return (
-    <DialogPrimitive open={isOpen} onOpenChange={onClose}>
+    <DialogPrimitive
+      open={isOpen}
+      // Garante chamar onClose apenas quando o Dialog fechar
+      onOpenChange={(open) => {
+        if (!open) onClose?.()
+      }}
+    >
       <DialogContent 
         className={cn(
           "w-[516px] bg-neutral-50 rounded-[16px] px-10 py-8 gap-4",
@@ -106,7 +108,16 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             <Button
               variant="link"
               size="sm"
-              onClick={onCancel || onClose}
+              onClick={() => {
+                console.log('🔘 Botão Cancelar clicado');
+                if (onCancel) {
+                  console.log('📞 Chamando onCancel');
+                  onCancel();
+                } else if (onClose) {
+                  console.log('📞 Chamando onClose (fallback)');
+                  onClose();
+                }
+              }}
               className="ml-0"
             >
               {cancelText || config.defaultCancelText}
@@ -115,7 +126,10 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             <Button
               variant="outlined"
               size="sm"
-              onClick={handleConfirm}
+              onClick={() => {
+                console.log('🔘 Botão Confirmar clicado');
+                handleConfirm();
+              }}
               className="mr-0"
             >
               {confirmText || config.defaultConfirmText}

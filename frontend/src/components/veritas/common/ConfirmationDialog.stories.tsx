@@ -8,7 +8,22 @@ export default {
 
 // Story para Cancelar Verificação
 export const CancelVerification: Story = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [action, setAction] = useState<string>("Nenhuma ação executada");
+
+  const handleCancel = () => {
+    setAction("❌ Verificação cancelada - Modal fechado");
+    setIsOpen(false);
+  };
+
+  const handleConfirm = () => {
+    setAction("✅ Verificação cancelada - Redirecionando para home");
+    setIsOpen(false);
+    // Simular redirecionamento
+    setTimeout(() => {
+      setAction("🏠 Redirecionado para home");
+    }, 1000);
+  };
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -21,7 +36,10 @@ export const CancelVerification: Story = () => {
 
       <div className="space-y-4">
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setIsOpen(true);
+            setAction("Modal aberto");
+          }}
           className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
         >
           Abrir Modal de Cancelamento
@@ -30,15 +48,22 @@ export const CancelVerification: Story = () => {
         <ConfirmationDialog
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
+          onCancel={handleCancel}
           variant="cancel-verification"
+          onConfirm={handleConfirm}
         />
+      </div>
+
+      <div className="p-4 bg-gray-50 border rounded-md">
+        <p className="text-sm font-medium text-gray-700">Última ação:</p>
+        <p className="text-sm text-gray-600">{action}</p>
       </div>
 
       <div className="text-xs text-muted-foreground">
         <p><strong>Variante:</strong> cancel-verification</p>
         <p><strong>Ícone:</strong> AlertTriangle</p>
-        <p><strong>Botão Principal:</strong> Cancelar</p>
-        <p><strong>Botão Secundário:</strong> Fechar</p>
+        <p><strong>Botão Principal:</strong> Cancelar (fecha modal)</p>
+        <p><strong>Botão Secundário:</strong> Fechar (fecha modal)</p>
       </div>
     </div>
   );
@@ -46,7 +71,22 @@ export const CancelVerification: Story = () => {
 
 // Story para Novo Texto
 export const NewText: Story = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+  const [action, setAction] = useState<string>("Nenhuma ação executada");
+
+  const handleCancel = () => {
+    setAction("❌ Ação cancelada - Modal fechado");
+    setIsOpen(false);
+  };
+
+  const handleConfirm = () => {
+    setAction("✅ Novo texto confirmado - Redirecionando para home");
+    setIsOpen(false);
+    // Simular redirecionamento
+    setTimeout(() => {
+      setAction("🏠 Redirecionado para home");
+    }, 1000);
+  };
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -59,7 +99,10 @@ export const NewText: Story = () => {
 
       <div className="space-y-4">
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setIsOpen(true);
+            setAction("Modal aberto");
+          }}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Abrir Modal de Novo Texto
@@ -68,15 +111,22 @@ export const NewText: Story = () => {
         <ConfirmationDialog
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
+          onCancel={handleCancel}
           variant="new-text"
+          onConfirm={handleConfirm}
         />
+      </div>
+
+      <div className="p-4 bg-gray-50 border rounded-md">
+        <p className="text-sm font-medium text-gray-700">Última ação:</p>
+        <p className="text-sm text-gray-600">{action}</p>
       </div>
 
       <div className="text-xs text-muted-foreground">
         <p><strong>Variante:</strong> new-text</p>
         <p><strong>Ícone:</strong> FileText</p>
-        <p><strong>Botão Principal:</strong> Novo Texto</p>
-        <p><strong>Botão Secundário:</strong> Cancelar</p>
+        <p><strong>Botão Principal:</strong> Novo Texto (confirma e redireciona)</p>
+        <p><strong>Botão Secundário:</strong> Cancelar (fecha modal)</p>
       </div>
     </div>
   );
