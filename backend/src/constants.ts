@@ -2,5 +2,5 @@
 export const MAX_TEXT_LENGTH = 20000;
 export const DEFAULT_NEED_RESEARCH_THRESHOLD = process.env['APP_DEFAULT_RESEARCH_THRESHOLD']
   ? Number(process.env['APP_DEFAULT_RESEARCH_THRESHOLD'])
-  : 0.8; // Aumentado para garantir mais pesquisas profundas
+  : 0.5;
 ;

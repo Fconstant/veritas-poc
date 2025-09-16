@@ -46,47 +46,12 @@ export async function* factCheckService(
   const threshold =
     factCheckReq.researchThreshold ?? Consts.DEFAULT_NEED_RESEARCH_THRESHOLD;
   for await (const result of basicAnalysisGenerator) {
-    console.log('🔍 Resultado da análise básica:', {
-      confidence: result.data.reasoningConfidence,
-      threshold,
-      needsResearch: result.data.reasoningConfidence <= threshold,
-      extractedClaim: result.data.extractedClaim,
-      hasFlags: !!result.data.flags,
-      flags: result.data.flags
-    });
-
     if (result.data.reasoningConfidence <= threshold) {
-      console.log('🔬 Iniciando pesquisa profunda para:', result.data.extractedClaim);
       const { sources, summary } = await deepResearch(
         result.data.extractedClaim,
       );
-      console.log('📚 Resultado da pesquisa profunda:', {
-        sourcesCount: sources.length,
-        sources: sources,
-        summaryLength: summary.length
-      });
-      
-      const finalResult = { 
-        ...result, 
-        data: { 
-          ...result.data, 
-          reasoning: summary, 
-          sources 
-        } 
-      };
-      console.log('📤 Enviando resultado final com fontes:', {
-        hasSources: !!finalResult.data.sources,
-        sourcesCount: finalResult.data.sources?.length || 0,
-        sources: finalResult.data.sources
-      });
-      
-      yield finalResult as typeof result;
+      yield { ...result, reasoning: summary, sources } as typeof result;
     } else {
-      console.log('✅ Alta confiança - enviando resultado sem pesquisa:', {
-        confidence: result.data.reasoningConfidence,
-        hasSources: !!result.data.sources,
-        sourcesCount: result.data.sources?.length || 0
-      });
       yield result;
     }
   }
