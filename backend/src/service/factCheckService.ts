@@ -24,12 +24,6 @@ export async function* factCheckService(
     );
   }
 
-  // TODO: apply proper caching
-  // const cacheKey = factCheckReq.fingerprint;
-  // if (hasCache(cacheKey)) {
-  //   return getCache(cacheKey)!;
-  // }
-
   const chunks = await applyChunking(content);
 
   yield {
