@@ -1,4 +1,4 @@
-import { ApplicationLLM } from '#/llm/index.js';
+import { AdvancedLLM } from '#/llm/index.js';
 import { parseLLMJsonResponse, sanitizeJsonForTemplate } from '#/utils/llm.js';
 import { FACT_CHECK_RESULT_DATA_SCHEMA } from '#/ws/types.js';
 import { StringOutputParser } from "@langchain/core/output_parsers";
@@ -87,7 +87,7 @@ const researchChain = RunnableSequence.from<DeepResearchInput, DeepResearchOutpu
     },
   },
   researchPrompt,
-  ApplicationLLM,
+  AdvancedLLM,
   new StringOutputParser(),
   // Parser final para extrair JSON estruturado
   (output: string) => {

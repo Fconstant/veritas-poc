@@ -1,4 +1,4 @@
-import { ApplicationLLM } from '#/llm/index.js';
+import { LiteLLM } from '#/llm/index.js';
 import { ParsingError } from '#/utils/errors.js';
 import { parseLLMJsonResponse, sanitizeJsonForTemplate } from '#/utils/llm.js';
 import {
@@ -53,7 +53,6 @@ Neutrality: The claim avoids biased or opinionated framing and sticks to factual
 Completeness: The output addresses all parts of the question without omitting key aspects.
 Confidence Statement: The model can articulate why the claim is correct and what underlying knowledge supports it.
 
-
 JSON SCHEMA:
 \`\`\`json
 ${sanitizeJsonForTemplate(z.toJSONSchema(INITIAL_ANALYSIS_SCHEMA))}
@@ -90,7 +89,7 @@ export async function* basicAnalysis({
       },
     },
     PROMPT_TEMPLATE,
-    ApplicationLLM,
+    LiteLLM,
   ]);
 
   for (let i = 0, currSeq = 0; i < chunks.length; i++) {
