@@ -10,6 +10,7 @@ import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { RunnableSequence } from '@langchain/core/runnables';
 import { BaseChatMemory } from 'langchain/memory';
 import z from 'zod';
+import { REASONING_CONFIDENCE_INPUT } from './constants.js';
 
 type ChainInput = {
   input: string;
@@ -26,7 +27,7 @@ Your task is to process the input text and return structured JSON according to t
 - Evaluate the veracity of the statement(s) in the input.
 - Provide clear reasoning for each claim. Each reasoning must not be empty.
 - You might face more than one speaker. In this case, make sure you're not mixing context between speakers.
-- Extract zero, one, or more claims per input. Each extracted claim must be an item in the returned array.
+- Extract zero, one, or more claims. Each extracted claim must be an item in the returned array.
 - Only extract claims that are prone to fact-checking. So keep the results array as small as possible.
 - Include additional flags only if applicable: ${FACT_CHECK_RESULT_SCHEMA.shape.data.shape.flags.unwrap().unwrap().options.join(', ')}.
 - Preserve the original language of the user's input provided by the INPUT block.
@@ -36,22 +37,7 @@ Your task is to process the input text and return structured JSON according to t
 - Follow strictly the JSON structure defined in JSON SCHEMA block bellow.
 
 REASONING CONFIDENCE CRITERIA:
-
-Evaluate its own answer against the following criteria.
-Each criterion must be explicitly considered.
-If all are satisfied, the output is highly reliable and requires no further external research.
-If one or more criteria fail, confidence should be reduced and research may be needed.
-
-Clarity and Specificity: The output is precise, unambiguous, and avoids vague statements.
-Internal Consistency: No contradictions exist within the answer.
-Logical Coherence: The reasoning follows a clear, logical structure without leaps or gaps.
-Evidence Alignment: The claim is supported by known, widely accepted facts or well-established reasoning.
-Domain Fit: The claim falls within well-documented and stable knowledge domains (e.g., mathematics, historical facts, definitions).
-Cross-Verification: The answer could be independently verified by multiple reliable sources, and it does not rely on a single fragile assumption.
-Temporal Validity: The information is not time-sensitive or subject to rapid change (e.g., current events, stock prices, elections).
-Neutrality: The claim avoids biased or opinionated framing and sticks to factual representation.
-Completeness: The output addresses all parts of the question without omitting key aspects.
-Confidence Statement: The model can articulate why the claim is correct and what underlying knowledge supports it.
+${REASONING_CONFIDENCE_INPUT}
 
 JSON SCHEMA:
 \`\`\`json

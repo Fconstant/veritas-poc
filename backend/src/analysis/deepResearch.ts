@@ -7,6 +7,7 @@ import { RunnableSequence } from "@langchain/core/runnables";
 import { TavilySearch, TavilySearchResponse } from '@langchain/tavily';
 import { BaseChatMemory } from 'langchain/memory';
 import z from 'zod';
+import { REASONING_CONFIDENCE_INPUT } from './constants.js';
 
 // Tipagem explícita para entrada e saída
 export type DeepResearchInput = {
@@ -38,6 +39,9 @@ PREVIOUS CONTEXT:
 
 SEARCH RESULTS:
 {searchResults}
+
+REASONING CONFIDENCE CRITERIA:
+${REASONING_CONFIDENCE_INPUT}
 
 INSTRUCTIONS:
 1. Analyze the claim against the provided search results
