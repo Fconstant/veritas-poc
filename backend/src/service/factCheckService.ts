@@ -45,7 +45,7 @@ export async function* factCheckService(
         result.data.extractedClaim,
         memory
       );
-      yield { ...result, ...deepResearchResult };
+      yield { ...result, data: { ...result.data, ...deepResearchResult } };
     } else {
       yield result;
     }
