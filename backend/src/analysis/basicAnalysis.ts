@@ -30,10 +30,29 @@ Your task is to process the input text and return structured JSON according to t
 - Only extract claims that are prone to fact-checking. So keep the results array as small as possible.
 - Include additional flags only if applicable: ${FACT_CHECK_RESULT_SCHEMA.shape.data.shape.flags.unwrap().unwrap().options.join(', ')}.
 - Preserve the original language of the user's input provided by the INPUT block.
-- Provide a reasoningConfidence value varying between 0-1 (float) for each claim.
+- Provide a reasoningConfidence value varying between 0-1 (float) for each claim. Follow the REASONING CONFIDENCE CRITERIA bellow.
 - Consider the PREVIOUS CONTEXT provided for more accurate assessment.
 - Return only valid JSON. No markdown, No code blocks, or explanatory text. Start directly with {{ and end with }}.
 - Follow strictly the JSON structure defined in JSON SCHEMA block bellow.
+
+REASONING CONFIDENCE CRITERIA:
+
+Evaluate its own answer against the following criteria.
+Each criterion must be explicitly considered.
+If all are satisfied, the output is highly reliable and requires no further external research.
+If one or more criteria fail, confidence should be reduced and research may be needed.
+
+Clarity and Specificity: The output is precise, unambiguous, and avoids vague statements.
+Internal Consistency: No contradictions exist within the answer.
+Logical Coherence: The reasoning follows a clear, logical structure without leaps or gaps.
+Evidence Alignment: The claim is supported by known, widely accepted facts or well-established reasoning.
+Domain Fit: The claim falls within well-documented and stable knowledge domains (e.g., mathematics, historical facts, definitions).
+Cross-Verification: The answer could be independently verified by multiple reliable sources, and it does not rely on a single fragile assumption.
+Temporal Validity: The information is not time-sensitive or subject to rapid change (e.g., current events, stock prices, elections).
+Neutrality: The claim avoids biased or opinionated framing and sticks to factual representation.
+Completeness: The output addresses all parts of the question without omitting key aspects.
+Confidence Statement: The model can articulate why the claim is correct and what underlying knowledge supports it.
+
 
 JSON SCHEMA:
 \`\`\`json

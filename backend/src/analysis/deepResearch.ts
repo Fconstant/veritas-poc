@@ -1,65 +1,104 @@
-import { RunnableSequence } from "@langchain/core/runnables";
+import { ApplicationLLM } from '#/llm/index.js';
+import { parseLLMJsonResponse, sanitizeJsonForTemplate } from '#/utils/llm.js';
+import { FACT_CHECK_RESULT_DATA_SCHEMA } from '#/ws/types.js';
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
+import { RunnableSequence } from "@langchain/core/runnables";
 import { TavilySearch, TavilySearchResponse } from '@langchain/tavily';
-import { ApplicationLLM } from '#/llm/index.js';
+import { BaseChatMemory } from 'langchain/memory';
+import z from 'zod';
 
 // Tipagem explícita para entrada e saída
 export type DeepResearchInput = {
   query: string;
+  memory?: BaseChatMemory;
 }
 
-export type DeepResearchOutput = {
-  summary: string;
-  sources: string[];
-}
+export const DEEP_RESEARCH_RESULT_SCHEMA = FACT_CHECK_RESULT_DATA_SCHEMA.pick({ reasoning: true, sources: true, reasoningConfidence: true });
+
+export type DeepResearchOutput = z.infer<typeof DEEP_RESEARCH_RESULT_SCHEMA>;
 
 // Ferramenta de busca Tavily
 const searchTool = new TavilySearch({
   maxResults: 5,
+  searchDepth: "advanced", // For more comprehensive results
+  includeAnswer: true,     // Get AI-generated answers
+  includeRawContent: false // Avoid overwhelming the LLM
 });
 
 // Prompt para síntese da pesquisa
 const researchPrompt = PromptTemplate.fromTemplate(`
-You are an expert fact-checker and debunking expert analyzing political statements.
-Resuma as informações encontradas sobre a seguinte questão: "{query}".
+You are an expert fact-checker analyzing political statements.
+Your task is to provide an objective, evidence-based assessment.
 
-Use os trechos de pesquisa abaixo:
-{search_results}
+CLAIM TO VERIFY: "{query}"
 
-Regras:
-- Seja objetivo, máximo 2 parágrafos.
-- Inclua sempre uma seção "Fontes" listando as URLs relevantes.
+PREVIOUS CONTEXT:
+{context}
+
+SEARCH RESULTS:
+{searchResults}
+
+INSTRUCTIONS:
+1. Analyze the claim against the provided search results
+2. Consider the previous context for more accurate assessment
+3. Provide a clear, objective summary (maximum 2 paragraphs)
+4. Indicate the level of confidence varying between 0-1 (float)
+5. Focus on credible sources and recent information
+6. Note any limitations in available evidence
+7. Format your response as JSON according to the schema provided. Follow these rules:
+
+RESPONSE JSON SCHEMA:
+\`\`\`json
+${sanitizeJsonForTemplate(z.toJSONSchema(DEEP_RESEARCH_RESULT_SCHEMA))}
+\`\`\`
 `);
 
 
 const researchChain = RunnableSequence.from<DeepResearchInput, DeepResearchOutput>([
   {
     query: (input) => input.query,
-    search_results: async (input) => {
-      const response = await searchTool.invoke({ query: input.query }) as TavilySearchResponse;
-      return JSON.stringify(response, null, 2);
+    context: async (input) => {
+      if (!input.memory) {
+        return '';
+      }
+      const mem = (await input.memory.loadMemoryVariables({})) as
+        | { context?: string }
+        | undefined;
+      return mem?.context ?? '';
+    },
+    searchResults: async (input) => {
+      try {
+        const response = await searchTool.invoke({ query: input.query }) as TavilySearchResponse;
+
+        // Extract meaningful content from Tavily response
+        const formattedResults = response.results.map((result, index) =>
+          `${(index + 1).toString()}. **${result.title}**\n` +
+          `   URL: ${result.url}\n` +
+          `   Content: ${result.content}\n` +
+          `   Score: ${result.score.toString() || 'N/A'}\n`
+        ).join('\n\n') || 'No search results found.';
+
+        return formattedResults;
+      } catch (error) {
+        console.error('Tavily search failed:', error);
+        return 'Search temporarily unavailable.';
+      }
     },
   },
   researchPrompt,
   ApplicationLLM,
   new StringOutputParser(),
-  // Parser final para separar resumo e fontes
+  // Parser final para extrair JSON estruturado
   (output: string) => {
-    const [summaryPart, sourcesPart] = output.split("Fontes:");
-    const sources = sourcesPart
-      ? sourcesPart
-          .split("\n")
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0)
-      : [];
-    return {
-      summary: summaryPart.trim(),
-      sources,
-    };
+    const parsed = parseLLMJsonResponse(DEEP_RESEARCH_RESULT_SCHEMA, output);
+    if (!parsed) {
+      throw new Error(`Failed to parse LLM JSON response: ${output}`);
+    }
+    return parsed;
   },
 ]);
 
-export function deepResearch(query: string) {
-  return researchChain.invoke({ query });
+export function deepResearch(query: string, memory?: BaseChatMemory) {
+  return researchChain.invoke({ query, memory });
 }
