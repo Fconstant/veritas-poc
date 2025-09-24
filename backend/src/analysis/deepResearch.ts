@@ -1,4 +1,3 @@
-import { AdvancedLLM } from '#/llm/index.js';
 import { parseLLMJsonResponse, sanitizeJsonForTemplate } from '#/utils/llm.js';
 import { FACT_CHECK_RESULT_DATA_SCHEMA } from '#/ws/types.js';
 import { StringOutputParser } from "@langchain/core/output_parsers";
@@ -8,27 +7,26 @@ import { TavilySearch, TavilySearchResponse } from '@langchain/tavily';
 import { BaseChatMemory } from 'langchain/memory';
 import z from 'zod';
 import { REASONING_CONFIDENCE_INPUT } from './constants.js';
+import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 
-// Tipagem explícita para entrada e saída
-export type DeepResearchInput = {
+export type DeepResearchArgs = {
+  query: string;
+  memory?: BaseChatMemory;
+  tavilyApiKey: string;
+  llm: BaseChatModel;
+};
+
+type DeepResearchRunnableInput = {
   query: string;
   memory?: BaseChatMemory;
 }
 
-export const DEEP_RESEARCH_RESULT_SCHEMA = FACT_CHECK_RESULT_DATA_SCHEMA.pick({ reasoning: true, sources: true, reasoningConfidence: true });
+const DEEP_RESEARCH_RESULT_SCHEMA = FACT_CHECK_RESULT_DATA_SCHEMA.pick({ reasoning: true, sources: true, reasoningConfidence: true });
 
 export type DeepResearchOutput = z.infer<typeof DEEP_RESEARCH_RESULT_SCHEMA>;
 
-// Ferramenta de busca Tavily
-const searchTool = new TavilySearch({
-  maxResults: 5,
-  searchDepth: "advanced", // For more comprehensive results
-  includeAnswer: true,     // Get AI-generated answers
-  includeRawContent: false // Avoid overwhelming the LLM
-});
-
 // Prompt para síntese da pesquisa
-const researchPrompt = PromptTemplate.fromTemplate(`
+const SYSTEM_PROMPT = PromptTemplate.fromTemplate(`
 You are an expert fact-checker analyzing political statements.
 Your task is to provide an objective, evidence-based assessment.
 
@@ -58,51 +56,60 @@ ${sanitizeJsonForTemplate(z.toJSONSchema(DEEP_RESEARCH_RESULT_SCHEMA))}
 \`\`\`
 `);
 
+export function deepResearch({ query, memory, llm, tavilyApiKey }: DeepResearchArgs) {
 
-const researchChain = RunnableSequence.from<DeepResearchInput, DeepResearchOutput>([
-  {
-    query: (input) => input.query,
-    context: async (input) => {
-      if (!input.memory) {
-        return '';
-      }
-      const mem = (await input.memory.loadMemoryVariables({})) as
-        | { context?: string }
-        | undefined;
-      return mem?.context ?? '';
+  // Ferramenta de busca Tavily
+  const searchTool = new TavilySearch({
+    tavilyApiKey,
+    maxResults: 5,
+    searchDepth: "advanced", // For more comprehensive results
+    includeAnswer: true,     // Get AI-generated answers
+    includeRawContent: false // Avoid overwhelming the LLM
+  });
+
+  const researchChain = RunnableSequence.from<DeepResearchRunnableInput, DeepResearchOutput>([
+    {
+      query: (input) => input.query,
+      context: async (input) => {
+        if (!input.memory) {
+          return '';
+        }
+        const mem = (await input.memory.loadMemoryVariables({})) as
+          | { context?: string }
+          | undefined;
+        return mem?.context ?? '';
+      },
+      searchResults: async (input) => {
+        try {
+          const response = await searchTool.invoke({ query: input.query }) as TavilySearchResponse;
+
+          // Extract meaningful content from Tavily response
+          const formattedResults = response.results.map((result, index) =>
+            `${(index + 1).toString()}. **${result.title}**\n` +
+            `   URL: ${result.url}\n` +
+            `   Content: ${result.content}\n` +
+            `   Score: ${result.score.toString() || 'N/A'}\n`
+          ).join('\n\n') || 'No search results found.';
+
+          return formattedResults;
+        } catch (error) {
+          console.error('Tavily search failed:', error);
+          return 'Search temporarily unavailable.';
+        }
+      },
     },
-    searchResults: async (input) => {
-      try {
-        const response = await searchTool.invoke({ query: input.query }) as TavilySearchResponse;
-
-        // Extract meaningful content from Tavily response
-        const formattedResults = response.results.map((result, index) =>
-          `${(index + 1).toString()}. **${result.title}**\n` +
-          `   URL: ${result.url}\n` +
-          `   Content: ${result.content}\n` +
-          `   Score: ${result.score.toString() || 'N/A'}\n`
-        ).join('\n\n') || 'No search results found.';
-
-        return formattedResults;
-      } catch (error) {
-        console.error('Tavily search failed:', error);
-        return 'Search temporarily unavailable.';
+    SYSTEM_PROMPT,
+    llm,
+    new StringOutputParser(),
+    // Parser final para extrair JSON estruturado
+    (output: string) => {
+      const parsed = parseLLMJsonResponse(DEEP_RESEARCH_RESULT_SCHEMA, output);
+      if (!parsed) {
+        throw new Error(`Failed to parse LLM JSON response: ${output}`);
       }
+      return parsed;
     },
-  },
-  researchPrompt,
-  AdvancedLLM,
-  new StringOutputParser(),
-  // Parser final para extrair JSON estruturado
-  (output: string) => {
-    const parsed = parseLLMJsonResponse(DEEP_RESEARCH_RESULT_SCHEMA, output);
-    if (!parsed) {
-      throw new Error(`Failed to parse LLM JSON response: ${output}`);
-    }
-    return parsed;
-  },
-]);
+  ]);
 
-export function deepResearch(query: string, memory?: BaseChatMemory) {
   return researchChain.invoke({ query, memory });
 }

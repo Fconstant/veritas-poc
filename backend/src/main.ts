@@ -104,9 +104,9 @@ httpServer.listen(PORT, () => {
   const fastModel = DEFAULT_FAST_MODEL;
   const advancedModel = DEFAULT_ADVANCED_MODEL;
   console.log(
-    `Fast model: ${fastModel.provider}/${fastModel.model}, API Key loaded? ${String(!!fastModel.apiKey)}`,
+    `Fast model: ${fastModel.provider}/${fastModel.model}`,
   );
   console.log(
-    `Advanced model: ${advancedModel.provider}/${advancedModel.model}, API Key loaded? ${String(!!advancedModel.apiKey)}`,
+    `Advanced model: ${advancedModel.provider}/${advancedModel.model}`,
   );
 });

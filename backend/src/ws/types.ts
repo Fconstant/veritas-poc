@@ -20,6 +20,10 @@ export const FACT_CHECK_REQUEST_SCHEMA = METADATA_SCHEMA.pick({
   fingerprint: true,
 }).extend({
   researchThreshold: z.number().gte(0).lte(1).optional(),
+  apiKeys: z.object({
+    google: z.string("Must provide Google API key."),
+    tavily: z.string("Must provide Tavily API key."),
+  }).required(),
 });
 
 export const FACT_CHECK_RESULT_DATA_SCHEMA = z.object({
@@ -27,7 +31,7 @@ export const FACT_CHECK_RESULT_DATA_SCHEMA = z.object({
   reasoningConfidence: z.number().gte(0).lte(1),
   reasoning: z.string().min(1, 'Reasoning cannot be empty'),
   flags: z
-    .array(z.enum(['UNVERIFIABLE', 'MISLEADING', 'INCONCLUSIVE', 'AMBIGUOUS']))
+    .array(z.enum([ 'UNVERIFIABLE', 'MISLEADING', 'INCONCLUSIVE', 'AMBIGUOUS' ]))
     .optional(),
   sources: z.array(z.url()).optional(),
 });
@@ -39,7 +43,7 @@ export const FACT_CHECK_RESULT_SCHEMA = buildResponseSchema(
 
 export const UPDATE_STATUS_SCHEMA = buildResponseSchema(
   z.object({
-    status: z.enum(['PROCESSING', 'FINISHED', 'EXCEPTION', 'INTERRUPTED']),
+    status: z.enum([ 'PROCESSING', 'FINISHED', 'EXCEPTION', 'INTERRUPTED' ]),
     message: z.string().optional(),
   }),
   METADATA_SCHEMA,

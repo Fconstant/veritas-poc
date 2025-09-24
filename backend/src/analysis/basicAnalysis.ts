@@ -1,4 +1,3 @@
-import { LiteLLM } from '#/llm/index.js';
 import { ParsingError } from '#/utils/errors.js';
 import { parseLLMJsonResponse, sanitizeJsonForTemplate } from '#/utils/llm.js';
 import {
@@ -11,6 +10,7 @@ import { RunnableSequence } from '@langchain/core/runnables';
 import { BaseChatMemory } from 'langchain/memory';
 import z from 'zod';
 import { REASONING_CONFIDENCE_INPUT } from './constants.js';
+import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 
 type ChainInput = {
   input: string;
@@ -57,12 +57,14 @@ export type BasicAnalysisArgs = {
   factCheckReq: FactCheckRequest;
   memory: BaseChatMemory;
   chunks: string[];
+  llm: BaseChatModel;
 };
 
 export async function* basicAnalysis({
   factCheckReq,
   chunks,
   memory,
+  llm
 }: BasicAnalysisArgs) {
   const chain = RunnableSequence.from([
     {
@@ -75,7 +77,7 @@ export async function* basicAnalysis({
       },
     },
     PROMPT_TEMPLATE,
-    LiteLLM,
+    llm,
   ]);
 
   for (let i = 0, currSeq = 0; i < chunks.length; i++) {

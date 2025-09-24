@@ -10,11 +10,13 @@ export const createLLM = (config: LLMConfig): BaseChatModel => {
       return new ChatGoogleGenerativeAI({
         model: config.model,
         temperature: config.temperature,
+        apiKey: config.apiKey,
       });
     case 'openai':
       return new ChatOpenAI({
         modelName: config.model,
         temperature: config.temperature,
+        apiKey: config.apiKey,
       });
     default:
       throw new Error("Unsupported provider");
