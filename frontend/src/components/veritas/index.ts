@@ -1,0 +1,7 @@
+// Componentes Veritas - Exportações principais
+// Facilita a importação de todos os componentes do Veritas
+
+export * from './Header';
+export * from './common';
+export * from './results';
+export * from './pages';

@@ -44,41 +44,61 @@
 }
 
 :root {
+  /* Cores específicas do Veritas baseadas no Figma */
+  --veritas-purple-primary: #351397;
+  --veritas-purple-secondary: #844ae9;
+  --veritas-purple-light: #a855f7;
+  --veritas-blue-dark: #102148;
+  --veritas-gray-light: #f7f7f7;
+  --veritas-gray-border: #d7d4de;
+  --veritas-results-background: #F9FAFC;
+  
+  /* Cores de estado */
+  --veritas-success: #10b981;
+  --veritas-warning: #f59e0b;
+  --veritas-error: #ef4444;
+  --veritas-info: #3b82f6;
+
+  /* Cores do sistema baseadas no Veritas */
   --background: #f8fafc;
   --foreground: #1e293b;
   --card: #ffffff;
   --card-foreground: #1e293b;
   --popover: #ffffff;
   --popover-foreground: #1e293b;
-  --primary: #6366f1;
+  --primary: var(--veritas-purple-primary);
   --primary-foreground: #ffffff;
   --secondary: #e5e7eb;
   --secondary-foreground: #374151;
-  --muted: #f3f4f6;
+  --muted: var(--veritas-gray-light);
   --muted-foreground: #6b7280;
   --accent: #e0e7ff;
   --accent-foreground: #374151;
-  --destructive: #ef4444;
+  --destructive: var(--veritas-error);
   --destructive-foreground: #ffffff;
-  --border: #d1d5db;
-  --input: #d1d5db;
-  --ring: #6366f1;
-  --chart-1: #6366f1;
-  --chart-2: #4f46e5;
-  --chart-3: #4338ca;
-  --chart-4: #3730a3;
+  --border: var(--veritas-gray-border);
+  --input: var(--veritas-gray-border);
+  --ring: var(--veritas-purple-primary);
+  --chart-1: var(--veritas-purple-primary);
+  --chart-2: var(--veritas-purple-secondary);
+  --chart-3: var(--veritas-purple-light);
+  --chart-4: #4338ca;
   --chart-5: #312e81;
-  --sidebar: #f3f4f6;
+  --sidebar: var(--veritas-gray-light);
   --sidebar-foreground: #1e293b;
-  --sidebar-primary: #6366f1;
+  --sidebar-primary: var(--veritas-purple-primary);
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #e0e7ff;
   --sidebar-accent-foreground: #374151;
-  --sidebar-border: #d1d5db;
-  --sidebar-ring: #6366f1;
-  --font-sans: Nunito, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: Merriweather, serif;
+  --sidebar-border: var(--veritas-gray-border);
+  --sidebar-ring: var(--veritas-purple-primary);
+  --font-sans: Inter, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: Inria Serif, serif;
   --font-mono: JetBrains Mono, monospace;
+  /* Fallbacks for Ladle/Vite when next/font variables are not injected */
+  --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inria-serif: "Inria Serif", serif;
+  --font-merriweather: Merriweather, serif;
   --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
@@ -93,41 +113,60 @@
 }
 
 .dark {
+  /* Cores específicas do Veritas para tema dark */
+  --veritas-purple-primary: #844ae9;
+  --veritas-purple-secondary: #a855f7;
+  --veritas-purple-light: #c084fc;
+  --veritas-blue-dark: #1e293b;
+  --veritas-gray-light: #1e293b;
+  --veritas-gray-border: #4b5563;
+  --veritas-results-background: #0f172a;
+  
+  /* Cores de estado para dark */
+  --veritas-success: #10b981;
+  --veritas-warning: #f59e0b;
+  --veritas-error: #ef4444;
+  --veritas-info: #3b82f6;
+
+  /* Cores do sistema dark baseadas no Veritas */
   --background: #0f172a;
   --foreground: #e2e8f0;
   --card: #1e293b;
   --card-foreground: #e2e8f0;
   --popover: #1e293b;
   --popover-foreground: #e2e8f0;
-  --primary: #818cf8;
+  --primary: var(--veritas-purple-secondary);
   --primary-foreground: #0f172a;
   --secondary: #2d3748;
   --secondary-foreground: #d1d5db;
-  --muted: #1e293b;
+  --muted: var(--veritas-gray-light);
   --muted-foreground: #9ca3af;
   --accent: #374151;
   --accent-foreground: #d1d5db;
-  --destructive: #ef4444;
+  --destructive: var(--veritas-error);
   --destructive-foreground: #0f172a;
-  --border: #4b5563;
-  --input: #4b5563;
-  --ring: #818cf8;
-  --chart-1: #818cf8;
-  --chart-2: #6366f1;
+  --border: var(--veritas-gray-border);
+  --input: var(--veritas-gray-border);
+  --ring: var(--veritas-purple-secondary);
+  --chart-1: var(--veritas-purple-secondary);
+  --chart-2: var(--veritas-purple-light);
   --chart-3: #4f46e5;
   --chart-4: #4338ca;
   --chart-5: #3730a3;
-  --sidebar: #1e293b;
+  --sidebar: var(--veritas-gray-light);
   --sidebar-foreground: #e2e8f0;
-  --sidebar-primary: #818cf8;
+  --sidebar-primary: var(--veritas-purple-secondary);
   --sidebar-primary-foreground: #0f172a;
   --sidebar-accent: #374151;
   --sidebar-accent-foreground: #d1d5db;
-  --sidebar-border: #4b5563;
-  --sidebar-ring: #818cf8;
-  --font-sans: Nunito, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: Merriweather, serif;
+  --sidebar-border: var(--veritas-gray-border);
+  --sidebar-ring: var(--veritas-purple-secondary);
+  --font-sans: Inter, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: Inria Serif, serif;
   --font-mono: JetBrains Mono, monospace;
+  /* Fallbacks for Ladle/Vite when next/font variables are not injected */
+  --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inria-serif: "Inria Serif", serif;
   --radius: 0.5rem;
   --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
@@ -145,5 +184,39 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Força Merriweather no textarea placeholder */
+textarea[data-slot="textarea"]::placeholder {
+  font-family: Merriweather, serif !important;
+  font-size: 16px !important;
+}
+
+/* Estado disabled - placeholder com opacidade reduzida */
+textarea[data-slot="textarea"]:disabled::placeholder {
+  opacity: 0.65 !important;
+}
+
+/* Animação shimmer para skeleton loading */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Animação fadePulse para círculo de progresso */
+@keyframes fadePulse {
+  0% {
+    background-color: #77e6a0;
+  }
+  50% {
+    background-color: #f5f5f5;
+  }
+  100% {
+    background-color: #77e6a0;
   }
 }

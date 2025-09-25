@@ -1,0 +1,538 @@
+---
+description: Design System Rules for Figma-to-Code Integration using MCP
+globs: ["frontend/src/components/**/*"]
+alwaysApply: true
+---
+
+# Design System Rules - Figma MCP Integration
+
+## Core Principle
+**ALWAYS extract specs directly from Figma using MCP tools - NO generic assumptions or generic design patterns.**
+
+## Workflow Process
+
+### 1. Figma Analysis Phase
+1. **Extract Code**: Use `mcp_figma_get_code` with correct nodeId
+2. **Get Screenshot**: Use `mcp_figma_get_screenshot` for visual context
+3. **Get Metadata**: Use `mcp_figma_get_metadata` for dimensions/structure
+4. **Get Variables**: Use `mcp_figma_get_variable_defs` for design tokens
+
+### 2. Documentation Phase
+1. Create `.md` file in `design/` directory
+2. Include complete Figma spec code and the Figma link
+3. Document all colors, fonts, dimensions, spacing
+4. Document component structure, variants, states and behavior
+5. Include TypeScript interface
+6. Document dynamic states and gradient logic
+7. Include Ladle stories link
+8. Document CSS custom properties if used
+
+### 3. Implementation Phase
+1. Follow the `.md` documentation EXACTLY
+2. Use Figma-extracted colors, fonts, spacing
+3. Implement pixel-perfect match
+4. Create Ladle stories for testing
+
+## Design System Structure
+
+### Token Definitions
+**Location**: `frontend/src/app/globals.css`
+
+```css
+:root {
+  /* Veritas-specific colors from Figma */
+  --veritas-purple-primary: #351397;
+  --veritas-purple-secondary: #844ae9;
+  --veritas-purple-light: #a855f7;
+  --veritas-blue-dark: #102148;
+  --veritas-gray-light: #f7f7f7;
+  --veritas-gray-border: #d7d4de;
+  
+  /* System colors mapped to Veritas */
+  --primary: var(--veritas-purple-primary);
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --border: var(--veritas-gray-border);
+  
+  /* Typography */
+  --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inria-serif: "Inria Serif", serif;
+  --font-merriweather: Merriweather, serif;
+}
+```
+
+### Component Architecture
+**Location**: `frontend/src/components/`
+
+```
+components/
+├── ui/                    # Generic UI components (shadcn/ui)
+│   ├── button.tsx
+│   ├── input.tsx
+│   ├── textarea.tsx
+│   └── *.stories.tsx
+└── veritas/              # Veritas-specific components
+    ├── layout/           # Header, Footer, Container, PurpleBorder
+    ├── common/           # Logo, AlphaBadge, Tagline
+    ├── verification/     # VerificationInput, VerificationButton
+    ├── results/          # ResultCard, TruthBadge, ConfidenceBar
+    └── pages/            # LandingPage, VerificationPage, ResultsPage
+```
+
+### Frameworks & Libraries
+- **UI Framework**: React 19 + Next.js 15
+- **Styling**: Tailwind CSS v4 + CSS Variables
+- **Component System**: shadcn/ui + Radix UI primitives
+- **Build System**: Next.js with Turbopack
+- **Package Manager**: pnpm
+- **Storybook**: Ladle for component development
+
+### Styling Approach
+**Methodology**: Tailwind CSS with CSS Variables + Utility Classes
+
+```tsx
+// Example from Header.tsx
+className={cn(
+  'flex items-center justify-between px-6 py-4 relative w-full',
+  'bg-background border-b border-[#d6d8db]',
+  className
+)}
+```
+
+**Key Patterns**:
+- Use `cn()` utility for class merging
+- CSS variables for design tokens
+- Hardcoded colors from Figma when needed
+- Responsive design with Tailwind breakpoints
+
+### Component Implementation Rules
+
+#### 1. TypeScript Interface
+```tsx
+interface ComponentProps {
+  // Content
+  value?: string;
+  placeholder?: string;
+  label?: string;
+  
+  // Behavior
+  disabled?: boolean;
+  required?: boolean;
+  
+  // Styling
+  className?: string;
+  
+  // Events
+  onChange?: (value: string) => void;
+  
+  // Accessibility
+  id?: string;
+  ariaLabel?: string;
+}
+```
+
+#### 2. Component Structure
+```tsx
+import React from 'react';
+import { cn } from '@/lib/utils';
+
+const Component: React.FC<ComponentProps> = ({
+  // props destructuring
+}) => {
+  return (
+    <div className={cn('base-classes', className)}>
+      {/* Component content */}
+    </div>
+  );
+};
+
+export default Component;
+```
+
+#### 3. Ladle Stories
+```tsx
+import type { Story, StoryDefault } from "@ladle/react";
+import { useState } from "react";
+import { Component } from "./Component";
+
+export default {
+  title: "ui/Component", // or "veritas/category/Component"
+} satisfies StoryDefault;
+
+// Interactive story for components with dynamic states
+export const Interactive: Story = () => {
+  const [value, setValue] = useState("");
+
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Component Interativo</h3>
+        <p className="text-sm text-muted-foreground">
+          Este componente gerencia automaticamente todos os estados
+        </p>
+      </div>
+
+      <Component
+        value={value}
+        onChange={setValue}
+        // other props
+      />
+
+      <div className="text-xs text-muted-foreground">
+        <p><strong>Estado atual:</strong> {value.length === 0 ? 'Default' : 'Entered'}</p>
+      </div>
+    </div>
+  );
+};
+
+// Static stories for specific states
+export const Disabled: Story = () => (
+  <Component disabled />
+);
+
+export const Error: Story = () => (
+  <Component error />
+);
+```
+
+### Asset Management
+**Location**: `frontend/public/`
+- Static assets (SVGs, images)
+- Next.js Image component for optimization
+- No CDN configuration (local development)
+
+### Icon System
+**Library**: Lucide React
+**CRITICAL**: **NEVER use raw SVG files for icons - ALWAYS use Lucide React components**
+
+**Usage**: 
+```tsx
+import { Play, Check, X, ArrowRight, Search } from "lucide-react";
+<Play className="size-4" />
+<Check className="size-5 text-green-500" />
+<ArrowRight className="size-6" />
+```
+
+**Icon Implementation Rules**:
+- ✅ **ALWAYS** use Lucide React components
+- ✅ Import specific icons: `import { IconName } from "lucide-react"`
+- ✅ Use Tailwind classes for sizing: `size-4`, `size-5`, `size-6`
+- ✅ Use Tailwind classes for colors: `text-primary`, `text-red-500`
+- ❌ **NEVER** use raw SVG files from `/public/` or inline SVG
+- ❌ **NEVER** create custom SVG components
+- ❌ **NEVER** use other icon libraries (Heroicons, Feather, etc.)
+
+**Common Lucide Icons for Veritas**:
+```tsx
+// Navigation & Actions
+import { ArrowRight, ArrowLeft, ArrowUp, ArrowDown } from "lucide-react";
+import { Play, Pause, Stop, RefreshCw } from "lucide-react";
+import { Search, Filter, SortAsc, SortDesc } from "lucide-react";
+
+// Status & Feedback
+import { Check, X, AlertCircle, Info, CheckCircle } from "lucide-react";
+import { Loader2, AlertTriangle, Shield, ShieldCheck } from "lucide-react";
+
+// Content & Media
+import { FileText, Image, Video, Link, Copy } from "lucide-react";
+import { Download, Upload, Share, ExternalLink } from "lucide-react";
+
+// UI Elements
+import { Menu, X as Close, Plus, Minus, Edit } from "lucide-react";
+import { Settings, User, Bell, Heart, Star } from "lucide-react";
+```
+
+### Project Structure
+```
+frontend/
+├── src/
+│   ├── app/              # Next.js app router
+│   │   ├── globals.css   # Design tokens & global styles
+│   │   ├── layout.tsx    # Root layout with fonts
+│   │   └── page.tsx      # Home page
+│   ├── components/
+│   │   ├── ui/          # Generic components
+│   │   └── veritas/     # Veritas-specific components
+│   └── lib/
+│       └── utils.ts     # cn() utility function
+├── public/              # Static assets
+├── components.json      # shadcn/ui config
+└── package.json         # Dependencies
+```
+
+## Implementation Checklist
+
+### Before Implementation
+- [ ] Extract Figma code using MCP tools
+- [ ] Create design documentation in `design/` folder
+- [ ] Verify all colors, fonts, dimensions from Figma
+- [ ] Plan component props and behavior
+
+### During Implementation
+- [ ] Follow Figma specs exactly (no assumptions)
+- [ ] Use correct colors from Figma
+- [ ] Use correct fonts from Figma
+- [ ] Use correct spacing from Figma
+- [ ] Implement TypeScript interface
+- [ ] Add proper accessibility attributes
+- [ ] Implement dynamic states (focus, error, disabled)
+- [ ] Add gradient borders with dynamic opacity
+- [ ] Use inline styles for critical font sizes
+- [ ] Add data-slot attributes for CSS targeting
+
+### After Implementation
+- [ ] Create Ladle stories for all states
+- [ ] Test all variants and states
+- [ ] Verify pixel-perfect match with Figma
+- [ ] Add CSS custom properties if needed
+- [ ] Export from appropriate index.ts
+- [ ] Update component documentation
+- [ ] Include Ladle link in documentation
+
+## Common Patterns
+
+### Color Usage
+```tsx
+// Use CSS variables when available
+className="bg-primary text-primary-foreground"
+
+// Use hardcoded Figma colors when needed
+className="bg-[#351397] text-[#102148]"
+
+// Use Tailwind utilities for common patterns
+className="border-[#d6d8db]"
+```
+
+### Typography
+```tsx
+// Use font variables
+className="font-[var(--font-inter)]"
+
+// Use Tailwind font classes
+className="font-medium text-[16px] leading-[28px]"
+```
+
+### Spacing
+```tsx
+// Use Tailwind spacing
+className="px-6 py-4 gap-2"
+
+// Use hardcoded values from Figma
+className="p-[12px]"
+```
+
+### Dynamic States & Gradients
+**CRITICAL**: Many components have dynamic states with gradient borders
+
+#### 1. State Management Pattern
+```tsx
+const [currentValue, setCurrentValue] = React.useState<string>(value)
+const [isFocused, setIsFocused] = React.useState<boolean>(false)
+
+// Dynamic gradient opacity based on state
+const gradientOpacity = currentValue.length > 0 ? 1 : (isFocused ? 0.5 : 0.2)
+```
+
+#### 2. Gradient Background Implementation
+```tsx
+const containerBackground = disabled
+  ? undefined  // No gradient for disabled
+  : (isError 
+    ? `linear-gradient(${containerFill},${containerFill}) padding-box, linear-gradient(90deg, rgba(239,68,68,0.5) 0%, rgba(220,38,38,0.5) 100%) border-box`
+    : `linear-gradient(${containerFill},${containerFill}) padding-box, linear-gradient(90deg, rgba(53,19,151,${gradientOpacity}) 0%, rgba(8,133,185,${gradientOpacity}) 100%) border-box`)
+
+// Apply via inline style
+style={{
+  border: disabled ? "none" : "1px solid transparent",
+  background: containerBackground ?? "#f8f8f8",
+}}
+```
+
+#### 3. Error State Logic
+```tsx
+const isError = !disabled && currentValue.length > maxLength
+
+// Apply error styling conditionally
+className={cn(
+  "base-classes",
+  isError && "text-red-500"
+)}
+```
+
+#### 4. Disabled State Pattern
+```tsx
+// Container: cursor-not-allowed
+className={cn(
+  "base-classes",
+  disabled && "cursor-not-allowed"
+)}
+
+// Input element: opacity + cursor
+className={cn(
+  "base-classes",
+  disabled && "opacity-[0.65] cursor-not-allowed"
+)}
+```
+
+### Font Implementation
+**CRITICAL**: Proper font setup requires coordination between Next.js, CSS, and Tailwind
+
+#### 1. Next.js Font Setup (layout.tsx)
+```tsx
+import { Inter, Inria_Serif, Merriweather } from "next/font/google";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const inriaSerif = Inria_Serif({
+  variable: "--font-inria-serif",
+  subsets: ["latin"],
+  weight: ["300", "400", "700"],
+});
+
+const merriweather = Merriweather({
+  variable: "--font-merriweather",
+  subsets: ["latin"],
+  weight: ["300", "400", "700", "900"],
+});
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="pt-BR">
+      <body className={`${inter.variable} ${inriaSerif.variable} ${merriweather.variable} antialiased`}>
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
+#### 2. CSS Variables Definition (globals.css)
+**MUST** define font variables in BOTH `:root` and `.dark` sections:
+
+```css
+:root {
+  /* Typography - Fallbacks for Ladle/Vite */
+  --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inria-serif: "Inria Serif", serif;
+  --font-merriweather: Merriweather, serif;
+}
+
+.dark {
+  /* Typography - MUST repeat in dark mode */
+  --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-inria-serif: "Inria Serif", serif;
+  --font-merriweather: Merriweather, serif;
+}
+```
+
+#### 3. Tailwind Application in Components
+**Use the correct Tailwind syntax for CSS custom properties:**
+
+```tsx
+// ✅ CORRECT: Tailwind v4 syntax for CSS variables
+className="[font-family:var(--font-merriweather)]"
+
+// ✅ CORRECT: For placeholders
+className="placeholder:[font-family:var(--font-merriweather)]"
+
+// ❌ WRONG: Invalid syntax
+className="font-[var(--font-merriweather)]"
+
+// ✅ ALTERNATIVE: Use predefined Tailwind classes
+className="font-serif" // if --font-serif includes the desired font
+```
+
+#### 4. Font Application Examples
+```tsx
+// Header logo using Inria Serif
+className="font-serif font-bold text-[24px]"
+
+// TextArea content using Merriweather
+className="[font-family:var(--font-merriweather)] text-[14px]"
+
+// Badge using Inter
+className="font-[var(--font-inter)] text-[12px]"
+```
+
+#### 5. Common Font Issues & Solutions
+
+**Problem**: Font not rendering
+**Solutions**:
+1. Check if variable is defined in both `:root` and `.dark`
+2. Verify Next.js font variable is applied to `<body>`
+3. Use correct Tailwind syntax: `[font-family:var(--font-name)]`
+4. Restart dev server after font changes
+
+**Problem**: Font works in light mode but not dark mode
+**Solution**: Add font variable to `.dark` section in globals.css
+
+**Problem**: Font fallback not working
+**Solution**: Include fallbacks in CSS variable definition:
+```css
+--font-merriweather: Merriweather, "Times New Roman", serif;
+```
+
+**Problem**: Font size being overridden by Tailwind classes
+**Solution**: Use inline styles for critical font sizes:
+```tsx
+style={{ fontSize: "16px", fontFamily: "Merriweather, serif" }}
+```
+
+**Problem**: Font not appearing in placeholder
+**Solution**: Use CSS custom properties with !important:
+```css
+textarea[data-slot="textarea"]::placeholder {
+  font-family: Merriweather, serif !important;
+  font-size: 16px !important;
+}
+```
+
+### CSS Custom Properties for Components
+**CRITICAL**: Use CSS custom properties for component-specific styling
+
+#### 1. Component-Specific CSS Rules
+```css
+/* Location: frontend/src/app/globals.css */
+
+/* Component-specific targeting using data attributes */
+textarea[data-slot="textarea"]::placeholder {
+  font-family: Merriweather, serif !important;
+  font-size: 16px !important;
+}
+
+textarea[data-slot="textarea"]:disabled::placeholder {
+  opacity: 0.65 !important;
+}
+```
+
+#### 2. Data Attributes for CSS Targeting
+```tsx
+// Add data-slot to components for CSS targeting
+<textarea
+  data-slot="textarea"
+  className="..."
+/>
+```
+
+#### 3. !important Usage Guidelines
+- **Use sparingly**: Only for critical overrides
+- **Component-specific**: Target specific components, not global
+- **Font enforcement**: When Tailwind classes conflict with Figma specs
+- **State-specific**: For disabled, error, or special states
+
+## Error Prevention
+- **NEVER** assume colors, fonts, or spacing
+- **ALWAYS** extract from Figma first
+- **ALWAYS** document before implementing
+- **ALWAYS** test with Ladle stories
+- **ALWAYS** verify pixel-perfect match
+- **NEVER** use raw SVG files for icons - **ALWAYS** use Lucide React components
+
+## References
+- [Figma MCP Tools](https://figma.com/design/QyHxg2phuY29PoHaxF631K/Veritas---FactChecker-Agent)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Ladle Documentation](https://ladle.dev/)
