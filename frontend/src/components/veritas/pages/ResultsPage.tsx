@@ -6,9 +6,10 @@ import ProcessedTextPanel from '../results/ProcessedTextPanel';
 import ResultsPanel from '../results/ResultsPanel';
 import { ResultData } from '../results/ResultCard';
 import { factCheckService } from '@/lib/services/factCheckService';
-import { VerificationState, FactCheckResult } from '@/lib/types/api';
+import { FactCheckResult } from '@/lib/types/api';
 import Header from '../Header/Header';
 import { ConfirmationDialog } from '../common/ConfirmationDialog';
+import { useFactCheckStore } from '@/lib/store/factCheckStore';
 
 interface ResultsPageProps {
   text?: string;
@@ -21,11 +22,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   onNewVerification,
   className
 }) => {
-  const [verificationState, setVerificationState] = useState<VerificationState>({
-    status: 'idle',
-    results: []
-  });
-  const [processedText, setProcessedText] = useState<string>('');
+  const verificationState = useFactCheckStore();
   const [showResultsPanel, setShowResultsPanel] = useState(false);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -88,7 +85,6 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   // Converte os resultados do backend para o formato do componente
   const convertedResults = verificationState.results.map(convertToResultData);
   
-  // Debug: log dos resultados convertidos
   console.log('📊 Resultados convertidos:', {
     count: convertedResults.length,
     results: convertedResults
@@ -96,7 +92,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
   // Função para gerar o texto completo formatado com todos os resultados
   const generateFormattedText = useCallback(() => {
-    const originalText = factCheckService.getProcessedText() || processedText || '';
+    const originalText = verificationState.processedText || text || '';
     const results = convertedResults;
     
     if (!originalText) return '';
@@ -172,7 +168,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     formattedText += `Total de afirmações verificadas: ${results.length}\n`;
     
     return formattedText;
-  }, [processedText, convertedResults]);
+  }, [verificationState.processedText, text, convertedResults]);
 
   const handleCopyPlainText = useCallback(async () => {
     try {
@@ -210,36 +206,10 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         const isConnected = await factCheckService.testConnection();
         if (!isConnected) {
           console.error('❌ Falha ao conectar com o backend');
-          setVerificationState(prev => ({
-            ...prev,
-            status: 'error',
-            error: 'Não foi possível conectar com o servidor. Verifique se o backend está rodando.'
-          }));
           return;
         }
 
         console.log('✅ Conexão com o backend estabelecida');
-        
-        // Sincroniza com o estado atual do serviço
-        const currentState = factCheckService.getState();
-        setVerificationState(currentState);
-        
-        // Obtém o texto processado do serviço ou usa o texto passado como prop
-        const serviceText = factCheckService.getProcessedText() || text || "Texto não disponível";
-        
-        // Se não há texto no serviço, aguarda um pouco e tenta novamente
-        if (!serviceText || serviceText === "Texto não disponível") {
-          console.log('⏳ Aguardando texto processado...');
-          const t = window.setTimeout(() => {
-            const retryText = factCheckService.getProcessedText() || text || "Texto não disponível";
-            setProcessedText(retryText);
-            setIsInitialized(true);
-          }, 500);
-          timeouts.push(t);
-          return;
-        }
-        
-        setProcessedText(serviceText);
         setIsInitialized(true);
 
         // Mostra o painel esquerdo primeiro (imagem 4)
@@ -256,11 +226,6 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
       } catch (error) {
         console.error('❌ Erro ao inicializar conexão:', error);
-        setVerificationState(prev => ({
-          ...prev,
-          status: 'error',
-          error: error instanceof Error ? error.message : 'Erro desconhecido'
-        }));
       } finally {
         // nada aqui; cleanup feito no retorno do effect
       }
@@ -272,16 +237,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     }
   }, [isInitialized, text]);
 
-  // Escuta mudanças no estado da verificação
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    const unsubscribe = factCheckService.onStateChange((state) => {
-      setVerificationState(state);
-    });
-
-    return unsubscribe;
-  }, [isInitialized]);
+  // O estado já é sincronizado automaticamente via Zustand
 
   // Inicia a verificação automaticamente quando a página carrega
   useEffect(() => {
@@ -313,11 +269,6 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         console.log('🔑 Fingerprint gerado:', fingerprint);
       } catch (error) {
         console.error('❌ Erro ao iniciar verificação:', error);
-        setVerificationState(prev => ({
-          ...prev,
-          status: 'error',
-          error: error instanceof Error ? error.message : 'Erro ao iniciar verificação'
-        }));
       }
     };
 
@@ -389,7 +340,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
           {showLeftPanel && (
             <div className="rounded-lg pl-16 pr-16 transition-opacity duration-500">
               <ProcessedTextPanel
-                text={processedText}
+                text={verificationState.processedText || text || ''}
                 results={convertedResults}
                 onNewVerification={handleNewVerification}
                 onClaimClick={handleClaimClick}

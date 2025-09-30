@@ -11,16 +11,10 @@ import {
   ClientToServerEvents,
   ServerToClientEvents
 } from '../types/api';
+import { factCheckStore } from '../store/factCheckStore';
 
 export class FactCheckService {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
-  private currentFingerprint: string | null = null;
-  private processedText: string = '';
-  private state: VerificationState = {
-    status: 'idle',
-    results: []
-  };
-  private listeners: Map<string, ((state: VerificationState) => void)[]> = new Map();
 
   constructor(private backendUrl: string = API_CONFIG.BACKEND_URL) {}
 
@@ -56,7 +50,7 @@ export class FactCheckService {
         console.log('✅ Conectado ao backend WebSocket');
         console.log('🔗 Socket ID:', this.socket?.id);
         console.log('🌐 URL:', this.backendUrl);
-        this.updateState({ status: 'idle' });
+        factCheckStore.setState({ status: 'idle' });
         resolve();
       });
 
@@ -65,10 +59,10 @@ export class FactCheckService {
         console.error('🌐 URL tentada:', this.backendUrl);
         console.error('📊 Detalhes do erro:', {
           message: error.message,
-          type: (error as any).type || 'unknown',
-          description: (error as any).description || 'No description available'
+          type: (error as Error & { type?: string }).type || 'unknown',
+          description: (error as Error & { description?: string }).description || 'No description available'
         });
-        this.updateState({ 
+        factCheckStore.setState({ 
           status: 'error', 
           error: `Erro ao conectar com o servidor: ${error.message}` 
         });
@@ -77,14 +71,15 @@ export class FactCheckService {
 
       this.socket.on('disconnect', (reason) => {
         console.log('Desconectado do backend:', reason);
-        this.updateState({ status: 'idle' });
+        factCheckStore.setState({ status: 'idle' });
       });
 
       // Eventos específicos da verificação de fatos
       this.socket.on('FACT_CHECK_RESULT', (result: FactCheckResult) => {
         console.log('Resultado recebido:', result);
-        this.updateState({
-          results: [...this.state.results, result]
+        const currentState = factCheckStore.getState();
+        factCheckStore.setState({
+          results: [...currentState.results, result]
         });
       });
 
@@ -107,7 +102,7 @@ export class FactCheckService {
             break;
         }
 
-        this.updateState({
+        factCheckStore.setState({
           status: newStatus,
           message: status.data.message
         });
@@ -116,7 +111,7 @@ export class FactCheckService {
       this.socket.on('CHUNK_COUNT', (chunkCount: ChunkCount) => {
         console.log('Contagem de chunks:', chunkCount);
         console.log(`📦 Texto dividido em ${chunkCount.data.chunkCount} chunks para processamento`);
-        this.updateState({
+        factCheckStore.setState({
           chunkCount: chunkCount.data.chunkCount
         });
       });
@@ -124,45 +119,16 @@ export class FactCheckService {
   }
 
   /**
-   * Atualiza o estado interno e notifica os listeners
-   */
-  private updateState(updates: Partial<VerificationState>): void {
-    this.state = { ...this.state, ...updates };
-    this.notifyListeners();
-  }
-
-  /**
-   * Notifica todos os listeners registrados
-   */
-  private notifyListeners(): void {
-    this.listeners.forEach((listeners) => {
-      listeners.forEach(listener => listener(this.state));
-    });
-  }
-
-  /**
-   * Registra um listener para mudanças de estado
+   * Registra um listener para mudanças de estado usando Zustand
    */
   public onStateChange(listener: (state: VerificationState) => void): () => void {
-    const id = Math.random().toString(36).substring(2);
-    if (!this.listeners.has(id)) {
-      this.listeners.set(id, []);
-    }
-    this.listeners.get(id)!.push(listener);
-
-    // Retorna função para remover o listener
-    return () => {
-      const listeners = this.listeners.get(id);
-      if (listeners) {
-        const index = listeners.indexOf(listener);
-        if (index > -1) {
-          listeners.splice(index, 1);
-        }
-        if (listeners.length === 0) {
-          this.listeners.delete(id);
-        }
-      }
-    };
+    // Chama o listener imediatamente com o estado atual
+    listener(factCheckStore.getState());
+    
+    // Subscreve às mudanças da store
+    return factCheckStore.subscribe((state) => {
+      listener(state);
+    });
   }
 
   /**
@@ -217,23 +183,22 @@ export class FactCheckService {
       }
 
       // Gera novo fingerprint
-      this.currentFingerprint = this.generateFingerprint();
+      const fingerprint = this.generateFingerprint();
 
-      // Armazena o texto processado
-      this.processedText = content;
-
-      // Limpa resultados anteriores
-      this.updateState({
+      // Limpa resultados anteriores e atualiza estado
+      factCheckStore.setState({
         status: 'connecting',
         results: [],
         chunkCount: undefined,
         error: undefined,
-        message: 'Conectando ao servidor...'
+        message: 'Conectando ao servidor...',
+        processedText: content,
+        fingerprint
       });
 
       // Prepara a requisição
       const request: FactCheckRequest = {
-        fingerprint: this.currentFingerprint,
+        fingerprint,
         researchThreshold: options.researchThreshold ?? API_CONFIG.DEFAULT_RESEARCH_THRESHOLD,
         apiKeys: options.apiKeys
       };
@@ -244,10 +209,10 @@ export class FactCheckService {
       }
       this.socket.emit('REQUEST_FACT_CHECK', content, request);
 
-      return this.currentFingerprint;
+      return fingerprint;
     } catch (error) {
       console.error('Erro ao enviar requisição de verificação:', error);
-      this.updateState({
+      factCheckStore.setState({
         status: 'error',
         error: error instanceof Error ? error.message : 'Erro desconhecido'
       });
@@ -259,28 +224,29 @@ export class FactCheckService {
    * Obtém o estado atual da verificação
    */
   public getState(): VerificationState {
-    return { ...this.state };
+    return factCheckStore.getState();
   }
 
   /**
    * Obtém o texto processado
    */
   public getProcessedText(): string {
-    return this.processedText;
+    return factCheckStore.getState().processedText;
   }
 
   /**
    * Limpa o estado atual
    */
   public reset(): void {
-    this.updateState({
+    factCheckStore.setState({
       status: 'idle',
       results: [],
       chunkCount: undefined,
       error: undefined,
-      message: undefined
+      message: undefined,
+      processedText: '',
+      fingerprint: null
     });
-    this.processedText = '';
   }
 
   /**
@@ -291,8 +257,7 @@ export class FactCheckService {
       this.socket.disconnect();
       this.socket = null;
     }
-    this.listeners.clear();
-    this.updateState({ status: 'idle' });
+    factCheckStore.setState({ status: 'idle' });
   }
 
   /**

@@ -2,13 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { factCheckService } from '@/lib/services/factCheckService';
-import { VerificationState } from '@/lib/types/api';
+import { useFactCheckStore } from '@/lib/store/factCheckStore';
 
 const ConnectionTest: React.FC = () => {
-  const [state, setState] = useState<VerificationState>({
-    status: 'idle',
-    results: []
-  });
+  const state = useFactCheckStore();
   const [isConnected, setIsConnected] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
 
@@ -18,13 +15,8 @@ const ConnectionTest: React.FC = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = factCheckService.onStateChange((newState) => {
-      setState(newState);
-      addLog(`Estado atualizado: ${newState.status}`);
-    });
-
-    return unsubscribe;
-  }, []);
+    addLog(`Estado atualizado: ${state.status}`);
+  }, [state.status]);
 
   const testConnection = async () => {
     addLog('Testando conexão...');

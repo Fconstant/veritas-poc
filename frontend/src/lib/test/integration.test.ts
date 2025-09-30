@@ -3,6 +3,7 @@
 
 import { factCheckService } from '@/lib/services/factCheckService';
 import { API_CONFIG } from '@/lib/config/api';
+import { factCheckStore } from '@/lib/store/factCheckStore';
 
 // Exemplo de texto para verificação
 const EXAMPLE_TEXT = `
@@ -21,7 +22,7 @@ export async function testFactCheckIntegration() {
   
   try {
     // 1. Configurar listener para mudanças de estado
-    const unsubscribe = factCheckService.onStateChange((state) => {
+    const unsubscribe = factCheckStore.subscribe((state) => {
       console.log('📊 Estado atualizado:', {
         status: state.status,
         message: state.message,
@@ -30,12 +31,10 @@ export async function testFactCheckIntegration() {
         error: state.error
       });
       
-      // Log específico quando chunkCount é recebido
       if (state.chunkCount) {
         console.log(`📦 Texto dividido em ${state.chunkCount} chunks para processamento`);
       }
       
-      // Log detalhado dos resultados
       if (state.results.length > 0) {
         console.log('📋 Resultados recebidos:');
         state.results.forEach((result, index) => {

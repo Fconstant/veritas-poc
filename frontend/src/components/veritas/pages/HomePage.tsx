@@ -8,7 +8,7 @@ import HeroSection from './HeroSection';
 import VerificationForm from './VerificationForm';
 import HomePageToast from './HomePageToast';
 import { factCheckService } from '@/lib/services/factCheckService';
-import { VerificationState } from '@/lib/types/api';
+import { useFactCheckStore } from '@/lib/store/factCheckStore';
 
 interface HomePageProps {
   className?: string;
@@ -21,10 +21,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
   const nextRouter = useRouter();
   const router = propRouter || nextRouter;
   const [textValue, setTextValue] = useState<string>("");
-  const [verificationState, setVerificationState] = useState<VerificationState>({
-    status: 'idle',
-    results: []
-  });
+  const verificationState = useFactCheckStore();
   const [toast, setToast] = useState<{
     type: 'success' | 'error' | 'info';
     message: string;
@@ -42,48 +39,42 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
 
   // Escuta mudanças no estado da verificação
   useEffect(() => {
-    const unsubscribe = factCheckService.onStateChange((state) => {
-      setVerificationState(state);
+    // Atualiza toast baseado no status
+    if (verificationState.status === 'finished') {
+      setToast({
+        type: 'success',
+        message: 'Verificação concluída! Redirecionando para os resultados...',
+        isVisible: true
+      });
       
-      // Atualiza toast baseado no status
-      if (state.status === 'finished') {
-        setToast({
-          type: 'success',
-          message: 'Verificação concluída! Redirecionando para os resultados...',
-          isVisible: true
-        });
-        
-        // Auto-hide toast após 2 segundos e redirecionar
-        setTimeout(() => {
-          setToast(prev => ({ ...prev, isVisible: false }));
-          router.push('/results');
-        }, 2000);
-      } else if (state.status === 'error') {
-        setToast({
-          type: 'error',
-          message: state.error || 'Erro na verificação. Tente novamente.',
-          isVisible: true
-        });
-        
-        // Auto-hide toast após 5 segundos
-        setTimeout(() => {
-          setToast(prev => ({ ...prev, isVisible: false }));
-        }, 5000);
-      } else if (state.status === 'interrupted') {
-        setToast({
-          type: 'error',
-          message: 'Verificação interrompida. Tente novamente.',
-          isVisible: true
-        });
-        
-        setTimeout(() => {
-          setToast(prev => ({ ...prev, isVisible: false }));
-        }, 5000);
-      }
-    });
-
-    return unsubscribe;
-  }, [router]);
+      // Auto-hide toast após 2 segundos e redirecionar
+      setTimeout(() => {
+        setToast(prev => ({ ...prev, isVisible: false }));
+        router.push('/results');
+      }, 2000);
+    } else if (verificationState.status === 'error') {
+      setToast({
+        type: 'error',
+        message: verificationState.error || 'Erro na verificação. Tente novamente.',
+        isVisible: true
+      });
+      
+      // Auto-hide toast após 5 segundos
+      setTimeout(() => {
+        setToast(prev => ({ ...prev, isVisible: false }));
+      }, 5000);
+    } else if (verificationState.status === 'interrupted') {
+      setToast({
+        type: 'error',
+        message: 'Verificação interrompida. Tente novamente.',
+        isVisible: true
+      });
+      
+      setTimeout(() => {
+        setToast(prev => ({ ...prev, isVisible: false }));
+      }, 5000);
+    }
+  }, [verificationState.status, verificationState.error, router]);
 
   // Cleanup ao desmontar o componente
   useEffect(() => {
