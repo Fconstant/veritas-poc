@@ -4,7 +4,7 @@ export interface FactCheckRequest {
   fingerprint: string;
   researchThreshold?: number;
   apiKeys?: {
-    gemini?: string;
+    google?: string;
     tavily?: string;
   };
 }

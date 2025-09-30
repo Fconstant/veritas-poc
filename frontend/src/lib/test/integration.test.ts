@@ -54,7 +54,7 @@ export async function testFactCheckIntegration() {
       researchThreshold: 0.5,
       // apiKeys podem ser configuradas aqui para teste
       // apiKeys: {
-      //   gemini: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+      //   google: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
       //   tavily: process.env.NEXT_PUBLIC_TAVILY_API_KEY
       // }
     });

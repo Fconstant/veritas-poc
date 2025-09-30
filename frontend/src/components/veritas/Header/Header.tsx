@@ -1,12 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { Settings } from 'lucide-react';
 
 interface HeaderProps {
   className?: string;
+  onSettingsClick?: () => void;
+  showSettings?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ className }) => {
+const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSettings = false }) => {
   return (
     <header
       className={cn(
@@ -32,15 +35,30 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         </span>
       </div>
       
-      {/* Tagline à direita - responsivo: esconde em telas pequenas */}
-      <p
-        className={cn(
-          "font-[var(--font-inter)] font-normal text-[14px] leading-normal text-[#737a8b] opacity-90 tracking-[0.28px] whitespace-nowrap",
-          "hidden sm:block"
+      {/* Direita: Tagline + Settings */}
+      <div className="flex items-center gap-4">
+        {/* Tagline - responsivo: esconde em telas pequenas */}
+        <p
+          className={cn(
+            "font-[var(--font-inter)] font-normal text-[14px] leading-normal text-[#737a8b] opacity-90 tracking-[0.28px] whitespace-nowrap",
+            "hidden sm:block"
+          )}
+        >
+          Automatize a verificação de fatos
+        </p>
+        
+        {/* Settings Button */}
+        {showSettings && onSettingsClick && (
+          <button
+            onClick={onSettingsClick}
+            className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+            aria-label="Configurações de API"
+            title="Configurar API Keys"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
         )}
-      >
-        Automatize a verificação de fatos
-      </p>
+      </div>
     </header>
   );
 };

@@ -167,7 +167,7 @@ export class FactCheckService {
     options: {
       researchThreshold?: number;
       apiKeys?: {
-        gemini?: string;
+        google?: string;
         tavily?: string;
       };
     } = {}

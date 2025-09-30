@@ -9,6 +9,8 @@ import VerificationForm from './VerificationForm';
 import HomePageToast from './HomePageToast';
 import { factCheckService } from '@/lib/services/factCheckService';
 import { useFactCheckStore } from '@/lib/store/factCheckStore';
+import { useApiKeys } from '@/lib/hooks/useApiKeys';
+import ApiSetupPage from '../setup/ApiSetupPage';
 
 interface HomePageProps {
   className?: string;
@@ -20,7 +22,9 @@ interface HomePageProps {
 const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) => {
   const nextRouter = useRouter();
   const router = propRouter || nextRouter;
+  const { apiKeys, isLoading, saveApiKeys, hasApiKeys } = useApiKeys();
   const [textValue, setTextValue] = useState<string>("");
+  const [showSettings, setShowSettings] = useState(false);
   const verificationState = useFactCheckStore();
   const [toast, setToast] = useState<{
     type: 'success' | 'error' | 'info';
@@ -31,6 +35,28 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
     message: '',
     isVisible: false
   });
+
+  // Mostra loading enquanto carrega as keys
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22c55e] mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostra setup se não tiver API keys
+  if (!hasApiKeys) {
+    return (
+      <ApiSetupPage
+        onComplete={saveApiKeys}
+        initialKeys={apiKeys || undefined}
+      />
+    );
+  }
 
   const handleUseExample = useCallback(() => {
     const exampleText = "Bolsonaro: Destinamos também a este estado maravilhoso aqui, mesmo sem comprovação científica, mais de 400 mil unidades de cloroquina para o tratamento precoce da população. Eu sou a prova viva de que deu certo. Muitos médicos defendem esse tratamento. Sabemos que mais de 100 mil pessoas morreram no Brasil. Caso tivessem sido tratadas lá atrás com esse medicamento, poderiam essas vidas terem sido evitadas.";
@@ -110,9 +136,12 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         return;
       }
       
-      // Envia requisição para o backend
+      // Envia requisição para o backend com as API keys
       const fingerprint = await factCheckService.requestFactCheck(textValue, {
-        // researchThreshold usa o valor padrão da configuração
+        apiKeys: {
+          google: apiKeys?.google,
+          tavily: apiKeys?.tavily
+        }
       });
 
       console.log('✅ Verificação iniciada com fingerprint:', fingerprint);
@@ -153,9 +182,41 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
       {/* Barra Superior */}
       <div className="absolute top-0 left-0 right-0 z-30">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <Header />
+          <Header 
+            showSettings={true}
+            onSettingsClick={() => setShowSettings(true)}
+          />
         </div>
       </div>
+      
+      {/* Modal de Configurações */}
+      {showSettings && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="relative max-w-4xl w-full mx-4">
+            <ApiSetupPage
+              onComplete={(keys) => {
+                saveApiKeys(keys);
+                setShowSettings(false);
+                setToast({
+                  type: 'success',
+                  message: 'API keys atualizadas com sucesso!',
+                  isVisible: true
+                });
+                setTimeout(() => {
+                  setToast(prev => ({ ...prev, isVisible: false }));
+                }, 3000);
+              }}
+              initialKeys={apiKeys || undefined}
+            />
+            <button
+              onClick={() => setShowSettings(false)}
+              className="absolute top-4 right-4 p-2 text-gray-600 hover:text-gray-900 bg-white rounded-lg shadow-lg"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
       
       
       {/* Container Principal de Conteúdo */}
