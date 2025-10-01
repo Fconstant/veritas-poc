@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { factCheckService } from '@/lib/services/factCheckService';
 import { useFactCheckStore } from '@/lib/store/factCheckStore';
+import { useApiKeys } from '@/lib/hooks/useApiKeys';
 
 const ConnectionTest: React.FC = () => {
   const state = useFactCheckStore();
+  const { apiKeys } = useApiKeys();
   const [isConnected, setIsConnected] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
 
@@ -32,9 +34,19 @@ const ConnectionTest: React.FC = () => {
   const startVerification = async () => {
     addLog('Iniciando verificação...');
     try {
+      if (!apiKeys?.google || !apiKeys?.tavily) {
+        addLog('⚠️ API keys ausentes. Configure-as no menu de configurações.');
+        return;
+      }
       const fingerprint = await factCheckService.requestFactCheck(
         "Este é um teste de verificação de fatos.",
-        { researchThreshold: 0.5 }
+        { 
+          researchThreshold: 0.5,
+          apiKeys: {
+            google: apiKeys.google,
+            tavily: apiKeys.tavily
+          }
+        }
       );
       addLog(`Fingerprint: ${fingerprint}`);
     } catch (error) {

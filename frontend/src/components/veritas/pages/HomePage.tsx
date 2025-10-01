@@ -12,6 +12,9 @@ import { useFactCheckStore } from '@/lib/store/factCheckStore';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
 import ApiSetupPage from '../setup/ApiSetupPage';
 
+// Constante para o texto de exemplo
+const EXAMPLE_FACT_CHECK_TEXT = "As vacinas contra COVID-19 foram desenvolvidas em tempo recorde em 2020. O Brasil iniciou sua campanha de vacinação em janeiro de 2021. Estudos mostram que as vacinas reduziram significativamente as hospitalizações e mortes pela doença.";
+
 interface HomePageProps {
   className?: string;
   router?: {
@@ -36,31 +39,9 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
     isVisible: false
   });
 
-  // Mostra loading enquanto carrega as keys
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22c55e] mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Mostra setup se não tiver API keys
-  if (!hasApiKeys) {
-    return (
-      <ApiSetupPage
-        onComplete={saveApiKeys}
-        initialKeys={apiKeys || undefined}
-      />
-    );
-  }
-
+  // Todos os hooks devem vir antes de qualquer return condicional
   const handleUseExample = useCallback(() => {
-    const exampleText = "Bolsonaro: Destinamos também a este estado maravilhoso aqui, mesmo sem comprovação científica, mais de 400 mil unidades de cloroquina para o tratamento precoce da população. Eu sou a prova viva de que deu certo. Muitos médicos defendem esse tratamento. Sabemos que mais de 100 mil pessoas morreram no Brasil. Caso tivessem sido tratadas lá atrás com esse medicamento, poderiam essas vidas terem sido evitadas.";
-    setTextValue(exampleText);
+    setTextValue(EXAMPLE_FACT_CHECK_TEXT);
   }, []);
 
   // Escuta mudanças no estado da verificação
@@ -102,12 +83,8 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
     }
   }, [verificationState.status, verificationState.error, router]);
 
-  // Cleanup ao desmontar o componente
-  useEffect(() => {
-    return () => {
-      factCheckService.disconnect();
-    };
-  }, []);
+  // Mantém a conexão entre páginas para não interromper o stream de resultados
+  // (não desconectar no unmount)
 
   const handleCheckFacts = useCallback(async () => {
     if (!textValue.trim()) {
@@ -173,6 +150,28 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
   const handleCloseToast = useCallback(() => {
     setToast(prev => ({ ...prev, isVisible: false }));
   }, []);
+
+  // Mostra loading enquanto carrega as keys
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22c55e] mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostra setup se não tiver API keys
+  if (!hasApiKeys) {
+    return (
+      <ApiSetupPage
+        onComplete={saveApiKeys}
+        initialKeys={apiKeys || undefined}
+      />
+    );
+  }
 
   return (
     <div className={cn(

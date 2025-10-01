@@ -4,6 +4,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { WandSparkles, Loader2 } from 'lucide-react';
 
+// Constante para o comprimento máximo do texto a ser verificado
+export const TEXT_TO_BE_REVIEWED_LENGTH = 5000;
+
 interface VerificationFormProps {
   className?: string;
   onUseExample?: () => void;
@@ -33,7 +36,7 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
         <Textarea
           label="Verificar os fatos de..."
           placeholder="Entre o texto que deseja verificar aqui..."
-          maxLength={5000}
+          maxLength={TEXT_TO_BE_REVIEWED_LENGTH}
           value={value}
           onChange={onTextChange}
           disabled={disabled}

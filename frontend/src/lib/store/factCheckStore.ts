@@ -2,8 +2,8 @@ import { create } from 'zustand';
 import type { FactCheckResult, VerificationState, VerificationStatus } from '../types/api';
 
 interface FactCheckStoreState extends VerificationState {
-  processedText: string;
-  fingerprint: string | null;
+  // VerificationState já inclui processedText e fingerprint do shared/types/api.ts
+  // Não precisamos redefinir aqui
 }
 
 interface FactCheckStoreActions {
@@ -45,7 +45,7 @@ export const useFactCheckStore = create<FactCheckStore>((set) => ({
 // Exporta a store para uso no serviço (sem React)
 export const factCheckStore = {
   getState: () => useFactCheckStore.getState(),
-  setState: (updates: Partial<FactCheckStore>) => useFactCheckStore.setState(updates),
+  setState: (updates: Partial<FactCheckStoreState>) => useFactCheckStore.setState(updates),
   subscribe: (listener: (state: FactCheckStore) => void) => useFactCheckStore.subscribe(listener),
 };
 

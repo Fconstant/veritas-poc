@@ -1,6 +1,7 @@
 packages:
   - frontend
   - backend
+  - shared
 
 catalog:
   typescript: ~5.9

@@ -17,10 +17,27 @@ export function useApiKeys() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        setApiKeys(parsed);
+        
+        // Migração automática: se tiver 'gemini', converte para 'google'
+        if (parsed.gemini && !parsed.google) {
+          const migratedKeys = {
+            google: parsed.gemini,
+            tavily: parsed.tavily
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedKeys));
+          setApiKeys(migratedKeys);
+        } else if (parsed.google && parsed.tavily) {
+          setApiKeys(parsed);
+        } else {
+          // Dados inválidos, limpa o localStorage
+          localStorage.removeItem(STORAGE_KEY);
+          setApiKeys(null);
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar API keys:', error);
+      localStorage.removeItem(STORAGE_KEY);
+      setApiKeys(null);
     } finally {
       setIsLoading(false);
     }
@@ -49,8 +66,8 @@ export function useApiKeys() {
   // Verifica se as keys estão configuradas
   const hasApiKeys = () => {
     return apiKeys !== null && 
-           apiKeys.google.trim().length > 0 && 
-           apiKeys.tavily.trim().length > 0;
+           apiKeys.google?.trim().length > 0 && 
+           apiKeys.tavily?.trim().length > 0;
   };
 
   return {

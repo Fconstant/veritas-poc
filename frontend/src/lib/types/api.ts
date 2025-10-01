@@ -1,78 +1,28 @@
-// Tipos baseados no backend para comunicação WebSocket
-
-export interface FactCheckRequest {
-  fingerprint: string;
-  researchThreshold?: number;
-  apiKeys?: {
-    google?: string;
-    tavily?: string;
-  };
-}
-
-export interface FactCheckResultData {
-  extractedClaim: string;
-  reasoningConfidence: number;
-  reasoning: string;
-  flags?: ('UNVERIFIABLE' | 'MISLEADING' | 'INCONCLUSIVE' | 'AMBIGUOUS')[];
-  sources?: string[];
-}
-
-export interface FactCheckResult {
-  data: FactCheckResultData;
-  meta: {
-    fingerprint: string;
-    chunk: number;
-    seq: number;
-  };
-}
-
-export interface UpdateStatusData {
-  status: 'PROCESSING' | 'FINISHED' | 'EXCEPTION' | 'INTERRUPTED';
-  message?: string;
-}
-
-export interface UpdateStatus {
-  data: UpdateStatusData;
-  meta: {
-    fingerprint: string;
-  };
-}
-
-export interface ChunkCountData {
-  chunkCount: number;
-}
-
-export interface ChunkCount {
-  data: ChunkCountData;
-  meta: {
-    fingerprint: string;
-  };
-}
-
-// Eventos do WebSocket
-export interface ClientToServerEvents {
-  REQUEST_FACT_CHECK: (content: string, request: FactCheckRequest) => void;
-}
-
-export interface ServerToClientEvents {
-  FACT_CHECK_RESULT: (data: FactCheckResult) => void;
-  UPDATE_STATUS: (data: UpdateStatus) => void;
-  CHUNK_COUNT: (data: ChunkCount) => void;
-}
-
-// Estados da verificação
-export type VerificationStatus = 
-  | 'idle'
-  | 'connecting'
-  | 'processing'
-  | 'finished'
-  | 'error'
-  | 'interrupted';
-
-export interface VerificationState {
-  status: VerificationStatus;
-  message?: string;
-  results: FactCheckResult[];
-  chunkCount?: number;
-  error?: string;
-}
+// Re-exporta todos os tipos do módulo compartilhado
+// Isso mantém a compatibilidade com o código existente
+// enquanto centraliza as definições de tipos
+export {
+  // Schemas Zod (se necessário no frontend)
+  FACT_CHECK_REQUEST_SCHEMA,
+  FACT_CHECK_RESULT_DATA_SCHEMA,
+  FACT_CHECK_RESULT_SCHEMA,
+  UPDATE_STATUS_SCHEMA,
+  CHUNK_COUNT_SCHEMA,
+  
+  // Types TypeScript
+  type FactCheckRequest,
+  type FactCheckResultData,
+  type FactCheckResult,
+  type UpdateStatus,
+  type UpdateStatusData,
+  type ChunkCount,
+  type ChunkCountData,
+  
+  // Eventos Socket.IO
+  type ClientToServerEvents,
+  type ServerToClientEvents,
+  
+  // Estados da Verificação
+  type VerificationStatus,
+  type VerificationState
+} from '@veritas/shared';

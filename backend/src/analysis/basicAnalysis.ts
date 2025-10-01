@@ -31,6 +31,7 @@ Your task is to process the input text and return structured JSON according to t
 - Only extract claims that are prone to fact-checking. So keep the results array as small as possible.
 - Include additional flags only if applicable: ${FACT_CHECK_RESULT_SCHEMA.shape.data.shape.flags.unwrap().unwrap().options.join(', ')}.
 - Preserve the original language of the user's input provided by the INPUT block.
+- Respond in the same language as the user's input for all explanatory fields in the JSON (e.g., reasoning). Do not translate quoted passages or the user's original text. Keep sources and URLs unchanged.
 - Provide a reasoningConfidence value varying between 0-1 (float) for each claim. Follow the REASONING CONFIDENCE CRITERIA bellow.
 - Consider the PREVIOUS CONTEXT provided for more accurate assessment.
 - Return only valid JSON. No markdown, No code blocks, or explanatory text. Start directly with {{ and end with }}.

@@ -10,6 +10,7 @@ import { FactCheckResult } from '@/lib/types/api';
 import Header from '../Header/Header';
 import { ConfirmationDialog } from '../common/ConfirmationDialog';
 import { useFactCheckStore } from '@/lib/store/factCheckStore';
+import { useApiKeys } from '@/lib/hooks/useApiKeys';
 
 interface ResultsPageProps {
   text?: string;
@@ -23,6 +24,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   className
 }) => {
   const verificationState = useFactCheckStore();
+  const { apiKeys } = useApiKeys();
   const [showResultsPanel, setShowResultsPanel] = useState(false);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -261,9 +263,19 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
         console.log('🚀 Iniciando verificação de fatos...');
         console.log('📝 Texto:', serviceText);
+
+        // Garante envio das API keys ao backend
+        if (!apiKeys?.google || !apiKeys?.tavily) {
+          console.warn('⚠️ API keys ausentes; abortando verificação automática na ResultsPage');
+          return;
+        }
         
         const fingerprint = await factCheckService.requestFactCheck(serviceText, {
-          researchThreshold: 0.5
+          researchThreshold: 0.5,
+          apiKeys: {
+            google: apiKeys.google,
+            tavily: apiKeys.tavily,
+          },
         });
         
         console.log('🔑 Fingerprint gerado:', fingerprint);
@@ -274,7 +286,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
     // Inicia a verificação imediatamente
     startVerification();
-  }, [isInitialized, showResultsPanel, text]);
+  }, [isInitialized, showResultsPanel, text, apiKeys]);
 
   const handleNewVerification = () => {
     // Sempre mostrar modal de confirmação

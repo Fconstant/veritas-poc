@@ -50,7 +50,6 @@ export class FactCheckService {
         console.log('✅ Conectado ao backend WebSocket');
         console.log('🔗 Socket ID:', this.socket?.id);
         console.log('🌐 URL:', this.backendUrl);
-        factCheckStore.setState({ status: 'idle' });
         resolve();
       });
 
@@ -71,12 +70,17 @@ export class FactCheckService {
 
       this.socket.on('disconnect', (reason) => {
         console.log('Desconectado do backend:', reason);
-        factCheckStore.setState({ status: 'idle' });
       });
 
       // Eventos específicos da verificação de fatos
       this.socket.on('FACT_CHECK_RESULT', (result: FactCheckResult) => {
         console.log('Resultado recebido:', result);
+        
+        // Double check: verifica estrutura do resultado
+        if (!result.data || !result.data.extractedClaim || typeof result.data.reasoningConfidence !== 'number' || !result.meta) {
+          console.warn('⚠️ API pode ter mudado: estrutura do FACT_CHECK_RESULT diferente do esperado');
+        }
+        
         const currentState = factCheckStore.getState();
         factCheckStore.setState({
           results: [...currentState.results, result]
@@ -147,6 +151,11 @@ export class FactCheckService {
       
       const healthData = await response.json();
       console.log('✅ Health check OK:', healthData);
+      
+      // Double check: verifica se a API retorna o formato esperado
+      if (!healthData.status) {
+        console.warn('⚠️ API pode ter mudado: campo "status" não encontrado na resposta');
+      }
       
       // Testa WebSocket
       await this.connect();
