@@ -1,6 +1,7 @@
 import type { Story, StoryDefault } from "@ladle/react";
 import React from "react";
 import HomePage from "./HomePage";
+import { factCheckService } from '@/lib/services/factCheckService';
 
 // Mock do router para o Ladle
 const mockRouter = {
@@ -44,18 +45,24 @@ const createMockFactCheckService = () => ({
 // Wrapper que substitui o factCheckService antes de renderizar
 const HomePageWithMock: React.FC<{ router: any }> = ({ router }) => {
   React.useEffect(() => {
-    // Substitui temporariamente o factCheckService
-    const factCheckServiceModule = require('@/lib/services/factCheckService');
-    const originalService = factCheckServiceModule.factCheckService;
+    // Cria backup dos métodos originais
+    const originalMethods = {
+      onStateChange: factCheckService.onStateChange,
+      disconnect: factCheckService.disconnect,
+      reset: factCheckService.reset,
+      testConnection: factCheckService.testConnection,
+      requestFactCheck: factCheckService.requestFactCheck,
+      getState: factCheckService.getState,
+      isConnected: factCheckService.isConnected,
+    };
+    
+    // Substitui com o mock
     const mockService = createMockFactCheckService();
+    Object.assign(factCheckService, mockService);
     
-    // Substitui os métodos
-    Object.assign(originalService, mockService);
-    
-    // Cleanup ao desmontar
+    // Cleanup ao desmontar - restaura os métodos originais
     return () => {
-      // Restaura o serviço original se necessário
-      Object.assign(originalService, originalService);
+      Object.assign(factCheckService, originalMethods);
     };
   }, []);
 
