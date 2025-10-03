@@ -1,0 +1,10 @@
+import type { Story, StoryDefault } from "@ladle/react";
+import AlphaBadge from "./AlphaBadge";
+
+export default {
+  title: "Shared/AlphaBadge",
+} satisfies StoryDefault;
+
+export const Default: Story = () => <AlphaBadge />;
+
+

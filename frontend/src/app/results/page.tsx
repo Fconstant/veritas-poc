@@ -1,4 +1,4 @@
-import { ResultsPage } from "@/components/veritas/pages";
+import ResultsPage from "./components/ResultsPage";
 
 export default function Results() {
   return <ResultsPage />;

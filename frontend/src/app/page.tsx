@@ -1,4 +1,4 @@
-import { HomePage } from "@/components/veritas/pages";
+import HomePage from "./home/components/HomePage";
 
 export default function Home() {
   return <HomePage />;

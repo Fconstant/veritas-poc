@@ -1,4 +1,4 @@
-import { ProcessingConfirmationPage } from "@/components/veritas/pages";
+import ProcessingConfirmationPage from "./components/ProcessingConfirmationPage";
 
 export default function Processing() {
   return <ProcessingConfirmationPage />;

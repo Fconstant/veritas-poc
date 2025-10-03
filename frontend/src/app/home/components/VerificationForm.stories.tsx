@@ -1,0 +1,43 @@
+import type { Story, StoryDefault } from "@ladle/react";
+import { useState } from "react";
+import VerificationForm from "./VerificationForm";
+
+export default {
+  title: "Home/VerificationForm",
+} satisfies StoryDefault;
+
+// Story interativa
+export const Interactive: Story = () => {
+  const [textValue, setTextValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleUseExample = () => {
+    const exampleText = "O presidente anunciou hoje que a economia cresceu 5% no último trimestre, segundo dados do IBGE. Esta é a maior taxa de crescimento dos últimos 10 anos e representa um marco histórico para o país.";
+    setTextValue(exampleText);
+  };
+
+  const handleCheckFacts = () => {
+    if (textValue.trim()) {
+      setIsLoading(true);
+      console.log('Verificando fatos para:', textValue);
+      
+      // Simular loading
+      setTimeout(() => {
+        setIsLoading(false);
+        console.log('Verificação concluída');
+      }, 3000);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-[571px] p-4">
+      <VerificationForm
+        onUseExample={handleUseExample}
+        onCheckFacts={handleCheckFacts}
+        onTextChange={setTextValue}
+        loading={isLoading}
+        value={textValue}
+      />
+    </div>
+  );
+};
