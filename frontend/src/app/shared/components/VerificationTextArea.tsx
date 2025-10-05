@@ -53,7 +53,7 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
     <div 
       className={cn(
         "flex flex-col gap-6 items-center w-full max-w-[570px] rounded-[24px] border backdrop-blur-[1.5px] pb-8 px-6 pt-0",
-        "bg-[var(--card-bg)] border-[var(--card-border)]",
+        "bg-[var(--card-bg)] border-[var(--card-border)] shadow-[0px_20px_80px_0px_rgba(137,44,219,0.20)]",
         className
       )}
     >

@@ -29,31 +29,33 @@ Cada variante possui 3 estados:
 ## Colors
 
 ### Filled Variant
-- **Enabled**: Background `#c4b5fd` (violet-300), Text `#5b21b6` (violet-800), Icon `#5b21b6`, Outline `#351397`, Shadow `0px 4px 16px rgba(27,0,85,0.60)`
-- **Hovered**: Background `#a78bfa` (violet-400), Text `#5b21b6`, Icon `#5b21b6`, Outline `#351397`, Shadow `0px 4px 16px rgba(27,0,85,0.60)`
-- **Disabled**: Opacity `0.45` (mantém todas as cores base)
+- **Enabled**: Background `#844ae9`, Border `#351397`, Text `white`, Icon `white`
+- **Hovered**: Background `#5d13dd`, Border `#351397`, Text `white`, Icon `white`
+- **Disabled**: Background `#c1a4f4`, Border `#351397`, Text `#5d0bbc`, Icon `#7f34d4`
 
 ### Outlined Variant
-- **Enabled**: Background `transparent`, Border `rgba(53,19,151,0.5)` (degradê 50% opacidade), Text `#8a5cda`, Icon `#8a5cda`
-- **Hovered**: Background `#f6f6f6`, Border `rgba(53,19,151,1)` (degradê 100% opacidade), Text `#5d13dd`, Icon `#5d13dd`
-- **Disabled**: Background `transparent`, Border `rgba(53,19,151,0.5)`, Text `#9d6eed`, Icon `#9d6eed`, Opacity `0.5`
-
-**Nota**: A borda do botão outlined é um degradê horizontal com opacidade de 50% no estado enabled e 100% no estado hovered.
+- **Enabled**: Background `transparent`, Border `#351397` (sólida), Text `#8a5cda`, Icon `#9d6eed`
+- **Hovered**: Background `#f5f5f5` (neutral-100), Border `#351397`, Text `#5d13dd`, Icon `#5d13dd`
+- **Disabled**: Background `transparent`, Border `#351397`, Text `#9d6eed`, Icon `#9d6eed`, Opacity `0.5`
 
 ### Link Variant
-- **Enabled**: Background `transparent`, Text `#8a5cda`, Icon `#8a5cda`
-- **Hovered**: Background `#f6f6f6`, Text `#5d13dd`, Icon `#5d13dd`, **Underline**
-- **Disabled**: Background `transparent`, Text `#8a5cda`, Icon `#8a5cda`, Opacity `0.5`
+- **Enabled**: Background `transparent`, Text `#8a5cda`, Icon `#9d6eed`, Font Weight `normal`
+- **Hovered**: Background `#f6f6f6`, Text `#5d13dd`, Icon `#5d13dd`, Font Weight `semibold`, **Underline**
+- **Disabled**: Background `transparent`, Text `#8a5cda`, Icon `#8a5cda`, Font Weight `normal`, Opacity `0.5`
 
 ## Typography
-- **Font**: Inter Semi Bold (`font-semibold`)
-- **SM Size**: `text-[14px]` com `leading-[24px]`
-- **Default Size**: `text-[16px]` com `leading-[24px]`
+- **Font Family**: Inter
+- **Font Weight**: 
+  - Filled/Outlined: Semi Bold (600)
+  - Link: Normal (400) / Semi Bold (600) on hover
+- **Font Size**: 
+  - SM: 14px
+  - Default: 16px
+- **Line Height**: 24px
 
 ## Layout
 - **Border Radius**: `rounded-[8px]`
 - **Gap**: `gap-2` entre ícone e texto
-- **Icon Size**: `size-4` para SM, `size-6` para Default
 - **Border**: `border-[#351397]` para variantes outlined
 
 ## Component Structure

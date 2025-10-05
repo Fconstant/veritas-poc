@@ -123,6 +123,9 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
               size="default"
               onClick={handleContinue}
               disabled={!isValid}
+              disabledTooltip={
+                !isValid && "Preencha ambas as chaves de API para continuar"
+              }
             >
               Começar a Verificar
               <ArrowRight className="w-6 h-6" />
