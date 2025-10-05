@@ -5,13 +5,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[8px] font-semibold transition-all disabled:pointer-events-none data-[state=loading]:pointer-events-none data-[state=loading]:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[8px] font-semibold transition-all disabled:pointer-events-none data-[state=loading]:pointer-events-none data-[state=loading]:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background [&_svg]:transition-colors",
   {
     variants: {
       variant: {
         // Filled (Figma: Filled Enabled/Hovered/Disabled)
         filled:
-          "bg-[#844ae9] text-white border border-[#351397] hover:bg-[#5d13dd] disabled:opacity-45",
+          "bg-[#c4b5fd] text-[#5b21b6] shadow-[0px_4px_16px_0px_rgba(27,0,85,0.60)] outline outline-1 outline-offset-[-1px] outline-[#351397] hover:bg-[#a78bfa] disabled:opacity-45",
         // Outlined (Figma: Outlined Enabled/Hovered/Disabled) - Borda degradê com opacidade
         outlined:
           "bg-transparent text-[#8a5cda] hover:bg-[#f6f6f6] hover:text-[#5d13dd] disabled:opacity-50 disabled:text-[#9d6eed]",
@@ -28,6 +28,11 @@ const buttonVariants = cva(
       },
     },
     compoundVariants: [
+      // Filled - Cor do stroke do SVG
+      {
+        variant: "filled",
+        class: "[&_svg]:stroke-[#5b21b6]",
+      },
       // Link SM - Padding específico do Figma
       {
         variant: "link",

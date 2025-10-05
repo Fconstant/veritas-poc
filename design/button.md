@@ -29,9 +29,9 @@ Cada variante possui 3 estados:
 ## Colors
 
 ### Filled Variant
-- **Enabled**: Background `#844ae9`, Text `white`, Icon `white`
-- **Hovered**: Background `#5d13dd`, Text `white`, Icon `white`
-- **Disabled**: Background `#844ae9`, Text `white` (opacity 0.45), Icon `white` (opacity 0.45)
+- **Enabled**: Background `#c4b5fd` (violet-300), Text `#5b21b6` (violet-800), Icon `#5b21b6`, Outline `#351397`, Shadow `0px 4px 16px rgba(27,0,85,0.60)`
+- **Hovered**: Background `#a78bfa` (violet-400), Text `#5b21b6`, Icon `#5b21b6`, Outline `#351397`, Shadow `0px 4px 16px rgba(27,0,85,0.60)`
+- **Disabled**: Opacity `0.45` (mantém todas as cores base)
 
 ### Outlined Variant
 - **Enabled**: Background `transparent`, Border `rgba(53,19,151,0.5)` (degradê 50% opacidade), Text `#8a5cda`, Icon `#8a5cda`

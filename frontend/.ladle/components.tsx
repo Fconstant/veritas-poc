@@ -16,4 +16,15 @@ if (typeof window !== 'undefined' && !window.localStorage) {
   };
 }
 
+// Popula o localStorage com dados de exemplo para os stories
+if (typeof window !== 'undefined' && window.localStorage) {
+  const existingKeys = window.localStorage.getItem('veritas_api_keys');
+  if (!existingKeys) {
+    window.localStorage.setItem('veritas_api_keys', JSON.stringify({
+      google: 'mock-google-api-key-for-ladle',
+      tavily: 'mock-tavily-api-key-for-ladle'
+    }));
+  }
+}
+
 export const Provider: GlobalProvider = ({ children }) => <>{children}</>;

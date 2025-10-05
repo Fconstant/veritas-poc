@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, ArrowRight, Info } from 'lucide-react';
 import ApiKeyCard from './ApiKeyCard';
-import Header from '../Header/Header';
+import Header from './Header';
+import { Button } from '@/app/shared/components/ui/button';
 
 interface ApiSetupPageProps {
   onComplete: (keys: { google: string; tavily: string }) => void;
@@ -117,31 +118,24 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-            <button
+            <Button
+              variant="filled"
+              size="default"
               onClick={handleContinue}
               disabled={!isValid}
-              className={cn(
-                "group relative px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200",
-                "flex items-center gap-3",
-                isValid
-                  ? "bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white shadow-lg hover:shadow-xl hover:scale-105"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
-              )}
             >
               Começar a Verificar
-              <ArrowRight className={cn(
-                "w-5 h-5 transition-transform",
-                isValid && "group-hover:translate-x-1"
-              )} />
-            </button>
+              <ArrowRight className="w-6 h-6" />
+            </Button>
 
             {initialKeys?.google && initialKeys?.tavily && (
-              <button
+              <Button
+                variant="link"
+                size="default"
                 onClick={handleSkip}
-                className="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-colors"
               >
                 Usar configuração anterior
-              </button>
+              </Button>
             )}
           </div>
 

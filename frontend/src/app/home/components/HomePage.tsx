@@ -3,6 +3,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { X } from 'lucide-react';
 import Header from '@/app/shared/components/Header';
 import HeroSection from './HeroSection';
 import VerificationForm from './VerificationForm';
@@ -11,6 +12,7 @@ import { factCheckService } from '@/lib/services/factCheckService';
 import { useFactCheckStore } from '@/lib/store/factCheckStore';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
 import ApiSetupPage from '@/app/shared/components/ApiSetupPage';
+import { Button } from '@/app/shared/components/ui/button';
 
 // Constante para o texto de exemplo
 const EXAMPLE_FACT_CHECK_TEXT = "As vacinas contra COVID-19 foram desenvolvidas em tempo recorde em 2020. O Brasil iniciou sua campanha de vacinação em janeiro de 2021. Estudos mostram que as vacinas reduziram significativamente as hospitalizações e mortes pela doença.";
@@ -207,12 +209,16 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
               }}
               initialKeys={apiKeys || undefined}
             />
-            <button
-              onClick={() => setShowSettings(false)}
-              className="absolute top-4 right-4 p-2 text-gray-600 hover:text-gray-900 bg-white rounded-lg shadow-lg"
-            >
-              ✕
-            </button>
+            <div className="absolute top-4 right-4">
+              <Button
+                variant="link"
+                size="icon"
+                onClick={() => setShowSettings(false)}
+                className="bg-white rounded-lg shadow-lg"
+              >
+                <X className="w-6 h-6" />
+              </Button>
+            </div>
           </div>
         </div>
       )}
