@@ -1,4 +1,4 @@
-"use client";
+    "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
@@ -66,24 +66,28 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
   // Converte o estado de verificação para o estado do painel de resultados
   const getResultsPanelStatus = useCallback((): 'loading' | 'partial' | 'complete' | 'error' => {
-    // Se não há resultados, sempre mostra loading
-    if (verificationState.results.length === 0) {
-      return 'loading';
+    const hasResults = verificationState.results.length > 0;
+
+    // Se já existem resultados, mostramos o estado "partial" enquanto o backend
+    // ainda está processando, e "complete" quando finalizar.
+    if (hasResults) {
+      if (verificationState.status === 'error' || verificationState.status === 'interrupted') {
+        return 'error';
+      }
+      return verificationState.status === 'finished' ? 'complete' : 'partial';
     }
 
-    switch (verificationState.status) {
-      case 'connecting':
-      case 'processing':
-        return 'loading';
-      case 'finished':
-        return 'complete';
-      case 'error':
-      case 'interrupted':
-        return 'error';
-      case 'idle':
-      default:
-        return 'partial';
+    // Sem resultados ainda: loading, a menos que haja erro/interrupção
+    if (verificationState.status === 'error' || verificationState.status === 'interrupted') {
+      return 'error';
     }
+    
+    // Se está finalizado mas sem resultados, retorna complete (o header vai mostrar o estado correto)
+    if (verificationState.status === 'finished') {
+      return 'complete';
+    }
+    
+    return 'loading';
   }, [verificationState.status, verificationState.results.length]);
 
   // Converte os resultados do backend para o formato do componente

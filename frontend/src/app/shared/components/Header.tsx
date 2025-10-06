@@ -8,6 +8,7 @@ interface HeaderProps {
   className?: string;
   onSettingsClick?: () => void;
   showSettings?: boolean;
+  rightContent?: React.ReactNode;
 }
 
 /**
@@ -22,7 +23,7 @@ interface HeaderProps {
  * - Padding: 16px top, 0px bottom
  * - Background: #f5f5f5 (neutral-100)
  */
-const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSettings = false }) => {
+const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSettings = false, rightContent }) => {
   return (
     <header
       className={cn(
@@ -59,17 +60,21 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
         </Link>
         
         {/* Botão Configurations (Settings) */}
-        {showSettings && onSettingsClick && (
-          <Button
-            variant="link"
-            size="default"
-            onClick={onSettingsClick}
-            aria-label="Configurações de API"
-            title="Configurar API Keys"
-          >
-            <Settings className="w-6 h-6" />
-            Configurations
-          </Button>
+        {rightContent ? (
+          rightContent
+        ) : (
+          showSettings && onSettingsClick && (
+            <Button
+              variant="link"
+              size="default"
+              onClick={onSettingsClick}
+              aria-label="Configurações de API"
+              title="Configurar API Keys"
+            >
+              <Settings className="w-6 h-6" />
+              Configurations
+            </Button>
+          )
         )}
       </div>
 
@@ -82,4 +87,5 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
 };
 
 export default Header;
+
 

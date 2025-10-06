@@ -173,13 +173,7 @@ export class FactCheckService {
    */
   public async requestFactCheck(
     content: string, 
-    options: {
-      researchThreshold?: number;
-      apiKeys?: {
-        google?: string;
-        tavily?: string;
-      };
-    } = {}
+    options: Partial<Omit<FactCheckRequest, 'fingerprint'>> = {}
   ): Promise<string> {
     if (!content.trim()) {
       throw new Error('Conteúdo não pode estar vazio');

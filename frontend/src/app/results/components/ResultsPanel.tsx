@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
+import { CheckCircle2, AlertCircle, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ResultsHeader, VerificationStatus } from './ResultsHeader';
 // import ResultCard from './ResultCard';
 import type { ResultData } from './ResultCard';
@@ -37,6 +37,10 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       case 'partial':
         return 'verifying';
       case 'complete':
+        // Se completo mas sem resultados, usa estado especial
+        if (results.length === 0) {
+          return 'complete-no-results';
+        }
         return 'done';
       case 'error':
         return 'error';
@@ -48,22 +52,22 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   const renderResults = () => {
     if (status === 'loading') {
       return (
-        <div className="space-y-4">
+        <div className="space-y-4 w-full">
           {/* Skeleton Card baseado no design do Figma */}
-          <div className="box-border flex flex-col gap-2 items-start justify-start pl-3 pr-4 py-4 relative rounded-[8px] w-full border border-[#351397]/30 bg-[#f9f9f9]">
-            <div className="flex gap-2 items-start justify-start relative shrink-0 w-full">
+          <div className="border border-[#351397] border-solid box-border content-stretch flex flex-col gap-[8px] items-start pl-[12px] pr-[16px] py-[16px] relative rounded-[16px] shrink-0 w-full">
+            <div className="content-stretch flex gap-[8px] items-start relative shrink-0 w-full">
               {/* Status dot skeleton */}
-              <div className="relative shrink-0 size-4">
-                <div className="absolute bg-[#e7ebeb] left-1/2 rounded-full size-4 top-1/2 translate-x-[-50%] translate-y-[-50%]" />
-                <div className="absolute bg-[#cbd0d5] left-1/2 rounded-full size-2 top-1/2 translate-x-[-50%] translate-y-[-50%]" />
+              <div className="relative shrink-0 size-[16px]">
+                <div className="absolute bg-[#e7ebeb] left-1/2 rounded-[9999px] size-[16px] top-1/2 translate-x-[-50%] translate-y-[-50%]" />
+                <div className="absolute bg-[#cbd0d5] left-1/2 rounded-[9999px] size-[8px] top-1/2 translate-x-[-50%] translate-y-[-50%]" />
               </div>
               
               {/* Text skeleton */}
-              <div className="flex flex-col gap-3 grow items-start justify-start min-h-px min-w-px relative shrink-0">
+              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-h-px min-w-px relative shrink-0">
                 {/* Primeira linha do skeleton */}
-                <div className="h-4 rounded-full shrink-0 w-full bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
+                <div className="h-[16px] relative rounded-[9999px] shrink-0 w-full bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
                 {/* Segunda linha do skeleton */}
-                <div className="h-4 rounded-full shrink-0 w-72 bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
+                <div className="h-[16px] relative rounded-[9999px] shrink-0 w-[288px] bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
               </div>
             </div>
           </div>
@@ -74,17 +78,17 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     if (status === 'error') {
       // Estado de erro baseado no design do Figma
       return (
-        <div className="flex flex-col gap-4 items-center justify-center">
+        <div className="flex flex-col gap-[16px] items-center justify-center">
           {/* Card com fundo vermelho claro */}
-          <div className="bg-[rgba(212,74,74,0.15)] box-border flex gap-2 items-center justify-start p-6 relative rounded-[15px]">
-            <div className="overflow-clip relative shrink-0 size-12">
-              <AlertCircle className="size-12 text-[#d44a4a]" />
+          <div className="bg-[rgba(212,74,74,0.15)] box-border content-stretch flex gap-[8px] items-center p-[24px] relative rounded-[15px] shrink-0">
+            <div className="overflow-clip relative shrink-0 size-[48px]">
+              <AlertCircle className="size-[48px] text-[#d44a4a]" />
             </div>
           </div>
           
           {/* Texto */}
-          <div className="flex flex-col font-normal justify-center leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[#383838] text-[14px] text-nowrap">
-            <p className="leading-[24px] overflow-ellipsis overflow-hidden whitespace-pre">Erro na Verificação. Tente novamente.</p>
+          <div className="flex flex-col font-['Inter'] font-normal justify-center leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[#383838] text-[14px] whitespace-nowrap">
+            <p className="leading-[24px] overflow-ellipsis overflow-hidden">Erro na Verificação. Tente novamente.</p>
           </div>
         </div>
       );
@@ -94,17 +98,17 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       if (status === 'complete') {
         // Estado "Nenhum resultado encontrado" baseado no design do Figma
         return (
-          <div className="flex flex-col gap-4 items-center justify-center">
+          <div className="flex flex-col gap-[16px] items-center justify-center">
             {/* Card com fundo roxo claro */}
-            <div className="bg-[rgba(132,74,233,0.1)] box-border flex gap-2 items-center justify-start p-6 relative rounded-[15px]">
-              <div className="overflow-clip relative shrink-0 size-12">
-                <CheckCircle2 className="size-12 text-[#844ae9]" />
+            <div className="bg-[rgba(132,74,233,0.1)] box-border content-stretch flex gap-[8px] items-center p-[24px] relative rounded-[15px] shrink-0">
+              <div className="overflow-clip relative shrink-0 size-[48px]">
+                <CheckCircle2 className="size-[48px] text-[#844ae9]" />
               </div>
             </div>
             
             {/* Texto */}
-            <div className="flex flex-col font-normal justify-center leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[#383838] text-[14px] text-nowrap">
-              <p className="leading-[24px] overflow-ellipsis overflow-hidden whitespace-pre">Nenhum resultado encontrado!</p>
+            <div className="flex flex-col font-['Inter'] font-normal justify-center leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[#383838] text-[14px] whitespace-nowrap">
+              <p className="leading-[24px] overflow-ellipsis overflow-hidden">Nenhum resultado encontrado!</p>
             </div>
           </div>
         );
@@ -128,59 +132,75 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
             key={result.id}
             id={`result-${result.id}`}
             className={cn(
-              "rounded-lg border border-[#d6d8db] bg-white p-4 transition-all duration-200 cursor-pointer",
+              "bg-white border border-[#d9d9d9] border-solid relative rounded-[16px] shrink-0 w-full transition-all duration-200 cursor-pointer",
               selectedResultId === result.id && "ring-2 ring-purple-500 ring-opacity-50 bg-purple-50",
               "hover:shadow-md hover:border-purple-300"
             )}
             onClick={() => onResultClick?.(result.id)}
           >
-            {/* Claim Number */}
-            <div className="flex items-start gap-3">
-              <div className={cn(
-                "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-200",
-                selectedResultId === result.id 
-                  ? "bg-purple-500 text-white" 
-                  : "bg-gray-200 text-gray-600"
-              )}>
-                {index + 1}
-              </div>
-              
-              <div className="flex-1">
-                {/* Claim Text */}
-                <div className="mb-3">
-                  <p className="text-neutral-700 text-base font-normal font-['Inter'] leading-normal">
-                    {result.text}
-                  </p>
+            <div className="box-border content-stretch flex flex-col gap-[16px] items-start overflow-clip pb-[16px] pt-[24px] px-[16px] relative rounded-[inherit] w-full">
+              {/* Claim Text com numeração */}
+              <div className="box-border content-stretch flex gap-[8px] items-start justify-center pl-0 pr-[16px] py-0 relative rounded-[8px] shrink-0 w-full">
+                <div className="-webkit-box flex-[1_0_0] flex-col font-[var(--font-merriweather)] justify-center leading-[0] min-h-px min-w-px not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[14px] text-[rgba(29,30,31,0.9)]">
+                  <ol className="list-decimal" start={index + 1}>
+                    <li className="ms-[21px] whitespace-pre-wrap">
+                      <span className="leading-[28px]">{result.text}</span>
+                    </li>
+                  </ol>
                 </div>
+              </div>
 
-                {/* Explanation */}
+              {/* Análise e Fontes */}
+              <div className="content-stretch flex flex-col gap-[12px] items-center relative shrink-0 w-full">
+                {/* Explanation/Análise */}
                 {result.explanation && (
-                  <div className="mb-3">
-                    <p className="text-sm text-gray-700 leading-normal bg-gray-50 p-2 rounded-lg">
-                      {result.explanation}
-                    </p>
+                  <div className="bg-[rgba(245,245,245,0.5)] border border-[#d8d8d8] border-solid box-border content-stretch flex flex-col gap-[8px] items-start p-[16px] relative rounded-[12px] shrink-0 w-full">
+                    <div className="content-stretch flex gap-[8px] items-center relative shrink-0 w-full">
+                      <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[#716793] text-[14px] whitespace-nowrap">
+                        <p className="leading-[24px]">Análise</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col font-['Inter'] font-normal justify-center leading-[28px] min-w-full not-italic relative shrink-0 text-[16px] text-[rgba(29,30,31,0.9)] w-[min-content] whitespace-pre-wrap">
+                      <p>{result.explanation}</p>
+                    </div>
                   </div>
                 )}
 
-                {/* Sources */}
+                {/* Sources/Fontes */}
                 {result.sources && result.sources.length > 0 && (
-                  <div>
-                    <h4 className="text-xs font-semibold text-gray-700 mb-2">Fontes:</h4>
-                    <div className="space-y-1">
-                      {result.sources.map((source: string, sourceIndex: number) => (
-                        <div key={sourceIndex} className="flex items-center gap-2">
-                          <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                          <a 
-                            href={source} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-xs text-[#8A5CDA] hover:text-[#5d13dd] underline truncate"
-                          >
-                            <span className="truncate">{source}</span>
-                            <ExternalLink className="size-3 flex-shrink-0" />
-                          </a>
-                        </div>
-                      ))}
+                  <div className="box-border content-stretch flex flex-col gap-[8px] items-start px-[8px] py-0 relative shrink-0 w-full">
+                    <div className="box-border content-stretch flex gap-[8px] items-center px-[8px] py-0 relative shrink-0 w-full">
+                      <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[#716793] text-[14px] whitespace-nowrap">
+                        <p className="leading-[24px]">Fontes</p>
+                      </div>
+                    </div>
+                    <div className="content-start flex flex-wrap gap-[4px_8px] items-start relative shrink-0 w-full">
+                      {result.sources.map((source: string, sourceIndex: number) => {
+                        let displayText = source;
+                        try {
+                          displayText = new URL(source).hostname.replace('www.', '');
+                        } catch {
+                          // Se não for uma URL válida, usa o texto original
+                          displayText = source.length > 30 ? source.substring(0, 30) + '...' : source;
+                        }
+                        
+                        return (
+                          <div key={sourceIndex} className="box-border content-stretch flex gap-[8px] items-center justify-center px-[6px] py-[2px] relative rounded-[8px] shrink-0">
+                            <a 
+                              href={source} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[13px] hover:text-[#5d13dd]"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {displayText}
+                            </a>
+                            <div className="overflow-clip relative shrink-0 size-[16px]">
+                              <ExternalLink className="size-[16px] text-[#8a5cda]" />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -190,21 +210,21 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
         ))}
 
         {/* Skeleton card no final da lista durante verificação */}
-        {(status === 'loading' as string | 'partial' as string) && (
-          <div className="box-border flex flex-col gap-2 items-start justify-start pl-3 pr-4 py-4 relative rounded-[8px] w-full border border-[#351397]/30 bg-[#f9f9f9]">
-            <div className="flex gap-2 items-start justify-start relative shrink-0 w-full">
+        {status === 'partial' && (
+          <div className="border border-[#351397] border-solid box-border content-stretch flex flex-col gap-[8px] items-start pl-[12px] pr-[16px] py-[16px] relative rounded-[16px] shrink-0 w-full">
+            <div className="content-stretch flex gap-[8px] items-start relative shrink-0 w-full">
               {/* Status dot skeleton */}
-              <div className="relative shrink-0 size-4">
-                <div className="absolute bg-[#e7ebeb] left-1/2 rounded-full size-4 top-1/2 translate-x-[-50%] translate-y-[-50%]" />
-                <div className="absolute bg-[#cbd0d5] left-1/2 rounded-full size-2 top-1/2 translate-x-[-50%] translate-y-[-50%]" />
+              <div className="relative shrink-0 size-[16px]">
+                <div className="absolute bg-[#e7ebeb] left-1/2 rounded-[9999px] size-[16px] top-1/2 translate-x-[-50%] translate-y-[-50%]" />
+                <div className="absolute bg-[#cbd0d5] left-1/2 rounded-[9999px] size-[8px] top-1/2 translate-x-[-50%] translate-y-[-50%]" />
               </div>
               
               {/* Text skeleton */}
-              <div className="flex flex-col gap-3 grow items-start justify-start min-h-px min-w-px relative shrink-0">
+              <div className="content-stretch flex flex-[1_0_0] flex-col gap-[12px] items-start min-h-px min-w-px relative shrink-0">
                 {/* Primeira linha do skeleton */}
-                <div className="h-4 rounded-full shrink-0 w-full bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
+                <div className="h-[16px] relative rounded-[9999px] shrink-0 w-full bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
                 {/* Segunda linha do skeleton */}
-                <div className="h-4 rounded-full shrink-0 w-72 bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
+                <div className="h-[16px] relative rounded-[9999px] shrink-0 w-[288px] bg-gradient-to-r from-[#e7ebeb] via-[#cbd0d5] to-[#e7ebeb] bg-[length:200px_100%] animate-[shimmer_10s_ease-in-out_infinite]" />
               </div>
             </div>
           </div>
@@ -218,7 +238,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       className={cn(
         'flex flex-col bg-stone-50 rounded-2xl',
         // Sombra condicional baseada no status
-        status === 'loading' || status === 'partial' 
+        status === 'partial' 
           ? 'shadow-[0px_20px_80px_0px_rgba(137,44,219,0.20),0px_4px_8px_0px_rgba(0,0,0,0.15)]'
           : 'shadow-[0px_4px_8px_0px_rgba(0,0,0,0.15)]',
         // Altura máxima garantida para nunca ultrapassar a viewport
@@ -226,15 +246,15 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
         // Borda condicional baseada no status
         status === 'error' 
           ? 'border border-[#cb1f1f]' 
-          : status === 'loading' || status === 'partial'
+          : status === 'partial'
             ? 'border border-violet-900'
             : 'border border-violet-900/30',
         className
       )}
     >
       {/* Header */}
-      <div className="px-6 py-4 border-b border-[#d6d8db] flex-shrink-0">
-        <div className="flex items-center justify-between">
+      <div className="box-border content-stretch flex flex-col gap-[16px] items-start pb-0 pt-[24px] px-0 relative shrink-0 w-full">
+        <div className="content-stretch flex items-start relative shrink-0 w-full px-6">
           <ResultsHeader
             status={getVerificationStatus()}
             onCancel={onCancel}
@@ -242,16 +262,89 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
             onCopy={onCopyPlainText}
           />
         </div>
+        <div className="h-0 relative shrink-0 w-full">
+          <div className="absolute bottom-0 left-0 right-0 top-[-1px] border-t border-[#d6d8db]" />
+        </div>
       </div>
 
       {/* Results Content */}
       <div className={cn(
-        'px-6 py-6',
+        'box-border content-stretch flex flex-col gap-[16px] items-center px-[8px] py-[16px] relative shrink-0 w-full',
         // Flex behavior: sempre flex-1 com overflow-y-auto para rolagem quando necessário
-        'flex-1 overflow-y-auto'
+        'flex-1 overflow-y-auto',
+        // Justificação condicional
+        (status === 'error' || (status === 'complete' && results.length === 0)) && 'justify-center'
       )}>
         {renderResults()}
       </div>
+
+      {/* Footer - apenas quando há resultados */}
+      {status === 'complete' && results.length > 0 && (
+        <div className="box-border content-stretch flex flex-col gap-[16px] items-start pb-[24px] pt-0 px-0 relative shrink-0 w-full">
+          <div className="h-0 relative shrink-0 w-full">
+            <div className="absolute bottom-0 left-0 right-0 top-[-1px] border-t border-[#d6d8db]" />
+          </div>
+          <div className="content-stretch flex items-start justify-between relative shrink-0 w-full px-6">
+            <div className="content-stretch flex gap-[8px] items-center relative self-stretch shrink-0">
+              <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic opacity-50 relative shrink-0 text-[14px] text-slate-900 whitespace-nowrap">
+                <p className="leading-[20px]">{results.length} {results.length === 1 ? 'Afirmação encontrada' : 'Afirmações encontradas'}</p>
+              </div>
+            </div>
+            <div className="content-stretch flex gap-[8px] items-center relative shrink-0">
+              <div className="box-border content-stretch flex gap-[8px] items-center justify-center opacity-50 px-[4px] py-[2px] relative rounded-[8px] shrink-0 cursor-not-allowed">
+                <div className="overflow-clip relative shrink-0 size-[16px]">
+                  <ChevronLeft className="size-[16px] text-[#8a5cda]" />
+                </div>
+                <p className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[14px]">
+                  Anterior
+                </p>
+              </div>
+              <div className="box-border content-stretch flex gap-[8px] items-center justify-center px-[4px] py-[2px] relative rounded-[8px] shrink-0 cursor-pointer hover:bg-purple-50">
+                <p className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[14px]">
+                  Próximo
+                </p>
+                <div className="overflow-clip relative shrink-0 size-[16px]">
+                  <ChevronRight className="size-[16px] text-[#8a5cda]" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer para estado partial (em andamento) */}
+      {status === 'partial' && results.length > 0 && (
+        <div className="box-border content-stretch flex flex-col gap-[16px] items-start pb-[24px] pt-0 px-0 relative shrink-0 w-full">
+          <div className="h-0 relative shrink-0 w-full">
+            <div className="absolute bottom-0 left-0 right-0 top-[-1px] border-t border-[#d6d8db]" />
+          </div>
+          <div className="content-stretch flex items-start justify-between relative shrink-0 w-full px-6">
+            <div className="content-stretch flex gap-[8px] items-center relative self-stretch shrink-0">
+              <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic opacity-50 relative shrink-0 text-[14px] text-slate-900 whitespace-nowrap">
+                <p className="leading-[20px]">{results.length} {results.length === 1 ? 'Afirmação encontrada' : 'Afirmações encontradas'}</p>
+              </div>
+            </div>
+            <div className="content-stretch flex gap-[8px] items-center relative shrink-0">
+              <div className="box-border content-stretch flex gap-[8px] items-center justify-center opacity-50 px-[4px] py-[2px] relative rounded-[8px] shrink-0 cursor-not-allowed">
+                <div className="overflow-clip relative shrink-0 size-[16px]">
+                  <ChevronLeft className="size-[16px] text-[#8a5cda]" />
+                </div>
+                <p className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[14px]">
+                  Anterior
+                </p>
+              </div>
+              <div className="box-border content-stretch flex gap-[8px] items-center justify-center px-[4px] py-[2px] relative rounded-[8px] shrink-0 cursor-pointer hover:bg-purple-50">
+                <p className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[14px]">
+                  Próximo
+                </p>
+                <div className="overflow-clip relative shrink-0 size-[16px]">
+                  <ChevronRight className="size-[16px] text-[#8a5cda]" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

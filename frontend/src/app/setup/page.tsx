@@ -6,6 +6,8 @@ import Header from '@/app/shared/components/Header';
 import HelperAccordion from '@/app/shared/components/HelperAccordion';
 import APIsRegistrationFlow from '@/app/shared/components/APIsRegistrationFlow';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
+import { Button } from '@/app/shared/components/ui/button';
+import { Wand2 } from 'lucide-react';
 
 /**
  * Setup Page - Configuração de API Keys
@@ -21,7 +23,7 @@ import { useApiKeys } from '@/lib/hooks/useApiKeys';
  */
 export default function SetupPage() {
   const router = useRouter();
-  const { saveApiKeys } = useApiKeys();
+  const { apiKeys, saveApiKeys } = useApiKeys();
 
   const handleComplete = async (keys: { gemini: string; tavily: string }) => {
     // Salva as keys no localStorage
@@ -29,6 +31,12 @@ export default function SetupPage() {
     
     // Navega para a página de verificação
     router.push('/verification');
+  };
+
+  // Navegação para "Verificações" respeitando a lógica central em '/'
+  const handleGoToVerifications = () => {
+    // A rota raiz já redireciona para /first-access ou /verification
+    router.push('/');
   };
 
   return (
@@ -43,12 +51,26 @@ export default function SetupPage() {
       {/* Top-bar - z-30 */}
       <div className="absolute top-0 left-0 right-0 z-30">
         <div className="max-w-[1440px] mx-auto px-20">
-          <Header showSettings={false} />
+          <Header
+            showSettings={false}
+            rightContent={
+              <Button
+                variant="link"
+                size="default"
+                onClick={handleGoToVerifications}
+                aria-label="Verificações"
+                title="Ir para Verificações"
+              >
+                <Wand2 className="w-6 h-6" />
+                Verificações
+              </Button>
+            }
+          />
         </div>
       </div>
 
       {/* Setup Content - z-20 */}
-      <div className="relative z-20 flex items-center justify-center min-h-screen pt-21 pb-[120px]">
+      <div className="relative z-20 flex justify-center min-h-screen pt-21 pb-[120px]">
         <div className="flex flex-col items-center w-[570px] gap-5">
           
           {/* Título */}
@@ -68,7 +90,10 @@ export default function SetupPage() {
 
             {/* APIs Registration Flow */}
             <div className="relative z-10">
-              <APIsRegistrationFlow onComplete={handleComplete} />
+              <APIsRegistrationFlow 
+                onComplete={handleComplete}
+                initialKeys={apiKeys ? { gemini: apiKeys.google, tavily: apiKeys.tavily } : undefined}
+              />
             </div>
           </div>
 

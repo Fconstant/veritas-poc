@@ -74,6 +74,24 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
     }
   };
 
+  // Mensagem do tooltip para botão desabilitado
+  const getDisabledTooltip = () => {
+    switch (flowState) {
+      case 'empty':
+        return "Preencha as duas chaves de API para continuar";
+      case 'gemini-filled':
+        return "Preencha a chave do Tavily para continuar";
+      case 'invalid':
+        return "As chaves fornecidas são inválidas. Verifique e tente novamente";
+      case 'validating':
+        return "Aguarde enquanto validamos suas chaves de API...";
+      case 'valid':
+        return null;
+      default:
+        return null;
+    }
+  };
+
   const getStatusBadge = () => {
     switch (flowState) {
       case 'empty':
@@ -290,6 +308,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           size="default"
           onClick={handleComplete}
           disabled={flowState !== 'valid'}
+          disabledTooltip={getDisabledTooltip()}
         >
           Começar
           <ArrowRight className="w-6 h-6" />

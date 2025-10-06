@@ -49,6 +49,17 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
     return 'var(--text-helper)';
   };
 
+  // Mensagem do tooltip para botão desabilitado
+  const getDisabledTooltip = () => {
+    if (isOverLimit) {
+      return `O texto excede o limite de ${TEXT_TO_BE_REVIEWED_LENGTH} caracteres. Remova ${charCount - TEXT_TO_BE_REVIEWED_LENGTH} caracteres para continuar.`;
+    }
+    if (isDisabled) {
+      return "Digite ou cole um texto para verificar";
+    }
+    return null;
+  };
+
   return (
     <div 
       className={cn(
@@ -111,6 +122,7 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
           size="default"
           onClick={onVerify}
           disabled={isDisabled || isOverLimit}
+          disabledTooltip={getDisabledTooltip()}
         >
           <Sparkles className="w-6 h-6" />
           Verificar fatos

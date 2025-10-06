@@ -25,6 +25,21 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
   value = ""
 }) => {
   const hasText = value.trim().length > 0;
+  const isOverLimit = value.length > TEXT_TO_BE_REVIEWED_LENGTH;
+
+  // Mensagem do tooltip para botão desabilitado
+  const getDisabledTooltip = () => {
+    if (disabled) {
+      return "Aguarde o processamento atual terminar";
+    }
+    if (isOverLimit) {
+      return `O texto excede o limite de ${TEXT_TO_BE_REVIEWED_LENGTH} caracteres. Remova ${value.length - TEXT_TO_BE_REVIEWED_LENGTH} caracteres para continuar.`;
+    }
+    if (!hasText) {
+      return "Digite ou cole um texto para verificar";
+    }
+    return null;
+  };
 
   return (
     <div className={cn(
@@ -51,6 +66,9 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           size="default"
           onClick={onUseExample}
           disabled={disabled}
+          disabledTooltip={
+            disabled ? "Aguarde o processamento atual terminar" : null
+          }
           className="px-4 py-3"
         >
           Usar Exemplo
@@ -60,7 +78,8 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           variant="filled"
           size="default"
           onClick={onCheckFacts}
-          disabled={!hasText || disabled}
+          disabled={!hasText || disabled || isOverLimit}
+          disabledTooltip={getDisabledTooltip()}
           className="px-4 py-3"
         >
           <WandSparkles className="size-5" />
