@@ -5,7 +5,7 @@ import { Button } from '@/app/shared/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Plus, Type } from 'lucide-react';
 import InteractiveText from './InteractiveText';
-import type { ResultData } from './ResultCard';
+import type { ResultData } from '@/lib/types/results';
 
 interface ProcessedTextPanelProps {
   text: string;
@@ -27,7 +27,7 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
   return (
     <div className={cn('flex flex-col h-full', className)}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-[#d6d8db] flex-shrink-0">
+      <div className="py-4 border-b border-[#d6d8db] flex-shrink-0">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Type className="size-5 text-slate-900 opacity-70" />
@@ -46,7 +46,7 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
       </div>
 
       {/* Text Content */}
-      <div className="px-6 flex-1 pb-4 overflow-y-auto flex flex-col justify-start max-h-[calc(100vh-200px)]">
+      <div className="px-2 flex-1 pb-4 overflow-y-auto flex flex-col justify-start max-h-[calc(100vh-200px)]">
         <InteractiveText
           text={text}
           results={results}

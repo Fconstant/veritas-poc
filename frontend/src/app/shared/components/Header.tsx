@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
               title="Configurar API Keys"
             >
               <Settings className="w-6 h-6" />
-              Configurations
+              Configurações
             </Button>
           )
         )}

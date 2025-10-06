@@ -1,7 +1,7 @@
 import type { Story, StoryDefault } from "@ladle/react";
 import { useState } from "react";
 import ResultsPanel from "./ResultsPanel";
-import { ResultData } from "./ResultCard";
+import type { ResultData } from "@/lib/types/results";
 
 export default {
   title: "Results/ResultsPanel",

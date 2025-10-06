@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import type { ResultData } from './ResultCard';
+import type { ResultData } from '@/lib/types/results';
 
 interface ClaimHighlight {
   id: string;

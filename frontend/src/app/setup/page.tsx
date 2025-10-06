@@ -7,7 +7,7 @@ import HelperAccordion from '@/app/shared/components/HelperAccordion';
 import APIsRegistrationFlow from '@/app/shared/components/APIsRegistrationFlow';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
 import { Button } from '@/app/shared/components/ui/button';
-import { Wand2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 /**
  * Setup Page - Configuração de API Keys
@@ -61,7 +61,7 @@ export default function SetupPage() {
                 aria-label="Verificações"
                 title="Ir para Verificações"
               >
-                <Wand2 className="w-6 h-6" />
+                <Sparkles className="w-6 h-6" />
                 Verificações
               </Button>
             }

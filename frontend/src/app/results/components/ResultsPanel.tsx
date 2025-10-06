@@ -4,8 +4,9 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, AlertCircle, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ResultsHeader, VerificationStatus } from './ResultsHeader';
+import { Button } from '@/app/shared/components/ui/button';
 // import ResultCard from './ResultCard';
-import type { ResultData } from './ResultCard';
+import type { ResultData } from '@/lib/types/results';
 // ResultCard desativado: estados por resultado não são suportados no momento.
 // O painel agora exibe apenas o status global via ResultsHeader.
 
@@ -47,6 +48,33 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       default:
         return 'verifying';
     }
+  };
+
+  // Navegação entre resultados selecionados
+  const selectedIndex = results.findIndex((r) => r.id === selectedResultId);
+  const canGoPrev = results.length > 0 && selectedIndex > 0;
+  const canGoNext = results.length > 0 && selectedIndex >= 0 && selectedIndex < results.length - 1;
+
+  const prevDisabledTooltip =
+    selectedIndex === -1
+      ? "Nenhum resultado selecionado"
+      : selectedIndex === 0
+      ? "Já está no primeiro resultado"
+      : undefined;
+
+  const nextDisabledTooltip =
+    selectedIndex === -1
+      ? "Nenhum resultado selecionado"
+      : selectedIndex === results.length - 1
+      ? "Já está no último resultado"
+      : undefined;
+
+  const handlePrev = () => {
+    if (canGoPrev) onResultClick?.(results[selectedIndex - 1].id);
+  };
+
+  const handleNext = () => {
+    if (canGoNext) onResultClick?.(results[selectedIndex + 1].id);
   };
 
   const renderResults = () => {
@@ -127,7 +155,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
     return (
       <div className="space-y-4">
-        {results.map((result: any, index: number) => (
+        {results.map((result: ResultData, index: number) => (
           <div 
             key={result.id}
             id={`result-${result.id}`}
@@ -234,27 +262,18 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   };
 
   return (
+    // Card com todos os Resultados na página de Verificação
     <div
       className={cn(
-        'flex flex-col bg-stone-50 rounded-2xl',
-        // Sombra condicional baseada no status
-        status === 'partial' 
-          ? 'shadow-[0px_20px_80px_0px_rgba(137,44,219,0.20),0px_4px_8px_0px_rgba(0,0,0,0.15)]'
-          : 'shadow-[0px_4px_8px_0px_rgba(0,0,0,0.15)]',
+        'flex flex-col',
         // Altura máxima garantida para nunca ultrapassar a viewport
         'max-h-[calc(100vh-7rem)]',
-        // Borda condicional baseada no status
-        status === 'error' 
-          ? 'border border-[#cb1f1f]' 
-          : status === 'partial'
-            ? 'border border-violet-900'
-            : 'border border-violet-900/30',
         className
       )}
     >
       {/* Header */}
-      <div className="box-border content-stretch flex flex-col gap-[16px] items-start pb-0 pt-[24px] px-0 relative shrink-0 w-full">
-        <div className="content-stretch flex items-start relative shrink-0 w-full px-6">
+      <div className="box-border content-stretch flex flex-col gap-[16px] items-start pt-[24px] relative shrink-0 w-full">
+        <div className="content-stretch flex items-start relative shrink-0 w-full">
           <ResultsHeader
             status={getVerificationStatus()}
             onCancel={onCancel}
@@ -284,29 +303,21 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
           <div className="h-0 relative shrink-0 w-full">
             <div className="absolute bottom-0 left-0 right-0 top-[-1px] border-t border-[#d6d8db]" />
           </div>
-          <div className="content-stretch flex items-start justify-between relative shrink-0 w-full px-6">
+          <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
             <div className="content-stretch flex gap-[8px] items-center relative self-stretch shrink-0">
               <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic opacity-50 relative shrink-0 text-[14px] text-slate-900 whitespace-nowrap">
                 <p className="leading-[20px]">{results.length} {results.length === 1 ? 'Afirmação encontrada' : 'Afirmações encontradas'}</p>
               </div>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0">
-              <div className="box-border content-stretch flex gap-[8px] items-center justify-center opacity-50 px-[4px] py-[2px] relative rounded-[8px] shrink-0 cursor-not-allowed">
-                <div className="overflow-clip relative shrink-0 size-[16px]">
-                  <ChevronLeft className="size-[16px] text-[#8a5cda]" />
-                </div>
-                <p className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[14px]">
-                  Anterior
-                </p>
-              </div>
-              <div className="box-border content-stretch flex gap-[8px] items-center justify-center px-[4px] py-[2px] relative rounded-[8px] shrink-0 cursor-pointer hover:bg-purple-50">
-                <p className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[14px]">
-                  Próximo
-                </p>
-                <div className="overflow-clip relative shrink-0 size-[16px]">
-                  <ChevronRight className="size-[16px] text-[#8a5cda]" />
-                </div>
-              </div>
+              <Button variant="link" size="sm" disabled={!canGoPrev} disabledTooltip={prevDisabledTooltip} onClick={handlePrev} className="px-[4px] py-[2px]">
+                <ChevronLeft className="size-4" />
+                Anterior
+              </Button>
+              <Button variant="link" size="sm" disabled={!canGoNext} disabledTooltip={nextDisabledTooltip} onClick={handleNext} className="px-[4px] py-[2px]">
+                Próximo
+                <ChevronRight className="size-4" />
+              </Button>
             </div>
           </div>
         </div>
@@ -318,29 +329,21 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
           <div className="h-0 relative shrink-0 w-full">
             <div className="absolute bottom-0 left-0 right-0 top-[-1px] border-t border-[#d6d8db]" />
           </div>
-          <div className="content-stretch flex items-start justify-between relative shrink-0 w-full px-6">
+          <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
             <div className="content-stretch flex gap-[8px] items-center relative self-stretch shrink-0">
               <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic opacity-50 relative shrink-0 text-[14px] text-slate-900 whitespace-nowrap">
                 <p className="leading-[20px]">{results.length} {results.length === 1 ? 'Afirmação encontrada' : 'Afirmações encontradas'}</p>
               </div>
             </div>
             <div className="content-stretch flex gap-[8px] items-center relative shrink-0">
-              <div className="box-border content-stretch flex gap-[8px] items-center justify-center opacity-50 px-[4px] py-[2px] relative rounded-[8px] shrink-0 cursor-not-allowed">
-                <div className="overflow-clip relative shrink-0 size-[16px]">
-                  <ChevronLeft className="size-[16px] text-[#8a5cda]" />
-                </div>
-                <p className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[14px]">
-                  Anterior
-                </p>
-              </div>
-              <div className="box-border content-stretch flex gap-[8px] items-center justify-center px-[4px] py-[2px] relative rounded-[8px] shrink-0 cursor-pointer hover:bg-purple-50">
-                <p className="font-['Inter'] font-normal leading-[24px] not-italic relative shrink-0 text-[#8a5cda] text-[14px]">
-                  Próximo
-                </p>
-                <div className="overflow-clip relative shrink-0 size-[16px]">
-                  <ChevronRight className="size-[16px] text-[#8a5cda]" />
-                </div>
-              </div>
+              <Button variant="link" size="sm" disabled={!canGoPrev} disabledTooltip={prevDisabledTooltip} onClick={handlePrev}>
+                <ChevronLeft className="size-4" />
+                Anterior
+              </Button>
+              <Button variant="link" size="sm" disabled={!canGoNext} disabledTooltip={nextDisabledTooltip} onClick={handleNext}>
+                Próximo
+                <ChevronRight className="size-4" />
+              </Button>
             </div>
           </div>
         </div>

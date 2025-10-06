@@ -1,10 +1,11 @@
     "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import ProcessedTextPanel from './ProcessedTextPanel';
 import ResultsPanel from './ResultsPanel';
-import { ResultData } from './ResultCard';
+import type { ResultData } from '@/lib/types/results';
 import { factCheckService } from '@/lib/services/factCheckService';
 import { FactCheckResult } from '@/lib/types/api';
 import Header from '@/app/shared/components/Header';
@@ -25,6 +26,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   className,
   demoMode = false
 }) => {
+  const router = useRouter();
   const verificationState = useFactCheckStore();
   const { apiKeys } = useApiKeys();
   const [showResultsPanel, setShowResultsPanel] = useState(false);
@@ -33,6 +35,10 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   const [showNewTextModal, setShowNewTextModal] = useState(false);
   const [showCancelVerificationModal, setShowCancelVerificationModal] = useState(false);
   const [selectedClaimId, setSelectedClaimId] = useState<string | undefined>();
+
+  const handleConfigurationsClick = () => {
+    router.push('/setup');
+  };
 
   // Converte FactCheckResult do backend para ResultData do componente
   const convertToResultData = useCallback((result: FactCheckResult): ResultData => {
@@ -130,23 +136,23 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
       formattedText += `${result.text}\n\n`;
       
       // Status da verificação
-      let statusText = '';
-      switch (result.status) {
-        case 'verified':
-          statusText = '✅ VERIFICADO';
-          break;
-        case 'unverified':
-          statusText = '❌ NÃO VERIFICADO';
-          break;
-        case 'pending':
-          statusText = '⏳ PENDENTE';
-          break;
-        default:
-          statusText = '❓ INDETERMINADO';
-      }
+      // let statusText = '';
+      // switch (result.status) {
+      //   case 'verified':
+      //     statusText = '✅ VERIFICADO';
+      //     break;
+      //   case 'unverified':
+      //     statusText = '❌ NÃO VERIFICADO';
+      //     break;
+      //   case 'pending':
+      //     statusText = '⏳ PENDENTE';
+      //     break;
+      //   default:
+      //     statusText = '❓ INDETERMINADO';
+      // }
       
-      formattedText += `Status: ${statusText}\n`;
-      formattedText += `Confiança: ${Math.round(result.confidence * 100)}%\n\n`;
+      // formattedText += `Status: ${statusText}\n`;
+      // formattedText += `Confiança: ${Math.round(result.confidence * 100)}%\n\n`;
       
       // Análise/explicação
       if (result.explanation) {
@@ -157,7 +163,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
       // Fontes
       if (result.sources && result.sources.length > 0) {
         formattedText += `FONTES:\n`;
-        result.sources.forEach((source, sourceIndex) => {
+        result.sources.forEach((source: string, sourceIndex: number) => {
           formattedText += `${sourceIndex + 1}. ${source}\n`;
         });
         formattedText += '\n';
@@ -375,9 +381,12 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
   return (
     <div className={cn('min-h-screen', className)} style={{ backgroundColor: 'var(--veritas-results-background)' }}>
-      {/* Header */}
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-        <Header />
+      {/* Header (mesmo layout do /verification) */}
+      <div className="max-w-[1440px] mx-auto px-20">
+        <Header 
+          showSettings={true} 
+          onSettingsClick={handleConfigurationsClick} 
+        />
       </div>
       
       <div className="max-w-[1280px] mx-auto px-4 sm:px-4 lg:px-8 py-6">

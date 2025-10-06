@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/app/shared/components/ui/textarea';
 import { Button } from '@/app/shared/components/ui/button';
-import { WandSparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2 } from 'lucide-react';
 
 // Constante para o comprimento máximo do texto a ser verificado
 export const TEXT_TO_BE_REVIEWED_LENGTH = 5000;
@@ -82,7 +82,7 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           disabledTooltip={getDisabledTooltip()}
           className="px-4 py-3"
         >
-          <WandSparkles className="size-5" />
+          <Sparkles className="size-5" />
           Verificar Fatos
         </Button>
       </div>

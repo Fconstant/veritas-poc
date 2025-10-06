@@ -43,6 +43,14 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
   const [flowState, setFlowState] = useState<APIFlowState>('empty');
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Sincroniza os campos quando initialKeys muda (ex.: após carregar do localStorage)
+  // Não sobrescreve valores já digitados pelo usuário
+  useEffect(() => {
+    if (!initialKeys) return;
+    setGeminiKey(prev => (prev ? prev : initialKeys.gemini || ''));
+    setTavilyKey(prev => (prev ? prev : initialKeys.tavily || ''));
+  }, [initialKeys?.gemini, initialKeys?.tavily]);
+
   // Determina o estado do fluxo baseado nos valores
   useEffect(() => {
     if (!geminiKey && !tavilyKey) {
