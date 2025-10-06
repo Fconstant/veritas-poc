@@ -25,14 +25,20 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
   className
 }) => {
   return (
-    <div className={cn('flex flex-col h-full', className)}>
+    <div className={cn("flex flex-col h-full", className)}>
       {/* Header */}
       <div className="py-4 border-b border-[#d6d8db] flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2">
-            <Type className="size-5 text-slate-900 opacity-70" />
-            <span>Texto Processado</span>
-          </span>
+        <div className="content-stretch flex items-center justify-between relative shrink-0 w-full">
+          <div className="content-stretch flex gap-[8px] h-full items-center relative shrink-0">
+            <div className="box-border content-stretch flex gap-[8px] items-center justify-center opacity-50 p-[8px] relative rounded-[100px] shrink-0 size-[24px]">
+              <div className="overflow-clip relative shrink-0 size-[24px]">
+                <Type className="size-[24px] text-slate-900" />
+              </div>
+            </div>
+            <div className="flex flex-col font-[var(--font-inter)] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-slate-900 whitespace-nowrap">
+              <p className="leading-[20px]">Texto Processado</p>
+            </div>
+          </div>
           <Button
             onClick={onNewVerification}
             variant="filled"
@@ -58,10 +64,9 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
           )}
         />
       </div>
-      </div>
+    </div>
   );
 };
 
 export default ProcessedTextPanel;
-
 

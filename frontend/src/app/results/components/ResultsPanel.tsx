@@ -57,16 +57,16 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
   const prevDisabledTooltip =
     selectedIndex === -1
-      ? "Nenhum resultado selecionado"
+      ? "Nenhuma afirmação selecionada"
       : selectedIndex === 0
-      ? "Já está no primeiro resultado"
+      ? "Já está na primeira afirmação"
       : undefined;
 
   const nextDisabledTooltip =
     selectedIndex === -1
-      ? "Nenhum resultado selecionado"
+      ? "Nenhuma afirmação selecionada"
       : selectedIndex === results.length - 1
-      ? "Já está no último resultado"
+      ? "Já está na última afirmação"
       : undefined;
 
   const handlePrev = () => {

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/app/shared/components/ui/button"
-import { X, RotateCcw, Copy, CircleCheck, AlertCircle, Check, ListChecks } from "lucide-react"
+import { X, RotateCcw, Copy, CircleCheck, AlertCircle, Check, Sparkles } from "lucide-react"
 import AnimatedDots from "@/app/shared/components/AnimatedDots"
 
 type VerificationStatus = "verifying" | "error" | "done" | "complete-no-results"
@@ -149,7 +149,7 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
             <div className="content-stretch flex gap-[8px] h-full items-center relative shrink-0">
               <div className="box-border content-stretch flex gap-[8px] items-center justify-center opacity-50 p-[8px] relative rounded-[100px] shrink-0 size-[24px]">
                 <div className="overflow-clip relative shrink-0 size-[24px]">
-                  <ListChecks className="size-[24px] text-slate-900" />
+                  <Sparkles className="size-[24px] text-slate-900" />
                 </div>
               </div>
               <div className="flex flex-col font-[var(--font-inter)] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-slate-900 whitespace-nowrap">

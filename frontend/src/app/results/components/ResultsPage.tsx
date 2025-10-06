@@ -32,11 +32,24 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   const [showResultsPanel, setShowResultsPanel] = useState(false);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [showSettingsConfirmModal, setShowSettingsConfirmModal] = useState(false);
   const [showNewTextModal, setShowNewTextModal] = useState(false);
   const [showCancelVerificationModal, setShowCancelVerificationModal] = useState(false);
   const [selectedClaimId, setSelectedClaimId] = useState<string | undefined>();
+  const isVerificationInProgress =
+    verificationState.status === 'processing' || verificationState.status === 'connecting';
+  const hasCompletedVerification = verificationState.status === 'finished';
+  const hasVerificationResults = verificationState.results.length > 0;
+  const shouldConfirmSettingsNavigation =
+    isVerificationInProgress || hasCompletedVerification || hasVerificationResults;
 
   const handleConfigurationsClick = () => {
+    if (shouldConfirmSettingsNavigation) {
+      setShowSettingsConfirmModal(true);
+      return;
+    }
+
+    factCheckService.reset();
     router.push('/setup');
   };
 
@@ -419,6 +432,22 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
       )}
         </div>
       </div>
+
+      {/* Modal de Confirmação para ir às Configurações */}
+      <ConfirmationDialog
+        isOpen={showSettingsConfirmModal}
+        onClose={() => setShowSettingsConfirmModal(false)}
+        onCancel={() => setShowSettingsConfirmModal(false)}
+        variant="cancel-verification"
+        description="Tem certeza de que deseja ir para configuracões? Se continuar, tudo o que foi feito até agora será perdido."
+        confirmText="Ir para Configurações"
+        cancelText="Voltar"
+        onConfirm={() => {
+          factCheckService.reset();
+          setShowSettingsConfirmModal(false);
+          router.push('/setup');
+        }}
+      />
 
       {/* Modal de Confirmação para Novo Texto */}
       <ConfirmationDialog

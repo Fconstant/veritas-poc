@@ -46,7 +46,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           bgColor: "bg-[rgba(132,74,233,0.1)]",
           defaultDescription: "Tem certeza de que deseja criar um novo texto? Se continuar, tudo o que foi feito até agora será perdido.",
           defaultConfirmText: "Novo Texto",
-          defaultCancelText: "Cancelar",
+          defaultCancelText: "Voltar",
         }
       case "cancel-verification":
       default:
@@ -56,7 +56,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           bgColor: "bg-[rgba(132,74,233,0.1)]",
           defaultDescription: "Tem certeza de que deseja cancelar esta verificação? Se você cancelar, tudo que foi feito até agora será perdido.",
           defaultConfirmText: "Cancelar",
-          defaultCancelText: "Fechar",
+          defaultCancelText: "Voltar",
         }
     }
   }
