@@ -23,7 +23,7 @@ export const API_CONFIG = {
   DEFAULT_RESEARCH_THRESHOLD:
     env.defaultResearchThreshold !== undefined
       ? Number(env.defaultResearchThreshold)
-      : 0.5,
+      : 1,
 
   // Timeout para conexão WebSocket (em ms)
   WEBSOCKET_TIMEOUT:

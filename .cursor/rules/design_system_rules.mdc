@@ -222,6 +222,7 @@ import { Play, Check, X, ArrowRight, Search } from "lucide-react";
 - ❌ **NEVER** create custom SVG components
 - ❌ **NEVER** use other icon libraries (Heroicons, Feather, etc.)
 
+
 **Common Lucide Icons for Veritas**:
 ```tsx
 // Navigation & Actions

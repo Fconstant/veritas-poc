@@ -74,7 +74,10 @@ export class FactCheckService {
 
       // Eventos específicos da verificação de fatos
       this.socket.on('FACT_CHECK_RESULT', (result: FactCheckResult) => {
-        console.log('Resultado recebido:', result);
+        console.log('📦 Resultado recebido:', result);
+        console.log('🔍 Sources no resultado:', result.data.sources);
+        console.log('📊 Tem sources?', !!result.data.sources);
+        console.log('📏 Quantidade de sources:', result.data.sources?.length || 0);
         
         // Double check: verifica estrutura do resultado
         if (!result.data || !result.data.extractedClaim || typeof result.data.reasoningConfidence !== 'number' || !result.meta) {
