@@ -1,5 +1,5 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import React from "react";
+import React, { useEffect } from "react";
 import HomePage from "./HomePage";
 
 // Mock do router para o Ladle
@@ -13,17 +13,44 @@ export default {
   title: "Pages/Home",
 } satisfies StoryDefault;
 
+const ensureApiKeys = () => {
+  if (typeof window === "undefined") return;
+  const storageKey = "veritas_api_keys";
+  const stored = window.localStorage.getItem(storageKey);
+  if (!stored) {
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        google: "AIzasy-demo-google-api-key",
+        tavily: "tvly-demo-tavily-api-key",
+      })
+    );
+  }
+};
+
+const HomePageStoryContainer: React.FC<{ widthClass?: string }> = ({ widthClass }) => {
+  useEffect(() => {
+    ensureApiKeys();
+    return () => {
+      if (typeof window !== "undefined") {
+        window.localStorage.removeItem("veritas_api_keys");
+      }
+    };
+  }, []);
+
+  return (
+    <div className={widthClass}>
+      <HomePage router={mockRouter} />
+    </div>
+  );
+};
+
 // Story completa da Home Page
 export const Default: Story = () => (
-  <div className="w-full h-screen overflow-hidden">
-    <HomePage router={mockRouter} />
-  </div>
+  <HomePageStoryContainer widthClass="w-full h-screen overflow-hidden" />
 );
 
 // Story mobile
 export const Mobile: Story = () => (
-  <div className="w-[375px] h-screen overflow-hidden mx-auto border border-gray-300">
-    <HomePage router={mockRouter} />
-  </div>
+  <HomePageStoryContainer widthClass="w-[375px] h-screen overflow-hidden mx-auto border border-gray-300" />
 );
-

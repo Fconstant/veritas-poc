@@ -1,6 +1,7 @@
 import type { Story, StoryDefault } from "@ladle/react";
 import { useState } from "react";
 import { ResultsHeader } from "./ResultsHeader";
+import type { VerificationStatus } from "./ResultsHeader";
 import { Button } from "@/app/shared/components/ui/button";
 
 export default {
@@ -9,7 +10,7 @@ export default {
 
 // Interactive story for testing all states
 export const Interactive: Story = () => {
-  const [status, setStatus] = useState<"verifying" | "error" | "done">("verifying");
+  const [status, setStatus] = useState<VerificationStatus>("verifying");
   const [lastAction, setLastAction] = useState<string>("");
 
   const handleCancel = () => {
@@ -62,6 +63,13 @@ export const Interactive: Story = () => {
             size="sm"
           >
             Completo
+          </Button>
+          <Button
+            onClick={() => setStatus("complete-no-results")}
+            variant={status === "complete-no-results" ? "filled" : "outlined"}
+            size="sm"
+          >
+            Completo sem resultados
           </Button>
         </div>
       </div>
@@ -122,6 +130,21 @@ export const AnimatedDots: Story = () => {
     </div>
   );
 };
+
+export const CompleteWithoutResults: Story = () => (
+  <div className="space-y-6 max-w-2xl">
+    <div className="space-y-2">
+      <h3 className="text-lg font-semibold">Estado: Completo sem Resultados</h3>
+      <p className="text-sm text-muted-foreground">
+        Header exibido quando a verificação terminou mas nenhuma afirmação foi retornada.
+      </p>
+    </div>
+
+    <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+      <ResultsHeader status="complete-no-results" />
+    </div>
+  </div>
+);
 
 // Static stories for each state
 // export const Verifying: Story = () => (

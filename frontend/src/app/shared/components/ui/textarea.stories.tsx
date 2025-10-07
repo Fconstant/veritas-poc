@@ -18,8 +18,8 @@ export const Interactive: Story = () => {
         </p>
         <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
           <li><strong>Default:</strong> Gradiente com opacidade 0.20</li>
-          <li><strong>Focused:</strong> Gradiente com opacidade 0.50 (ao clicar)</li>
-          <li><strong>Entered:</strong> Gradiente com opacidade 0.05 (ao digitar)</li>
+          <li><strong>Focused:</strong> Gradiente com opacidade 0.50 enquanto o campo está em foco</li>
+          <li><strong>Entered:</strong> Gradiente com opacidade 1.00 ao digitar</li>
           <li><strong>Error:</strong> Gradiente vermelho quando excede 5000 caracteres</li>
         </ul>
       </div>

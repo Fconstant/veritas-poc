@@ -1,8 +1,9 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ResultsPage from "./ResultsPage";
 import { useFactCheckStore } from "@/lib/store/factCheckStore";
 import type { FactCheckResult } from "@veritas/shared";
+import type { ComponentProps } from "react";
 
 // Mock data para demonstração
 const createMockResults = (): FactCheckResult[] => [
@@ -60,28 +61,35 @@ const createMockResults = (): FactCheckResult[] => [
 ];
 
 // Componente auxiliar que inicializa o store com mock data
-const ResultsPageWithMockData: React.FC<{ text?: string; mockResults?: FactCheckResult[] }> = ({ 
-  text = "Este é um texto de exemplo para demonstração da página de resultados.", 
-  mockResults = createMockResults() 
+type ResultsPageStoryProps = {
+  text?: string;
+  mockResults?: FactCheckResult[];
+} & Pick<ComponentProps<typeof ResultsPage>, "onNewVerification">;
+
+const ResultsPageWithMockData: React.FC<ResultsPageStoryProps> = ({
+  text = "Este é um texto de exemplo para demonstração da página de resultados.",
+  mockResults,
+  onNewVerification,
 }) => {
-  const store = useFactCheckStore();
+  const updateStore = useFactCheckStore((state) => state.update);
+  const resetStore = useFactCheckStore((state) => state.reset);
+
+  const resolvedResults = useMemo(() => mockResults ?? createMockResults(), [mockResults]);
 
   useEffect(() => {
-    // Inicializa a store com dados mock
-    store.update({
+    updateStore({
       status: 'finished',
       processedText: text,
-      results: mockResults,
+      results: resolvedResults,
       fingerprint: 'demo-fingerprint-1',
     });
 
     return () => {
-      // Limpa a store quando o componente desmonta
-      store.reset();
+      resetStore();
     };
-  }, [text, mockResults, store]);
+  }, [text, resolvedResults, updateStore, resetStore]);
 
-  return <ResultsPage text={text} demoMode={true} />;
+  return <ResultsPage text={text} demoMode={true} onNewVerification={onNewVerification} />;
 };
 
 export default {
@@ -104,7 +112,7 @@ export const CustomText: Story = () => (
 
 export const LongText: Story = () => (
   <div className="h-screen">
-    <ResultsPage 
+    <ResultsPageWithMockData 
       text={`
 Este é um texto muito longo para demonstrar como a página de resultados lida com textos extensos.
 
@@ -132,6 +140,7 @@ Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saep
 
 export const Interactive: Story = () => {
   const [text, setText] = useState("Este é um texto de exemplo para demonstração da página de resultados.");
+  const [mockResults] = useState(() => createMockResults());
 
   const handleNewVerification = () => {
     console.log('Nova verificação iniciada!');
@@ -148,8 +157,9 @@ export const Interactive: Story = () => {
       </div>
 
       <div className="h-screen">
-        <ResultsPage 
+        <ResultsPageWithMockData 
           text={text}
+          mockResults={mockResults}
           onNewVerification={handleNewVerification}
         />
       </div>
@@ -164,6 +174,7 @@ export const Interactive: Story = () => {
 
 export const WithModalConfirmation: Story = () => {
   const [text, setText] = useState("Este é um texto de exemplo para demonstrar o modal de confirmação.");
+  const [mockResults] = useState(() => createMockResults());
 
   const handleNewVerification = () => {
     console.log('Nova verificação confirmada!');
@@ -185,8 +196,9 @@ export const WithModalConfirmation: Story = () => {
       </div>
 
       <div className="h-screen">
-        <ResultsPage 
+        <ResultsPageWithMockData 
           text={text}
+          mockResults={mockResults}
           onNewVerification={handleNewVerification}
         />
       </div>

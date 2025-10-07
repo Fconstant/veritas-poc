@@ -6,23 +6,25 @@ import type { ResultData } from "@/lib/types/results";
 export default {
   title: "Results/ResultsPanel",
 } satisfies StoryDefault;
-
 const sampleResults: ResultData[] = [
   {
-    id: '1',
-    text: 'Este é um texto de exemplo para demonstração',
+    id: "claim-1",
+    text: "A Terra gira em torno do Sol em aproximadamente 365 dias.",
     confidence: 0.95,
-    status: 'verified',
-    sources: ['https://example.com/source1'],
-    explanation: 'Esta afirmação foi verificada através de múltiplas fontes confiáveis.'
+    status: "verified",
+    sources: ["https://www.nasa.gov/solar-system/earth"],
+    explanation: "Afirmação confirmada por medições astronômicas oficiais."
   },
   {
-    id: '2',
-    text: 'da página de resultados',
-    confidence: 0.87,
-    status: 'verified',
-    sources: ['https://example.com/source2'],
-    explanation: 'Confirmado por fontes oficiais.'
+    id: "claim-2",
+    text: "O Brasil tem mais de 500 milhões de habitantes.",
+    confidence: 0.83,
+    status: "unverified",
+    sources: [
+      "https://www.ibge.gov.br/apps/populacao/projecao/",
+      "https://pt.wikipedia.org/wiki/Demografia_do_Brasil"
+    ],
+    explanation: "Dados do IBGE apontam população próxima de 215 milhões em 2024."
   }
 ];
 
@@ -32,6 +34,7 @@ export const Loading: Story = () => (
       status="loading"
       results={[]}
       onCancel={() => console.log("Cancel clicked")}
+      onResultClick={() => {}}
     />
   </div>
 );
@@ -42,19 +45,30 @@ export const Partial: Story = () => (
       status="partial"
       results={sampleResults.slice(0, 1)}
       onCancel={() => console.log("Cancel clicked")}
+      onResultClick={(resultId) => console.log("Selecionado:", resultId)}
+      selectedResultId={sampleResults[0].id}
     />
   </div>
 );
 
-export const Complete: Story = () => (
-  <div className="w-[664px] rounded-lg">
-    <ResultsPanel
-      status="complete"
-      results={sampleResults}
-      onCopyPlainText={() => console.log("Copy Plain Text clicked")}
-    />
-  </div>
-);
+export const Complete: Story = () => {
+  const [selectedResultId, setSelectedResultId] = useState<string>(sampleResults[0].id);
+
+  return (
+    <div className="w-[664px] rounded-lg">
+      <ResultsPanel
+        status="complete"
+        results={sampleResults}
+        onCopyPlainText={() => console.log("Copy Plain Text clicked")}
+        onResultClick={(resultId) => {
+          setSelectedResultId(resultId);
+          console.log("Selecionado:", resultId);
+        }}
+        selectedResultId={selectedResultId}
+      />
+    </div>
+  );
+};
 
 export const Scrollable: Story = () => {
   // Criar muitos resultados para demonstrar rolagem
@@ -66,6 +80,7 @@ export const Scrollable: Story = () => {
     sources: [`https://example.com/source${i + 1}`],
     explanation: `Esta é a explicação detalhada para o resultado ${i + 1}, incluindo análise e verificação das fontes.`
   }));
+  const [selectedResultId, setSelectedResultId] = useState<string>(manyResults[0].id);
 
   return (
     <div className="space-y-6 w-[664px]">
@@ -81,6 +96,11 @@ export const Scrollable: Story = () => {
           status="complete"
           results={manyResults}
           onCopyPlainText={() => console.log("Copy Plain Text clicked")}
+          onResultClick={(resultId) => {
+            setSelectedResultId(resultId);
+            console.log("Selecionado:", resultId);
+          }}
+          selectedResultId={selectedResultId}
         />
       </div>
 
@@ -107,6 +127,7 @@ export const Error: Story = () => (
         status="error"
         results={[]}
         onRetry={() => console.log("Retry clicked")}
+        onResultClick={() => {}}
       />
     </div>
 
@@ -132,6 +153,7 @@ export const Empty: Story = () => (
         status="complete"
         results={[]}
         onCopyPlainText={() => console.log("Copy Plain Text clicked")}
+        onResultClick={() => {}}
       />
     </div>
 
@@ -147,6 +169,7 @@ export const Interactive: Story = () => {
   const [status, setStatus] = useState<'loading' | 'partial' | 'complete' | 'error'>('loading');
   const [results, setResults] = useState<ResultData[]>([]);
   const [lastAction, setLastAction] = useState<string>("");
+  const [selectedResultId, setSelectedResultId] = useState<string | undefined>(undefined);
 
   const simulateLoading = () => {
     setStatus('loading');
@@ -157,12 +180,14 @@ export const Interactive: Story = () => {
       setStatus('partial');
       setResults([sampleResults[0]]);
       setLastAction("Carregamento parcial...");
+      setSelectedResultId(sampleResults[0].id);
     }, 2000);
     
     setTimeout(() => {
       setStatus('complete');
       setResults(sampleResults);
       setLastAction("Carregamento completo!");
+      setSelectedResultId(sampleResults[0].id);
     }, 4000);
   };
 
@@ -170,12 +195,14 @@ export const Interactive: Story = () => {
     setStatus('error');
     setResults([]);
     setLastAction("Erro simulado");
+    setSelectedResultId(undefined);
   };
 
   const reset = () => {
     setStatus('loading');
     setResults([]);
     setLastAction("Reset executado");
+    setSelectedResultId(undefined);
   };
 
   const handleCancel = () => {
@@ -231,6 +258,11 @@ export const Interactive: Story = () => {
           onCancel={handleCancel}
           onRetry={handleRetry}
           onCopyPlainText={handleCopy}
+          onResultClick={(resultId) => {
+            setSelectedResultId(resultId);
+            console.log("Selecionado:", resultId);
+          }}
+          selectedResultId={selectedResultId}
         />
       </div>
 

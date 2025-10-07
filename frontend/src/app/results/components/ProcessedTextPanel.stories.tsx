@@ -1,83 +1,95 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ProcessedTextPanel from "./ProcessedTextPanel";
+import type { ResultData } from "@/lib/types/results";
 
 export default {
   title: "Results/ProcessedTextPanel",
 } satisfies StoryDefault;
 
+const sampleText = [
+  "A Terra gira em torno do Sol em aproximadamente 365 dias. ",
+  "O Brasil tem mais de 500 milhões de habitantes. ",
+  "A inteligência artificial vai substituir todos os empregos nos próximos 5 anos."
+].join("");
+
+const sampleResults: ResultData[] = [
+  {
+    id: "claim-1",
+    text: "A Terra gira em torno do Sol em aproximadamente 365 dias.",
+    confidence: 0.95,
+    status: "verified",
+    explanation: "Afirmação cientificamente comprovada com base em medições astronômicas.",
+    sources: ["https://www.nasa.gov/solar-system/earth"]
+  },
+  {
+    id: "claim-2",
+    text: "O Brasil tem mais de 500 milhões de habitantes.",
+    confidence: 0.82,
+    status: "unverified",
+    explanation: "Dados oficiais do IBGE indicam população próxima de 215 milhões em 2024.",
+    sources: [
+      "https://www.ibge.gov.br/apps/populacao/projecao/",
+      "https://pt.wikipedia.org/wiki/Demografia_do_Brasil"
+    ]
+  },
+  {
+    id: "claim-3",
+    text: "A inteligência artificial vai substituir todos os empregos nos próximos 5 anos.",
+    confidence: 0.63,
+    status: "pending",
+    explanation: "Especialistas divergem sobre o impacto total no período citado.",
+    sources: ["https://www.weforum.org/reports/the-future-of-jobs-report-2023"]
+  }
+];
+
 export const Default: Story = () => {
-  const [text] = useState("Este é um texto de exemplo para demonstração da página de resultados. O texto será processado e verificado pelo sistema de fact-checking.");
+  const [selectedClaimId, setSelectedClaimId] = useState<string | undefined>(sampleResults[0].id);
 
   return (
-    <div className="h-96 border border-gray-200 rounded-lg">
+    <div className="h-[520px] border border-gray-200 rounded-lg">
       <ProcessedTextPanel
-        text={text}
-        onNewVerification={() => console.log('New verification clicked')}
+        text={sampleText}
+        results={sampleResults}
+        selectedClaimId={selectedClaimId}
+        onClaimClick={(claimId) => {
+          setSelectedClaimId(claimId);
+          console.log("Claim selecionado:", claimId);
+        }}
+        onNewVerification={() => console.log("Solicitar nova verificação")}
       />
     </div>
   );
 };
 
-export const LongText: Story = () => {
-  const [text] = useState(`
-Este é um texto muito longo para demonstrar como o componente ProcessedTextPanel lida com textos extensos que podem ultrapassar a altura da tela disponível.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-
-Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-
-Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incididunt ut labore et dolore magnam aliquam quaerat voluptatem.
-
-Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
-
-At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.
-
-Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-
-Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.
-  `.trim());
-
+export const WithLongerText: Story = () => {
+  const extendedText = useMemo(
+    () =>
+      [
+        sampleText,
+        "\n\n",
+        "Também analisamos a evolução das fontes citadas para garantir que os links continuem válidos.",
+        " Este bloco extra ilustra rolagem dentro do painel."
+      ].join(""),
+    []
+  );
   return (
-    <div className="h-96 border border-gray-200 rounded-lg">
+    <div className="h-[520px] border border-gray-200 rounded-lg">
       <ProcessedTextPanel
-        text={text}
-        onNewVerification={() => console.log('New verification clicked')}
+        text={extendedText}
+        results={sampleResults}
+        onNewVerification={() => console.log("Solicitar nova verificação")}
       />
     </div>
   );
 };
 
-export const Interactive: Story = () => {
-  const [text, setText] = useState("Este é um texto de exemplo para demonstração da página de resultados.");
-
-  return (
-    <div className="space-y-6 max-w-4xl">
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold">ProcessedTextPanel Interativo</h3>
-        <p className="text-sm text-muted-foreground">
-          Este componente exibe o texto processado e permite iniciar uma nova verificação
-        </p>
-      </div>
-
-      <div className="h-96 border border-gray-200 rounded-lg">
-        <ProcessedTextPanel
-          text={text}
-          onNewVerification={() => {
-            console.log('New verification clicked');
-            setText("Novo texto para verificação!");
-          }}
-        />
-      </div>
-
-      <div className="text-xs text-muted-foreground">
-        <p><strong>Texto atual:</strong> {text}</p>
-        <p><strong>Caracteres:</strong> {text.length}</p>
-      </div>
-    </div>
-  );
-};
+export const WithoutResults: Story = () => (
+  <div className="h-[400px] border border-gray-200 rounded-lg">
+    <ProcessedTextPanel
+      text="O texto original aparece aqui mesmo quando nenhuma afirmação é encontrada."
+      results={[]}
+      onNewVerification={() => console.log("Solicitar nova verificação")}
+    />
+  </div>
+);
