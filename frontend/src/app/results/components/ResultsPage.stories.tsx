@@ -104,7 +104,7 @@ export const Default: Story = () => (
 
 export const CustomText: Story = () => (
   <div className="h-screen">
-    <ResultsPageWithMockData 
+    <ResultsPageWithMockData
       text="Este é um texto personalizado para demonstração da página de resultados. O sistema irá processar e verificar este texto específico."
     />
   </div>
@@ -112,7 +112,7 @@ export const CustomText: Story = () => (
 
 export const LongText: Story = () => (
   <div className="h-screen">
-    <ResultsPageWithMockData 
+    <ResultsPageWithMockData
       text={`
 Este é um texto muito longo para demonstrar como a página de resultados lida com textos extensos.
 
@@ -157,7 +157,7 @@ export const Interactive: Story = () => {
       </div>
 
       <div className="h-screen">
-        <ResultsPageWithMockData 
+        <ResultsPageWithMockData
           text={text}
           mockResults={mockResults}
           onNewVerification={handleNewVerification}
@@ -186,17 +186,17 @@ export const WithModalConfirmation: Story = () => {
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">ResultsPage com Modal de Confirmação</h3>
         <p className="text-sm text-muted-foreground">
-          Demonstra o modal de confirmação que aparece ao clicar no botão "Novo"
+          Demonstra o modal de confirmação que aparece ao clicar no botão &ldquo;Novo&rdquo;
         </p>
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
           <p className="text-sm text-blue-800">
-            <strong>Como testar:</strong> Clique no botão "Novo" na coluna esquerda para ver o modal de confirmação.
+            <strong>Como testar:</strong> Clique no botão &ldquo;Novo&rdquo; na coluna esquerda para ver o modal de confirmação.
           </p>
         </div>
       </div>
 
       <div className="h-screen">
-        <ResultsPageWithMockData 
+        <ResultsPageWithMockData
           text={text}
           mockResults={mockResults}
           onNewVerification={handleNewVerification}
@@ -206,7 +206,7 @@ export const WithModalConfirmation: Story = () => {
       <div className="text-xs text-muted-foreground">
         <p><strong>Texto atual:</strong> {text}</p>
         <p><strong>Caracteres:</strong> {text.length}</p>
-        <p><strong>Modal:</strong> Aparece automaticamente ao clicar em "Novo"</p>
+        <p><strong>Modal:</strong> Aparece automaticamente ao clicar em &ldquo;Novo&rdquo;</p>
       </div>
     </div>
   );

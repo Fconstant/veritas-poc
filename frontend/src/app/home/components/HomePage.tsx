@@ -55,7 +55,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         message: 'Verificação concluída! Redirecionando para os resultados...',
         isVisible: true
       });
-      
+
       // Auto-hide toast após 2 segundos e redirecionar
       setTimeout(() => {
         setToast(prev => ({ ...prev, isVisible: false }));
@@ -67,7 +67,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         message: verificationState.error || 'Erro na verificação. Tente novamente.',
         isVisible: true
       });
-      
+
       // Auto-hide toast após 5 segundos
       setTimeout(() => {
         setToast(prev => ({ ...prev, isVisible: false }));
@@ -78,7 +78,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         message: 'Verificação interrompida. Tente novamente.',
         isVisible: true
       });
-      
+
       setTimeout(() => {
         setToast(prev => ({ ...prev, isVisible: false }));
       }, 5000);
@@ -101,11 +101,11 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
     try {
       // Limpa estado anterior
       factCheckService.reset();
-      
+
       // Testa conectividade primeiro
       console.log('🧪 Testando conectividade antes de enviar requisição...');
       const isConnected = await factCheckService.testConnection();
-      
+
       if (!isConnected) {
         setToast({
           type: 'error',
@@ -114,7 +114,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         });
         return;
       }
-      
+
       // Envia requisição para o backend com as API keys
       const fingerprint = await factCheckService.requestFactCheck(textValue, {
         apiKeys: {
@@ -130,7 +130,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
 
       // Redireciona direto para a página de resultados
       router.push('/results');
-      
+
     } catch (error) {
       console.error('❌ Erro ao iniciar verificação:', error);
       setToast({
@@ -138,12 +138,12 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         message: error instanceof Error ? error.message : 'Erro interno. Tente novamente mais tarde.',
         isVisible: true
       });
-      
+
       setTimeout(() => {
         setToast(prev => ({ ...prev, isVisible: false }));
       }, 5000);
     }
-  }, [textValue, router]);
+  }, [textValue, router, apiKeys?.google, apiKeys?.tavily]);
 
   const handleTextChange = useCallback((text: string) => {
     setTextValue(text);
@@ -183,13 +183,13 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
       {/* Barra Superior */}
       <div className="absolute top-0 left-0 right-0 z-30">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <Header 
+          <Header
             showSettings={true}
             onSettingsClick={() => setShowSettings(true)}
           />
         </div>
       </div>
-      
+
       {/* Modal de Configurações */}
       {showSettings && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -222,18 +222,18 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
           </div>
         </div>
       )}
-      
-      
+
+
       {/* Container Principal de Conteúdo */}
       <div className="relative z-20 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-20">
         <div className="w-full max-w-[1280px] mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-            
+
             {/* Seção Hero - Lado Esquerdo */}
             <div className="order-1 lg:order-1">
               <HeroSection className="max-w-[629px] mx-auto lg:mx-0" />
             </div>
-            
+
             {/* Formulário de Verificação - Lado Direito */}
             <div className="order-2 lg:order-2">
               <div className="max-w-[571px] mx-auto lg:mx-0">
@@ -245,17 +245,17 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
                 />
               </div>
             </div>
-            
+
           </div>
         </div>
       </div>
-      
+
       {/* Ajustes específicos para Mobile/Tablet */}
       <div className="lg:hidden">
         {/* Espaçamento adicional para mobile */}
         <div className="h-16" />
       </div>
-      
+
       {/* Notificação Toast */}
       <HomePageToast
         type={toast.type}

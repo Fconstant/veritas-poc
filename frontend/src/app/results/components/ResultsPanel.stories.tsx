@@ -118,7 +118,7 @@ export const Error: Story = () => (
     <div className="space-y-2">
       <h3 className="text-lg font-semibold">Variante de Erro</h3>
       <p className="text-sm text-muted-foreground">
-        Painel com estado de erro - borda vermelha, ícone AlertTriangle e botão "Try again"
+        Painel com estado de erro - borda vermelha, ícone AlertTriangle e botão &ldquo;Try again&rdquo;
       </p>
     </div>
 
@@ -175,14 +175,14 @@ export const Interactive: Story = () => {
     setStatus('loading');
     setResults([]);
     setLastAction("Iniciando carregamento...");
-    
+
     setTimeout(() => {
       setStatus('partial');
       setResults([sampleResults[0]]);
       setLastAction("Carregamento parcial...");
       setSelectedResultId(sampleResults[0].id);
     }, 2000);
-    
+
     setTimeout(() => {
       setStatus('complete');
       setResults(sampleResults);
@@ -231,19 +231,19 @@ export const Interactive: Story = () => {
       </div>
 
       <div className="flex gap-2 flex-wrap">
-        <button 
+        <button
           onClick={simulateLoading}
           className="px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm hover:bg-blue-200"
         >
           Simular Carregamento
         </button>
-        <button 
+        <button
           onClick={simulateError}
           className="px-3 py-1 bg-red-100 text-red-800 rounded text-sm hover:bg-red-200"
         >
           Simular Erro
         </button>
-        <button 
+        <button
           onClick={reset}
           className="px-3 py-1 bg-gray-100 text-gray-800 rounded text-sm hover:bg-gray-200"
         >

@@ -16,14 +16,14 @@ interface APIsRegistrationFlowProps {
 /**
  * APIsRegistrationFlow - Formulário de registro de API keys
  * Design v0.2: Node 543:39609 (5 estados)
- * 
+ *
  * Estados (Property1):
  * 1. "empty" - Ambos vazios
  * 2. "gemini-filled" - Gemini preenchido, Tavily vazio
  * 3. "invalid" - Ambos preenchidos mas inválidos
  * 4. "validating" - Validando com backend
  * 5. "valid" - Tudo válido e pronto
- * 
+ *
  * Especificações:
  * - Dimensões: 570px × 408px
  * - Background: #f2f2f2
@@ -49,7 +49,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
     if (!initialKeys) return;
     setGeminiKey(prev => (prev ? prev : initialKeys.gemini || ''));
     setTavilyKey(prev => (prev ? prev : initialKeys.tavily || ''));
-  }, [initialKeys?.gemini, initialKeys?.tavily]);
+  }, [initialKeys]);
 
   // Determina o estado do fluxo baseado nos valores
   useEffect(() => {
@@ -61,7 +61,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
       // Validação client-side básica
       const isGeminiValid = geminiKey.startsWith('AI') && geminiKey.length === 39;
       const isTavilyValid = tavilyKey.length > 10; // Validação simples
-      
+
       if (!isGeminiValid || !isTavilyValid) {
         setFlowState('invalid');
         setErrorMessage('Formato de chave inválido');
@@ -146,7 +146,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
   };
 
   return (
-    <div 
+    <div
       className={cn(
         "flex flex-col gap-6 items-end w-[570px] max-w-[624px] min-w-[300px] rounded-[24px] border pt-0 pb-8 px-6 shadow-[0px_8px_32px_0px_rgba(0,0,0,0.20)]",
         "bg-[var(--card-bg)] border-[var(--card-border)]",
@@ -165,7 +165,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           </div>
           {/* Status Badge */}
           <div className="flex gap-2 items-center">
-            <span 
+            <span
               className="font-[var(--font-inter)] font-medium text-[14px] leading-[24px]"
               style={{ color: statusBadge.color }}
             >
@@ -191,7 +191,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
                 <span className="font-normal"> (Google Gemini API)</span>
               </span>
             </div>
-            <a 
+            <a
               href="https://aistudio.google.com/app/apikey"
               target="_blank"
               rel="noopener noreferrer"
@@ -203,7 +203,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
               <ExternalLink className="w-4 h-4" />
             </a>
           </div>
-          <div 
+          <div
             className={cn(
               "flex gap-2 items-center p-3 w-full rounded-lg border",
               flowState === 'invalid' ? 'bg-[var(--error-background)] border-[var(--error-red)]' : 'bg-[var(--input-bg)] border-[var(--purple-primary)]'
@@ -249,7 +249,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
                 <span className="font-normal"> (Tavily API)</span>
               </span>
             </div>
-            <a 
+            <a
               href="https://tavily.com/"
               target="_blank"
               rel="noopener noreferrer"
@@ -261,12 +261,12 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
               <ExternalLink className="w-4 h-4" />
             </a>
           </div>
-          <div 
+          <div
             className={cn(
               "flex gap-2 items-center p-3 w-full rounded-lg border",
-              flowState === 'invalid' 
-                ? 'bg-[var(--error-background)] border-[var(--error-red)]' 
-                : flowState === 'empty' 
+              flowState === 'invalid'
+                ? 'bg-[var(--error-background)] border-[var(--error-red)]'
+                : flowState === 'empty'
                   ? 'bg-[var(--input-bg-secondary)] border-[var(--purple-primary)]'
                   : 'bg-[var(--input-bg)] border-[var(--purple-primary)]'
             )}
@@ -309,7 +309,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
         <div className="h-0 w-full relative">
           <div className="absolute bottom-0 left-0 right-0 top-[-1px] border-t" style={{ borderColor: 'var(--divider)' }} />
         </div>
-        
+
         {/* Botão Começar */}
         <Button
           variant="filled"

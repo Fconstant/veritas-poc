@@ -9,12 +9,12 @@ const removeNextJsDirectives = () => ({
   transform(code, id) {
     if (id.includes('node_modules')) return null;
     if (!id.match(/\.(tsx?|jsx?)$/)) return null;
-    
+
     // Remove "use client" e "use server" do início dos arquivos
     const transformed = code
       .replace(/^['"]use client['"];?\s*/m, '')
       .replace(/^['"]use server['"];?\s*/m, '');
-    
+
     if (transformed !== code) {
       return { code: transformed, map: null };
     }
@@ -22,7 +22,7 @@ const removeNextJsDirectives = () => ({
   }
 });
 
-export default {
+const config = {
   plugins: [removeNextJsDirectives()],
   resolve: {
     alias: {
@@ -38,3 +38,5 @@ export default {
     exclude: ['socket.io-client'], // Exclui socket.io-client da otimização
   },
 };
+
+export default config;

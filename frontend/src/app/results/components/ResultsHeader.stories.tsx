@@ -34,8 +34,8 @@ export const Interactive: Story = () => {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Results-Header Interativo</h3>
         <p className="text-sm text-muted-foreground">
-          Teste todos os estados e ações do componente Results-Header. 
-          <strong>Nota:</strong> O estado "Verificando" agora inclui animação dos 3 pontos.
+          Teste todos os estados e ações do componente Results-Header.
+          <strong>Nota:</strong> O estado &ldquo;Verificando&rdquo; agora inclui animação dos 3 pontos.
         </p>
       </div>
 
@@ -106,7 +106,7 @@ export const AnimatedDots: Story = () => {
       <div className="space-y-2">
         <h3 className="text-lg font-semibold">Animação dos Pontos</h3>
         <p className="text-sm text-muted-foreground">
-          Demonstração da animação dos 3 pontos e do círculo pulsante no estado "Verificando"
+          Demonstração da animação dos 3 pontos e do círculo pulsante no estado &ldquo;Verificando&rdquo;
         </p>
       </div>
 
@@ -120,11 +120,11 @@ export const AnimatedDots: Story = () => {
       <div className="text-xs text-muted-foreground">
         <p><strong>Características da animação:</strong></p>
         <ul className="list-disc list-inside space-y-1">
-          <li>Texto "Verificando" com pontos animados (ciclo: . → .. → ...)</li>
+          <li>Texto &ldquo;Verificando&rdquo; com pontos animados (ciclo: . → .. → ...)</li>
           <li>Intervalo de 500ms entre cada ponto</li>
           <li>Círculo externo verde (#77e6a0) com animação fade (2s)</li>
           <li>Círculo interno verde (#22c55e) estático</li>
-          <li>Botão "Cancel" com ícone X</li>
+          <li>Botão &ldquo;Cancel&rdquo; com ícone X</li>
         </ul>
       </div>
     </div>
@@ -247,13 +247,13 @@ export const CompleteWithoutResults: Story = () => (
 //         disabled
 //         onCancel={() => console.log("Cancel clicked")}
 //       />
-      
+
 //       <ResultsHeader
 //         status="error"
 //         disabled
 //         onRetry={() => console.log("Retry clicked")}
 //       />
-      
+
 //       <ResultsHeader
 //         status="done"
 //         disabled
@@ -291,7 +291,7 @@ export const CompleteWithoutResults: Story = () => (
 //           onCancel={() => console.log("Cancel clicked")}
 //         />
 //       </div>
-      
+
 //       <div className="space-y-2">
 //         <h4 className="text-sm font-medium text-gray-600">Erro</h4>
 //         <ResultsHeader
@@ -299,7 +299,7 @@ export const CompleteWithoutResults: Story = () => (
 //           onRetry={() => console.log("Retry clicked")}
 //         />
 //       </div>
-      
+
 //       <div className="space-y-2">
 //         <h4 className="text-sm font-medium text-gray-600">Completo</h4>
 //         <ResultsHeader
