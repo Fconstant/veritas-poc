@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { deepResearch, DEEP_RESEARCH_RESULT_SCHEMA } from '#/analysis/deepResearch.js';
 import type { BaseChatMemory } from 'langchain/memory';
+import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
 
 // Mock the entire RunnableSequence to avoid complex LangChain mocking
 vi.mock('@langchain/core/runnables', () => ({
@@ -37,14 +38,28 @@ vi.mock('@langchain/core/prompts', () => ({
 }));
 
 describe('deepResearch', () => {
+  let mockLLM: BaseChatModel;
+
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Create a mocked LLM
+    mockLLM = {
+      invoke: vi.fn(),
+      stream: vi.fn(),
+      batch: vi.fn(),
+      _llmType: vi.fn().mockReturnValue('mock'),
+    } as unknown as BaseChatModel;
   });
 
   it('should return properly structured fact-check results', async () => {
     const query = 'Test political claim about government policy';
 
-    const result = await deepResearch(query);
+    const result = await deepResearch({
+      query,
+      llm: mockLLM,
+      tavilyApiKey: 'test-api-key'
+    });
 
     // Validate the result structure matches our schema
     expect(() => DEEP_RESEARCH_RESULT_SCHEMA.parse(result)).not.toThrow();
@@ -70,7 +85,12 @@ describe('deepResearch', () => {
 
     const query = 'Follow-up claim about the same topic';
 
-    const result = await deepResearch(query, mockMemory);
+    const result = await deepResearch({
+      query,
+      memory: mockMemory,
+      llm: mockLLM,
+      tavilyApiKey: 'test-api-key'
+    });
 
     // Since we're mocking the entire RunnableSequence, we can't test memory interaction
     // but we can verify the function accepts memory parameter and returns valid result
@@ -83,7 +103,11 @@ describe('deepResearch', () => {
   it('should handle search failures gracefully', async () => {
     // Since we're mocking the entire RunnableSequence, this test verifies
     // that the function can handle different scenarios and return valid results
-    const result = await deepResearch('Test query');
+    const result = await deepResearch({
+      query: 'Test query',
+      llm: mockLLM,
+      tavilyApiKey: 'test-api-key'
+    });
 
     expect(result).toBeDefined();
     expect(result.reasoning).toBeDefined();
