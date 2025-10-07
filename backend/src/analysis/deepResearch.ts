@@ -48,7 +48,8 @@ INSTRUCTIONS:
 4. Indicate the level of confidence varying between 0-1 (float)
 5. Focus on credible sources and recent information
 6. Note any limitations in available evidence
-7. Format your response as JSON according to the schema provided. Follow these rules:
+7. Respond in the same language as the user's input for all explanatory fields in the JSON (e.g., reasoning). Do not translate quoted passages or the user's original text. Keep sources and URLs unchanged.
+8. Format your response as JSON according to the schema provided. Follow these rules:
 
 RESPONSE JSON SCHEMA:
 \`\`\`json
