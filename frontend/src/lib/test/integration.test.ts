@@ -7,11 +7,11 @@ import { factCheckStore } from '@/lib/store/factCheckStore';
 
 // Exemplo de texto para verificação
 const EXAMPLE_TEXT = `
-Bolsonaro: Destinamos também a este estado maravilhoso aqui, mesmo sem comprovação científica, 
-mais de 400 mil unidades de cloroquina para o tratamento precoce da população. 
-Eu sou a prova viva de que deu certo. Muitos médicos defendem esse tratamento. 
-Sabemos que mais de 100 mil pessoas morreram no Brasil. 
-Caso tivessem sido tratadas lá atrás com esse medicamento, 
+Bolsonaro: Destinamos também a este estado maravilhoso aqui, mesmo sem comprovação científica,
+mais de 400 mil unidades de cloroquina para o tratamento precoce da população.
+Eu sou a prova viva de que deu certo. Muitos médicos defendem esse tratamento.
+Sabemos que mais de 100 mil pessoas morreram no Brasil.
+Caso tivessem sido tratadas lá atrás com esse medicamento,
 poderiam essas vidas terem sido evitadas.
 `;
 
@@ -19,7 +19,7 @@ poderiam essas vidas terem sido evitadas.
 export async function testFactCheckIntegration() {
   console.log('🧪 Iniciando teste da integração Frontend-Backend');
   console.log('📡 Backend URL:', API_CONFIG.BACKEND_URL);
-  
+
   try {
     // 1. Configurar listener para mudanças de estado
     const unsubscribe = factCheckStore.subscribe((state) => {
@@ -30,11 +30,11 @@ export async function testFactCheckIntegration() {
         chunkCount: state.chunkCount,
         error: state.error
       });
-      
+
       if (state.chunkCount) {
         console.log(`📦 Texto dividido em ${state.chunkCount} chunks para processamento`);
       }
-      
+
       if (state.results.length > 0) {
         console.log('📋 Resultados recebidos:');
         state.results.forEach((result, index) => {
@@ -60,7 +60,7 @@ export async function testFactCheckIntegration() {
     });
 
     console.log('✅ Verificação iniciada com fingerprint:', fingerprint);
-    
+
     // 3. Aguardar conclusão (opcional - para testes automatizados)
     return new Promise<void>((resolve) => {
       const checkCompletion = () => {
@@ -74,7 +74,7 @@ export async function testFactCheckIntegration() {
           setTimeout(checkCompletion, 1000);
         }
       };
-      
+
       // Iniciar verificação de conclusão após 2 segundos
       setTimeout(checkCompletion, 2000);
     });
@@ -88,7 +88,7 @@ export async function testFactCheckIntegration() {
 // Função para testar diferentes cenários
 export async function testDifferentScenarios() {
   console.log('🧪 Testando diferentes cenários...');
-  
+
   const scenarios = [
     {
       name: 'Texto vazio',
@@ -114,10 +114,10 @@ export async function testDifferentScenarios() {
 
   for (const scenario of scenarios) {
     console.log(`\n📝 Testando: ${scenario.name}`);
-    
+
     try {
       factCheckService.reset();
-      
+
       if (scenario.shouldFail) {
         try {
           await factCheckService.requestFactCheck(scenario.text);
@@ -132,7 +132,7 @@ export async function testDifferentScenarios() {
     } catch (error) {
       console.log('❌ Erro inesperado:', error.message);
     }
-    
+
     // Aguardar um pouco entre testes
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
@@ -141,20 +141,20 @@ export async function testDifferentScenarios() {
 // Função para testar conectividade
 export async function testConnectivity() {
   console.log('🔌 Testando conectividade...');
-  
+
   try {
     // Tentar conectar
     await factCheckService.connect();
     console.log('✅ Conectado com sucesso');
-    
+
     // Verificar se está conectado
     const isConnected = factCheckService.isConnected();
     console.log('📡 Status da conexão:', isConnected);
-    
+
     // Desconectar
     factCheckService.disconnect();
     console.log('🔌 Desconectado');
-    
+
   } catch (error) {
     console.error('❌ Erro de conectividade:', error);
     throw error;
@@ -164,21 +164,21 @@ export async function testConnectivity() {
 // Função principal para executar todos os testes
 export async function runAllTests() {
   console.log('🚀 Executando todos os testes da integração...\n');
-  
+
   try {
     // Teste 1: Conectividade
     await testConnectivity();
     console.log('\n' + '='.repeat(50) + '\n');
-    
+
     // Teste 2: Cenários diferentes
     await testDifferentScenarios();
     console.log('\n' + '='.repeat(50) + '\n');
-    
+
     // Teste 3: Integração completa
     await testFactCheckIntegration();
-    
+
     console.log('\n🎉 Todos os testes concluídos com sucesso!');
-    
+
   } catch (error) {
     console.error('\n💥 Falha nos testes:', error);
     throw error;
@@ -195,6 +195,6 @@ export const testUtils = {
 
 // Para uso direto no console do navegador
 if (typeof window !== 'undefined') {
-  (window as any).testFactCheck = testUtils;
+  (window as typeof window & { testFactCheck: typeof testUtils }).testFactCheck = testUtils;
   console.log('🧪 Testes disponíveis em window.testFactCheck');
 }

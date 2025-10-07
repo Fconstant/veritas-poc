@@ -20,12 +20,7 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
 }) => {
   const baseClasses = "animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200px_100%] animate-[shimmer_1.5s_ease-in-out_infinite]";
 
-  const variants = {
-    card: "rounded-lg p-4 space-y-3",
-    text: "rounded h-4",
-    button: "rounded-md h-10",
-    circle: "rounded-full"
-  };
+
 
   if (variant === 'card') {
     return (

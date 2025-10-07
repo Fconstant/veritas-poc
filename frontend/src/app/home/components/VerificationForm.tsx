@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/app/shared/components/ui/textarea';
 import { Button } from '@/app/shared/components/ui/button';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 // Constante para o comprimento máximo do texto a ser verificado
 export const TEXT_TO_BE_REVIEWED_LENGTH = 5000;
@@ -58,7 +58,7 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           className="w-full"
         />
       </div>
-      
+
       {/* Action Buttons */}
       <div className="flex justify-between items-center w-full gap-4">
         <Button
@@ -73,7 +73,7 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
         >
           Usar Exemplo
         </Button>
-        
+
         <Button
           variant="filled"
           size="default"

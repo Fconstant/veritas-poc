@@ -6,7 +6,7 @@ interface LinkProps {
   children: React.ReactNode;
   className?: string;
   'aria-label'?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 const Link: React.FC<LinkProps> = ({ href, children, ...props }) => {

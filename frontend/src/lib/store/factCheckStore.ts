@@ -1,10 +1,7 @@
 import { create } from 'zustand';
 import type { FactCheckResult, VerificationState, VerificationStatus } from '../types/api';
 
-interface FactCheckStoreState extends VerificationState {
-  // VerificationState já inclui processedText e fingerprint do shared/types/api.ts
-  // Não precisamos redefinir aqui
-}
+type FactCheckStoreState = VerificationState;
 
 interface FactCheckStoreActions {
   update: (updates: Partial<FactCheckStoreState>) => void;

@@ -6,7 +6,7 @@ import type { GlobalProvider } from "@ladle/react";
 if (typeof window !== 'undefined' && !window.localStorage) {
   console.warn('localStorage não disponível, criando mock');
   const storage: Record<string, string> = {};
-  (window as any).localStorage = {
+  (window as typeof window & { localStorage: Storage }).localStorage = {
     getItem: (key: string) => storage[key] || null,
     setItem: (key: string, value: string) => { storage[key] = value; },
     removeItem: (key: string) => { delete storage[key]; },

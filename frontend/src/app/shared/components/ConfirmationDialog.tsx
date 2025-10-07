@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { AlertTriangle, FileText, X } from "lucide-react"
+import { AlertTriangle, FileText } from "lucide-react"
 import { Button } from "@/app/shared/components/ui/button"
 import {
   Dialog as DialogPrimitive,
@@ -77,7 +77,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
         if (!open) onClose?.()
       }}
     >
-      <DialogContent 
+      <DialogContent
         className={cn(
           "w-[516px] bg-neutral-50 rounded-2xl px-10 py-8 gap-4",
           "shadow-[0px_4px_8px_0px_rgba(0,0,0,0.15),var(--shadow-card)]",
@@ -93,7 +93,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               <IconComponent className="size-12" />
             </div>
           </div>
-          
+
           {/* Message Section */}
           <div className="w-full text-center">
             <DialogDescription className="text-[var(--text-active)] text-base leading-6 tracking-[0.16px] font-[var(--font-inter)] font-normal">

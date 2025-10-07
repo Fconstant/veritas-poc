@@ -9,7 +9,6 @@ import { Loader2 } from 'lucide-react';
 
 interface ProcessingConfirmationPageProps {
   className?: string;
-  text?: string;
   onComplete?: () => void;
   autoRedirect?: boolean;
   redirectDelay?: number;
@@ -17,7 +16,6 @@ interface ProcessingConfirmationPageProps {
 
 const ProcessingConfirmationPage: React.FC<ProcessingConfirmationPageProps> = ({
   className,
-  text = "",
   onComplete,
   autoRedirect = true,
   redirectDelay = 2500
@@ -76,8 +74,8 @@ const ProcessingConfirmationPage: React.FC<ProcessingConfirmationPageProps> = ({
 
             {/* Texto de Confirmação */}
             <div className="text-center space-y-2">
-              <AnimatedDots 
-                text="Lendo Texto" 
+              <AnimatedDots
+                text="Lendo Texto"
                 className="text-lg font-medium text-[var(--text-primary)] [font-family:var(--font-inter)]"
                 interval={500}
               />
