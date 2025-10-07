@@ -50,7 +50,7 @@ const ProcessingConfirmationPage: React.FC<ProcessingConfirmationPageProps> = ({
 
   return (
     <div className={cn(
-      "min-h-screen bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea] relative w-full overflow-hidden transition-opacity duration-500",
+      "min-h-screen bg-gradient-to-b from-[var(--gradient-bg-start)] to-[var(--gradient-bg-end)] relative w-full overflow-hidden transition-opacity duration-500",
       isVisible ? "opacity-100" : "opacity-0",
       className
     )}>
@@ -66,29 +66,29 @@ const ProcessingConfirmationPage: React.FC<ProcessingConfirmationPageProps> = ({
         <div className="w-full max-w-[571px] mx-auto">
           {/* Card de Confirmação */}
           <div className={cn(
-            "backdrop-blur-[1.5px] backdrop-filter flex flex-col items-center justify-center gap-6 p-8 relative rounded-[16px] w-full bg-[#f2f2f2] border border-[bg-violet-900/20] shadow-[0px_20px_80px_0px_rgba(137,44,219,0.2)] transition-all duration-700",
+            "backdrop-blur-[1.5px] backdrop-filter flex flex-col items-center justify-center gap-6 p-8 relative rounded-2xl w-full bg-[var(--card-bg)] border border-violet-900/20 shadow-[var(--shadow-card)] transition-all duration-700",
             isVisible ? "scale-100 opacity-100 translate-y-0" : "scale-95 opacity-0 translate-y-4"
           )}>
             {/* Ícone de Loading */}
-            <div className="flex items-center justify-center p-4 rounded-full bg-[rgba(132,74,233,0.1)]">
-              <Loader2 className="size-8 text-[#8A5CDA] animate-spin" />
+            <div className="flex items-center justify-center p-4 rounded-full bg-[var(--bg-purple-light)]">
+              <Loader2 className="size-8 text-[var(--purple-hover)] animate-spin" />
             </div>
 
             {/* Texto de Confirmação */}
             <div className="text-center space-y-2">
               <AnimatedDots 
                 text="Lendo Texto" 
-                className="text-[18px] font-medium text-[#102148] [font-family:var(--font-inter)]"
+                className="text-lg font-medium text-[var(--text-primary)] [font-family:var(--font-inter)]"
                 interval={500}
               />
-              <p className="text-[14px] text-[#6e678a] [font-family:var(--font-inter)]">
+              <p className="text-sm text-[var(--text-muted)] [font-family:var(--font-inter)]">
                 Processando seu texto para verificação de fatos...
               </p>
             </div>
 
             {/* Indicador de Progresso */}
-            <div className="w-full max-w-[200px] h-1 bg-[#e0e0e0] rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#8A5CDA] to-[#731fb8] rounded-full animate-pulse"></div>
+            <div className="w-full max-w-[200px] h-1 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-[var(--purple-hover)] to-[var(--purple-accent)] rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>

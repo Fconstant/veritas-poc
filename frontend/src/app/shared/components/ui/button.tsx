@@ -12,7 +12,7 @@ const buttonVariants = cva(
       variant: {
         // Filled (Figma: Filled Enabled/Hovered/Disabled)
         filled:
-          "font-semibold bg-[#844ae9] text-white border border-[#351397] shadow-[0px_12px_40px_0px_rgba(83,44,219,0.50)] hover:bg-[#5d13dd] disabled:bg-[#c1a4f4] disabled:text-[#5d0bbc] disabled:opacity-100 disabled:shadow-none disabled:hover:bg-[#c1a4f4] disabled:hover:text-[#5d0bbc] disabled:hover:shadow-none",
+          "font-semibold bg-[#844ae9] text-white border border-[#351397] shadow-[0px_8px_24px_0px_rgba(83,44,219,0.50)] hover:bg-[#5d13dd] hover:shadow-[0px_12px_40px_0px_rgba(83,44,219,0.50)]  disabled:bg-[#c1a4f4] disabled:text-[#5d0bbc] disabled:opacity-100 disabled:shadow-none disabled:hover:bg-[#c1a4f4] disabled:hover:text-[#5d0bbc] disabled:hover:shadow-none",
         // Outlined (Figma: Outlined Enabled/Hovered/Disabled)
         outlined:
           "font-semibold bg-transparent text-[#8a5cda] border border-[#351397] hover:bg-neutral-100 hover:text-[#5d13dd] disabled:opacity-50 disabled:text-[#9d6eed] disabled:hover:bg-transparent disabled:hover:text-[#9d6eed] disabled:hover:opacity-50",

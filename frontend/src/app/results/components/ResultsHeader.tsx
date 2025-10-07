@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/app/shared/components/ui/button"
 import { X, RotateCcw, Copy, CircleCheck, AlertCircle, Check, Sparkles } from "lucide-react"
 import AnimatedDots from "@/app/shared/components/AnimatedDots"
+import ResultsSectionTitle from "./ResultsSectionTitle"
 
 type VerificationStatus = "verifying" | "error" | "done" | "complete-no-results"
 
@@ -146,16 +147,10 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
         <div className="flex flex-[1_0_0] flex-row items-center self-stretch">
           <div className="content-stretch flex flex-[1_0_0] flex-wrap gap-[16px] h-full items-baseline min-h-px min-w-px relative shrink-0">
             {/* Título "Verificações" */}
-            <div className="content-stretch flex gap-[8px] h-full items-center relative shrink-0">
-              <div className="box-border content-stretch flex gap-[8px] items-center justify-center opacity-50 p-[8px] relative rounded-[100px] shrink-0 size-[24px]">
-                <div className="overflow-clip relative shrink-0 size-[24px]">
-                  <Sparkles className="size-[24px] text-slate-900" />
-                </div>
-              </div>
-              <div className="flex flex-col font-[var(--font-inter)] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-slate-900 whitespace-nowrap">
-                <p className="leading-[20px]">Verificações</p>
-              </div>
-            </div>
+            <ResultsSectionTitle
+              icon={<Sparkles className="size-[24px] text-slate-900" />}
+              text="Verificações"
+            />
             
             {/* Status atual */}
             <div className="content-stretch flex gap-[8px] h-full items-center relative shrink-0">

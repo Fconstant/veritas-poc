@@ -33,7 +33,7 @@ export const ComingSoonBanner: React.FC<ComingSoonBannerProps> = ({ className })
       <div className="flex items-center gap-1">
         <FileText className="w-5 h-5" style={{ color: 'var(--purple-accent)' }} />
         <p className="text-sm leading-6 text-[var(--text-muted)]">
-          <span className="font-semibold">Text Files</span> and
+          <span className="font-semibold">Arquivos de Texto</span> e
         </p>
       </div>
 
@@ -41,7 +41,7 @@ export const ComingSoonBanner: React.FC<ComingSoonBannerProps> = ({ className })
       <div className="flex items-center gap-1">
         <AudioLines className="w-5 h-5" style={{ color: 'var(--purple-accent)' }} />
         <p className="text-sm leading-6 text-[var(--text-muted)]">
-          <span className="font-semibold">Audio</span> are coming soon
+          <span className="font-semibold">Áudio</span> estão chegando em breve
         </p>
       </div>
     </div>

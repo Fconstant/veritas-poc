@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Plus, Type } from 'lucide-react';
 import InteractiveText from './InteractiveText';
 import type { ResultData } from '@/lib/types/results';
+import ResultsSectionTitle from './ResultsSectionTitle';
 
 interface ProcessedTextPanelProps {
   text: string;
@@ -29,16 +30,10 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
       {/* Header */}
       <div className="py-4 border-b border-[#d6d8db] flex-shrink-0">
         <div className="content-stretch flex items-center justify-between relative shrink-0 w-full">
-          <div className="content-stretch flex gap-[8px] h-full items-center relative shrink-0">
-            <div className="box-border content-stretch flex gap-[8px] items-center justify-center opacity-50 p-[8px] relative rounded-[100px] shrink-0 size-[24px]">
-              <div className="overflow-clip relative shrink-0 size-[24px]">
-                <Type className="size-[24px] text-slate-900" />
-              </div>
-            </div>
-            <div className="flex flex-col font-[var(--font-inter)] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-slate-900 whitespace-nowrap">
-              <p className="leading-[20px]">Texto Processado</p>
-            </div>
-          </div>
+          <ResultsSectionTitle
+            icon={<Type className="size-[24px] text-slate-900" />}
+            text="Texto Processado"
+          />
           <Button
             onClick={onNewVerification}
             variant="filled"
@@ -69,4 +64,3 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
 };
 
 export default ProcessedTextPanel;
-

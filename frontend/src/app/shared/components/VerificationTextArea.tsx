@@ -45,7 +45,7 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
   // Determina a cor do counter
   const getCounterColor = () => {
     if (isOverLimit) return 'var(--error-red)';
-    if (charCount > 4500) return '#f59e0b'; // warning
+    if (charCount > 4500) return 'var(--warning-amber)';
     return 'var(--text-helper)';
   };
 

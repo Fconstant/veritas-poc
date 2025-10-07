@@ -40,18 +40,18 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
           className="flex flex-col leading-[0]"
         >
           <span 
-            className="font-bold text-[24px] leading-[32px] tracking-[0.48px] whitespace-pre-wrap"
+            className="font-bold text-2xl leading-8 tracking-[0.48px] whitespace-pre-wrap"
             style={{ 
-              color: '#102148',
+              color: 'var(--text-primary)',
               fontFamily: 'var(--font-inria-serif), "Inria Serif", Georgia, serif'
             }}
           >
             Veritas
           </span>
           <span 
-            className="font-normal text-[12px] leading-[20px] tracking-[0.24px] whitespace-pre-wrap opacity-90"
+            className="font-normal text-xs leading-5 tracking-[0.24px] whitespace-pre-wrap opacity-90"
             style={{ 
-              color: '#737b91',
+              color: 'var(--text-tagline)',
               fontFamily: 'var(--font-inter), Inter, sans-serif'
             }}
           >

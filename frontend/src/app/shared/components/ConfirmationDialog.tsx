@@ -42,8 +42,8 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       case "new-text":
         return {
           icon: FileText,
-          iconColor: "text-[#8A5CDA]",
-          bgColor: "bg-[rgba(132,74,233,0.1)]",
+          iconColor: "text-[var(--purple-hover)]",
+          bgColor: "bg-[var(--bg-purple-light)]",
           defaultDescription: "Tem certeza de que deseja criar um novo texto? Se continuar, tudo o que foi feito até agora será perdido.",
           defaultConfirmText: "Novo Texto",
           defaultCancelText: "Voltar",
@@ -52,8 +52,8 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       default:
         return {
           icon: AlertTriangle,
-          iconColor: "text-[#8A5CDA]",
-          bgColor: "bg-[rgba(132,74,233,0.1)]",
+          iconColor: "text-[var(--purple-hover)]",
+          bgColor: "bg-[var(--bg-purple-light)]",
           defaultDescription: "Tem certeza de que deseja cancelar esta verificação? Se você cancelar, tudo que foi feito até agora será perdido.",
           defaultConfirmText: "Cancelar",
           defaultCancelText: "Voltar",
@@ -79,16 +79,16 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     >
       <DialogContent 
         className={cn(
-          "w-[516px] bg-neutral-50 rounded-[16px] px-10 py-8 gap-4",
-          "shadow-[0px_4px_8px_0px_rgba(0,0,0,0.15),0px_20px_80px_0px_rgba(137,44,219,0.2)]",
-          "outline outline-1 outline-offset-[-1px] outline-[#351397]",
+          "w-[516px] bg-neutral-50 rounded-2xl px-10 py-8 gap-4",
+          "shadow-[0px_4px_8px_0px_rgba(0,0,0,0.15),var(--shadow-card)]",
+          "outline outline-1 outline-offset-[-1px] outline-[var(--purple-primary)]",
           className
         )}
         showCloseButton={false}
       >
         <div className="flex flex-col gap-6 items-center justify-start w-full">
           {/* Icon Section */}
-          <div className={cn("flex items-center justify-center p-[24px] rounded-[15px]", config.bgColor)}>
+          <div className={cn("flex items-center justify-center p-6 rounded-2xl", config.bgColor)}>
             <div className={cn("flex items-center justify-center", config.iconColor)}>
               <IconComponent className="size-12" />
             </div>
@@ -96,7 +96,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           
           {/* Message Section */}
           <div className="w-full text-center">
-            <DialogDescription className="text-[#383838] text-[16px] leading-[24px] tracking-[0.16px] font-[var(--font-inter)] font-normal">
+            <DialogDescription className="text-[var(--text-active)] text-base leading-6 tracking-[0.16px] font-[var(--font-inter)] font-normal">
               {description || config.defaultDescription}
             </DialogDescription>
           </div>

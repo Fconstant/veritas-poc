@@ -31,7 +31,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({
   return (
     <div className={cn(
       "relative bg-white rounded-2xl border-2 transition-all duration-200",
-      isFocused ? "border-[#22c55e] shadow-lg" : "border-gray-200",
+      isFocused ? "border-[var(--success-green)] shadow-lg" : "border-gray-200",
       isConfigured && !isFocused && "border-green-200 bg-green-50/30",
       className
     )}>
@@ -67,7 +67,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({
               "w-full px-4 py-3 pr-12 rounded-xl border-2 transition-all duration-200",
               "font-mono text-sm",
               "focus:outline-none focus:ring-0",
-              isFocused ? "border-[#22c55e] bg-white" : "border-gray-200 bg-gray-50",
+              isFocused ? "border-[var(--success-green)] bg-white" : "border-gray-200 bg-gray-50",
               "placeholder:text-gray-400 placeholder:font-sans"
             )}
           />
@@ -90,7 +90,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({
           href={helpUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-[#22c55e] hover:text-[#16a34a] transition-colors group"
+          className="inline-flex items-center gap-2 text-sm text-[var(--success-green)] hover:text-green-600 transition-colors group"
         >
           <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           {helpText}

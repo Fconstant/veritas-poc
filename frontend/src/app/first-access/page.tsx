@@ -19,7 +19,7 @@ import { Button } from '@/app/shared/components/ui/button';
  * - Título: Inter Extra Light/Bold, 64px
  * - Subtítulo: Inter Regular, 20px
  * - CTA: "Configure para começar", roxo #844ae9
- * - Badge: "É Grátis!", texto #6e678a
+ * - Badge: "É grátis!", texto #6e678a
  */
 export default function FirstAccessPage() {
   const router = useRouter();
@@ -78,12 +78,12 @@ export default function FirstAccessPage() {
             <ArrowRight className="w-6 h-6" />
           </Button>
 
-          {/* Badge "É Grátis!" */}
+          {/* Badge "É grátis!" */}
           <p 
             className="font-[var(--font-inter)] font-normal text-[14px] leading-[24px]"
             style={{ color: 'var(--text-muted)' }}
           >
-            É Grátis!
+            É grátis!
           </p>
 
           {/* Coming Soon Banner */}

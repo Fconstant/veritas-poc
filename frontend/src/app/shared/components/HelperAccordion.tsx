@@ -38,9 +38,9 @@ export const HelperAccordion: React.FC<HelperAccordionProps> = ({ className }) =
   return (
     <div 
       className={cn(
-        "px-4 rounded-tl-2xl rounded-tr-2xl border-l border-r border-t border-[#d6d8db] overflow-hidden transition-all duration-300 ease-in-out cursor-pointer",
-        "hover:border-[#b09ac5] hover:shadow-[0_0_10px_0_rgba(0,0,0,0.10)]",
-        isExpanded ? "h-auto" : "h-[64px]",
+        "px-4 rounded-tl-2xl rounded-tr-2xl border-l border-r border-t border-[var(--helper-border)] overflow-hidden transition-all duration-300 ease-in-out cursor-pointer",
+        "hover:border-[var(--border-hover-purple)] hover:shadow-[var(--shadow-hover-accordion)]",
+        isExpanded ? "h-auto" : "h-16",
         className
       )}
       onClick={toggleExpanded}
