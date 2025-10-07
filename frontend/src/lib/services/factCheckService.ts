@@ -205,7 +205,7 @@ export class FactCheckService {
       // Prepara a requisição
       const request: FactCheckRequest = {
         fingerprint,
-        researchThreshold: options.researchThreshold ?? API_CONFIG.DEFAULT_RESEARCH_THRESHOLD,
+        researchThreshold: options.researchThreshold,
         apiKeys: options.apiKeys
       };
 

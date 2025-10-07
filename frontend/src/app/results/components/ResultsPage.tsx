@@ -289,7 +289,6 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         }
         
         const fingerprint = await factCheckService.requestFactCheck(serviceText, {
-          researchThreshold: 0.5,
           apiKeys: {
             google: apiKeys.google,
             tavily: apiKeys.tavily,

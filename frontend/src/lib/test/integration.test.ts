@@ -51,7 +51,6 @@ export async function testFactCheckIntegration() {
     // 2. Iniciar verificação
     console.log('🚀 Iniciando verificação de fatos...');
     const fingerprint = await factCheckService.requestFactCheck(EXAMPLE_TEXT, {
-      researchThreshold: 0.5,
       // apiKeys podem ser configuradas aqui para teste
       // apiKeys: {
       //   google: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,

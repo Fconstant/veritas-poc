@@ -9,7 +9,6 @@ const getEnv = (key: string): string | undefined => {
 
 const env = {
   backendUrl: getEnv('NEXT_PUBLIC_BACKEND_URL'),
-  defaultResearchThreshold: getEnv('NEXT_PUBLIC_DEFAULT_RESEARCH_THRESHOLD'),
   websocketTimeout: getEnv('NEXT_PUBLIC_WEBSOCKET_TIMEOUT'),
   maxRetryAttempts: getEnv('NEXT_PUBLIC_MAX_RETRY_ATTEMPTS'),
   retryDelay: getEnv('NEXT_PUBLIC_RETRY_DELAY'),
@@ -18,12 +17,6 @@ const env = {
 export const API_CONFIG = {
   // URL do backend – pode ser configurada via NEXT_PUBLIC_BACKEND_URL
   BACKEND_URL: env.backendUrl || 'http://localhost:3000',
-
-  // Configurações padrão para verificação de fatos
-  DEFAULT_RESEARCH_THRESHOLD:
-    env.defaultResearchThreshold !== undefined
-      ? Number(env.defaultResearchThreshold)
-      : 1,
 
   // Timeout para conexão WebSocket (em ms)
   WEBSOCKET_TIMEOUT:
