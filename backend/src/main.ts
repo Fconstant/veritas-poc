@@ -61,7 +61,7 @@ createWebSocketServer(httpServer, (socket) => {
         }
 
         type Res = typeof result
-        const isChunkCount = (v: Res): v is ChunkCount => "chunkCount" in result.data;
+        const isChunkCount = (v: Res): v is ChunkCount => "chunkCount" in v.data;
 
         if (isChunkCount(result)) {
           socket.emit('CHUNK_COUNT', result);

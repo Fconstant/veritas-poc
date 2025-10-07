@@ -21,7 +21,7 @@ type DeepResearchRunnableInput = {
   memory?: BaseChatMemory;
 }
 
-const DEEP_RESEARCH_RESULT_SCHEMA = FACT_CHECK_RESULT_DATA_SCHEMA.pick({ reasoning: true, sources: true, reasoningConfidence: true });
+export const DEEP_RESEARCH_RESULT_SCHEMA = FACT_CHECK_RESULT_DATA_SCHEMA.pick({ reasoning: true, sources: true, reasoningConfidence: true });
 
 export type DeepResearchOutput = z.infer<typeof DEEP_RESEARCH_RESULT_SCHEMA>;
 
