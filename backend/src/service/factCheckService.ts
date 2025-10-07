@@ -44,7 +44,7 @@ export async function* factCheckService(
   const threshold =
     factCheckReq.researchThreshold ?? Consts.DEFAULT_NEED_RESEARCH_THRESHOLD;
   for await (const result of basicAnalysisGenerator) {
-    if (result.data.reasoningConfidence <= threshold) {
+    if (result.data.reasoningConfidence > threshold) {
       const deepResearchResult = await deepResearch({
         query: result.data.extractedClaim,
         memory,
