@@ -29,8 +29,6 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   const router = useRouter();
   const verificationState = useFactCheckStore();
   const { apiKeys } = useApiKeys();
-  const [showResultsPanel, setShowResultsPanel] = useState(false);
-  const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showSettingsConfirmModal, setShowSettingsConfirmModal] = useState(false);
   const [showNewTextModal, setShowNewTextModal] = useState(false);
@@ -223,28 +221,12 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   // Inicializa a conexão com o backend
   useEffect(() => {
     if (isInitialized) return;
-
-    const timeouts: number[] = [];
     
     // Modo demo: pula a conexão com backend
     if (demoMode) {
       console.log('🎭 Modo demo ativado - pulando conexão com backend');
       setIsInitialized(true);
-      
-      // Mostra os painéis imediatamente
-      const t1 = window.setTimeout(() => {
-        setShowLeftPanel(true);
-      }, 100);
-      timeouts.push(t1);
-
-      const t2 = window.setTimeout(() => {
-        setShowResultsPanel(true);
-      }, 200);
-      timeouts.push(t2);
-
-      return () => {
-        timeouts.forEach((id) => window.clearTimeout(id));
-      };
+      return;
     }
 
     const initializeConnection = async () => {
@@ -261,36 +243,19 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         console.log('✅ Conexão com o backend estabelecida');
         setIsInitialized(true);
 
-        // Mostra o painel esquerdo primeiro (imagem 4)
-        const t1 = window.setTimeout(() => {
-          setShowLeftPanel(true);
-        }, 500);
-        timeouts.push(t1);
-
-        // Mostra o painel de resultados após 1-2 segundos (imagem 5)
-        const t2 = window.setTimeout(() => {
-          setShowResultsPanel(true);
-        }, 1500);
-        timeouts.push(t2);
-
       } catch (error) {
         console.error('❌ Erro ao inicializar conexão:', error);
-      } finally {
-        // nada aqui; cleanup feito no retorno do effect
       }
     };
 
     void initializeConnection();
-    return () => {
-      timeouts.forEach((id) => window.clearTimeout(id));
-    }
   }, [isInitialized, demoMode, text]);
 
   // O estado já é sincronizado automaticamente via Zustand
 
   // Inicia a verificação automaticamente quando a página carrega
   useEffect(() => {
-    if (!isInitialized || !showResultsPanel) return;
+    if (!isInitialized) return;
     
     // Modo demo: não inicia verificação
     if (demoMode) {
@@ -339,7 +304,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
 
     // Inicia a verificação imediatamente
     startVerification();
-  }, [isInitialized, showResultsPanel, text, apiKeys, demoMode]);
+  }, [isInitialized, text, apiKeys, demoMode]);
 
   const handleNewVerification = () => {
     // Sempre mostrar modal de confirmação
@@ -402,34 +367,30 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         />
       </div>
       
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-4 lg:px-8 py-6">
+      <div className="max-w-[1440px] mx-auto px-[80px] sm:px-4 lg:px-20 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 h-[calc(100vh-7rem)]">
           {/* Coluna Esquerda - Texto Processado */}
-          {showLeftPanel && (
-            <div className="rounded-lg pl-16 pr-16 transition-opacity duration-500">
-              <ProcessedTextPanel
-                text={verificationState.processedText || text || ''}
-                results={convertedResults}
-                onNewVerification={handleNewVerification}
-                onClaimClick={handleClaimClick}
-                selectedClaimId={selectedClaimId}
-              />
-            </div>
-          )}
+          <div className="rounded-lg pl-10 pr-8">
+            <ProcessedTextPanel
+              text={verificationState.processedText || text || ''}
+              results={convertedResults}
+              onNewVerification={handleNewVerification}
+              onClaimClick={handleClaimClick}
+              selectedClaimId={selectedClaimId}
+            />
+          </div>
 
           {/* Coluna Direita - Resultados */}
-          {showResultsPanel && (
-            <div>
-          <ResultsPanel
-            status={getResultsPanelStatus()}
-            results={convertedResults}
-            onCopyPlainText={handleCopyPlainText}
-            onCancel={() => setShowCancelVerificationModal(true)}
-            onResultClick={handleResultClick}
-            selectedResultId={selectedClaimId}
-          />
-        </div>
-      )}
+          <div>
+            <ResultsPanel
+              status={getResultsPanelStatus()}
+              results={convertedResults}
+              onCopyPlainText={handleCopyPlainText}
+              onCancel={() => setShowCancelVerificationModal(true)}
+              onResultClick={handleResultClick}
+              selectedResultId={selectedClaimId}
+            />
+          </div>
         </div>
       </div>
 
@@ -439,9 +400,8 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         onClose={() => setShowSettingsConfirmModal(false)}
         onCancel={() => setShowSettingsConfirmModal(false)}
         variant="cancel-verification"
-        description="Tem certeza de que deseja ir para configuracões? Se continuar, tudo o que foi feito até agora será perdido."
+        description="Tem certeza de que deseja ir para configurações? Se continuar, tudo o que foi feito até agora será perdido."
         confirmText="Ir para Configurações"
-        cancelText="Voltar"
         onConfirm={() => {
           factCheckService.reset();
           setShowSettingsConfirmModal(false);

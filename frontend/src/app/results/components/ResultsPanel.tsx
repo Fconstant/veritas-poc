@@ -64,7 +64,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
   const nextDisabledTooltip =
     selectedIndex === -1
-      ? "Nenhuma afirmação selecionada"
+      ? "Nenhum afirmação selecionado"
       : selectedIndex === results.length - 1
       ? "Já está na última afirmação"
       : undefined;
@@ -265,14 +265,14 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     // Card com todos os Resultados na página de Verificação
     <div
       className={cn(
-        'flex flex-col',
+        'flex flex-col inline-flex flex-col justify-start items-start w-full',
         // Altura máxima garantida para nunca ultrapassar a viewport
         'max-h-[calc(100vh-7rem)]',
         className
       )}
     >
       {/* Header */}
-      <div className="box-border content-stretch flex flex-col gap-[16px] items-start pt-[24px] relative shrink-0 w-full">
+      <div className="box-border content-stretch flex flex-col gap-[16px] items-start pt-[16px] relative shrink-0 w-full">
         <div className="content-stretch flex items-start relative shrink-0 w-full">
           <ResultsHeader
             status={getVerificationStatus()}
@@ -288,7 +288,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
       {/* Results Content */}
       <div className={cn(
-        'box-border content-stretch flex flex-col gap-[16px] items-center px-[8px] py-[16px] relative shrink-0 w-full',
+        'box-border content-justify flex flex-col gap-[16px] items-center px-[8px] py-[16px] relative shrink-0 w-full',
         // Flex behavior: sempre flex-1 com overflow-y-auto para rolagem quando necessário
         'flex-1 overflow-y-auto',
         // Justificação condicional
