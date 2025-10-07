@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Textarea } from "./textarea";
 
 export default {
-  title: "UI/Textarea",
+  title: "app/shared/components/ui/textarea",
 } satisfies StoryDefault;
 
 export const Interactive: Story = () => {

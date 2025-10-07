@@ -17,16 +17,6 @@ Página completa de onboarding que guia o usuário na configuração das API key
 - ✅ Suporte para edição de keys existentes
 - ✅ Armazenamento seguro no localStorage
 
-### `ApiKeyCard`
-Card individual para configuração de uma API key.
-
-**Features:**
-- ✅ Campo com toggle de visibilidade (show/hide)
-- ✅ Indicador de status "Configurado"
-- ✅ Link de ajuda para obter a chave
-- ✅ Feedback visual ao focar
-- ✅ Animações suaves
-
 ## 🔧 Hook: `useApiKeys`
 
 Hook customizado para gerenciar API keys:

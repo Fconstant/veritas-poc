@@ -3,7 +3,7 @@ import { Button } from "./button";
 import { Save, Send, Trash2 } from "lucide-react";
 
 export default {
-  title: "UI/Button/Disabled with Tooltip",
+  title: "app/shared/components/ui/button-with-tooltip",
 } satisfies StoryDefault;
 
 // Botão desabilitado com tooltip - Filled variant

@@ -4,7 +4,7 @@ import ResultsPanel from "./ResultsPanel";
 import type { ResultData } from "@/lib/types/results";
 
 export default {
-  title: "Results/ResultsPanel",
+  title: "app/results/components/ResultsPanel",
 } satisfies StoryDefault;
 const sampleResults: ResultData[] = [
   {

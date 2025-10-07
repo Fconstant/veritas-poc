@@ -4,7 +4,7 @@ import Header from "./Header";
 import { Button } from "@/app/shared/components/ui/button";
 
 export default {
-  title: "Shared/Header",
+  title: "app/shared/components/Header",
 } satisfies StoryDefault;
 
 export const Default: Story = () => {

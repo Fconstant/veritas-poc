@@ -2,7 +2,7 @@ import type { Story, StoryDefault } from "@ladle/react";
 import ProcessingConfirmationPage from "./ProcessingConfirmationPage";
 
 export default {
-  title: "Pages/ProcessingConfirmationPage",
+  title: "app/processing/components/ProcessingConfirmationPage",
 } satisfies StoryDefault;
 
 // Estado padrão usado na plataforma (auto redirect ativado)

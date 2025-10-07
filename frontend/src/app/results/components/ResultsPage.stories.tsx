@@ -93,7 +93,7 @@ const ResultsPageWithMockData: React.FC<ResultsPageStoryProps> = ({
 };
 
 export default {
-  title: "Pages/ResultsPage",
+  title: "app/results/components/ResultsPage",
 } satisfies StoryDefault;
 
 export const Default: Story = () => (
