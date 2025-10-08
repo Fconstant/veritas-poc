@@ -15,6 +15,10 @@ const env = {
   retryDelay: getEnv('NEXT_PUBLIC_RETRY_DELAY'),
 };
 
+console.log('🔍 API Config Debug:');
+console.log('process.env.NEXT_PUBLIC_BACKEND_URL:', process.env.NEXT_PUBLIC_BACKEND_URL);
+console.log('All NEXT_PUBLIC_ vars:', Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC_')));
+
 export const API_CONFIG = {
   // URL do backend – pode ser configurada via NEXT_PUBLIC_BACKEND_URL
   BACKEND_URL: env.backendUrl || 'http://localhost:3000',
