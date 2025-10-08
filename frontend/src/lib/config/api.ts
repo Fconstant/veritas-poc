@@ -1,18 +1,12 @@
-// Configurações da API
-// Suporte para Next.js e Ladle/Vite (process.env pode não estar disponível)
-const getEnv = (key: string): string | undefined => {
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env[key];
-  }
-  return undefined;
+const env = {
+  backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
+  websocketTimeout: process.env.NEXT_PUBLIC_WEBSOCKET_TIMEOUT,
+  maxRetryAttempts: process.env.NEXT_PUBLIC_MAX_RETRY_ATTEMPTS,
+  retryDelay: process.env.NEXT_PUBLIC_RETRY_DELAY,
 };
 
-const env = {
-  backendUrl: getEnv('NEXT_PUBLIC_BACKEND_URL'),
-  websocketTimeout: getEnv('NEXT_PUBLIC_WEBSOCKET_TIMEOUT'),
-  maxRetryAttempts: getEnv('NEXT_PUBLIC_MAX_RETRY_ATTEMPTS'),
-  retryDelay: getEnv('NEXT_PUBLIC_RETRY_DELAY'),
-};
+console.log('🔍 API Config Debug:');
+console.log('process.env.NEXT_PUBLIC_BACKEND_URL:', process.env.NEXT_PUBLIC_BACKEND_URL);
 
 export const API_CONFIG = {
   // URL do backend – pode ser configurada via NEXT_PUBLIC_BACKEND_URL

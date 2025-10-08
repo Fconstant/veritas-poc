@@ -9,7 +9,7 @@ export default {
 export const Default: Story = () => (
   <div className="border border-gray-200 rounded-lg overflow-hidden" style={{ height: "640px" }}>
     <ProcessingConfirmationPage
-      text="Estamos lendo o texto enviado e preparando a verificação de fatos completa."
+      // text="Estamos lendo o texto enviado e preparando a verificação de fatos completa."
       onComplete={() => console.log("Redirecionando para /results (mockado na story)")}
     />
   </div>
@@ -19,7 +19,7 @@ export const Default: Story = () => (
 export const WithoutAutoRedirect: Story = () => (
   <div className="border border-gray-200 rounded-lg overflow-hidden" style={{ height: "640px" }}>
     <ProcessingConfirmationPage
-      text="Processando texto para visualização contínua (sem redirecionamento automático)."
+      // text="Processando texto para visualização contínua (sem redirecionamento automático)."
       autoRedirect={false}
     />
   </div>
