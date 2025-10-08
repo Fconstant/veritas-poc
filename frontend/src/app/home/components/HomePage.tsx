@@ -177,7 +177,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
 
   return (
     <div className={cn(
-      "bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea] relative w-full min-h-screen overflow-hidden",
+      "bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea] relative w-full min-h-screen",
       className
     )}>
       {/* Barra Superior */}

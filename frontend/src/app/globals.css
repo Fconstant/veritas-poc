@@ -186,6 +186,14 @@
   /* === Sombras Específicas === */
   --shadow-card: 0px 20px 80px 0px rgba(137, 44, 219, 0.2);
   --shadow-hover-accordion: 0 0 10px 0 rgba(0, 0, 0, 0.10);
+
+  /* === Text Highlight Colors (Node 574:14996) === */
+  --text-highlight-base: #707070;
+  --text-highlight-claim: #5d13dd;
+  --text-highlight-claim-dark: #4200b4;
+  --text-highlight-bg: #e3d9f7;
+  --text-highlight-underline: rgba(93, 19, 221, 0.5);
+  --text-highlight-underline-selected: rgba(66, 0, 180, 0.85);
 }
 
 .dark {
@@ -260,8 +268,18 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  html {
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+  }
+  
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overscroll-behavior: none;
   }
 }
 

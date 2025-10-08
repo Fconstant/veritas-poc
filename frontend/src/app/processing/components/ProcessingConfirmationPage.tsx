@@ -48,7 +48,7 @@ const ProcessingConfirmationPage: React.FC<ProcessingConfirmationPageProps> = ({
 
   return (
     <div className={cn(
-      "min-h-screen bg-gradient-to-b from-[var(--gradient-bg-start)] to-[var(--gradient-bg-end)] relative w-full overflow-hidden transition-opacity duration-500",
+      "min-h-screen bg-gradient-to-b from-[var(--gradient-bg-start)] to-[var(--gradient-bg-end)] relative w-full transition-opacity duration-500",
       isVisible ? "opacity-100" : "opacity-0",
       className
     )}>
