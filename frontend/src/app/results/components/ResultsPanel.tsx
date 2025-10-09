@@ -2,13 +2,11 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, AlertCircle, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ResultsHeader, VerificationStatus } from './ResultsHeader';
 import { Button } from '@/app/shared/components/ui/button';
-// import ResultCard from './ResultCard';
+import ResultCard from './ResultCard';
 import type { ResultData } from '@/lib/types/results';
-// ResultCard desativado: estados por resultado não são suportados no momento.
-// O painel agora exibe apenas o status global via ResultsHeader.
 
 interface ResultsPanelProps {
   status: 'loading' | 'partial' | 'complete' | 'error';
@@ -156,85 +154,16 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     return (
       <div className="space-y-4">
         {results.map((result: ResultData, index: number) => (
-          <div 
+          <ResultCard
             key={result.id}
             id={`result-${result.id}`}
-            className={cn(
-              "bg-white border border-[var(--border-card)] border-solid relative rounded-2xl shrink-0 w-full transition-all duration-200 cursor-pointer",
-              selectedResultId === result.id && "ring-2 ring-purple-500 ring-opacity-50 bg-purple-50",
-              "hover:shadow-md hover:border-purple-300"
-            )}
+            text={result.text}
+            explanation={result.explanation}
+            sources={result.sources}
+            index={index + 1}
+            isSelected={selectedResultId === result.id}
             onClick={() => onResultClick?.(result.id)}
-          >
-            <div className="box-border content-stretch flex flex-col gap-4 items-start overflow-clip pb-4 pt-6 px-4 relative rounded-[inherit] w-full">
-              {/* Claim Text com numeração */}
-              <div className="box-border content-stretch flex gap-2 items-start justify-center pl-0 pr-4 py-0 relative rounded-lg shrink-0 w-full">
-                <div className="-webkit-box flex-[1_0_0] flex-col font-[var(--font-merriweather)] justify-center leading-[0] min-h-px min-w-px not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-sm text-[var(--text-opacity-dark)]">
-                  <ol className="list-decimal" start={index + 1}>
-                    <li className="ms-[21px] whitespace-pre-wrap">
-                      <span className="leading-7">{result.text}</span>
-                    </li>
-                  </ol>
-                </div>
-              </div>
-
-              {/* Análise e Fontes */}
-              <div className="content-stretch flex flex-col gap-3 items-center relative shrink-0 w-full">
-                {/* Explanation/Análise */}
-                {result.explanation && (
-                  <div className="bg-[var(--bg-analysis)] border border-[var(--border-analysis)] border-solid box-border content-stretch flex flex-col gap-2 items-start p-4 relative rounded-xl shrink-0 w-full">
-                    <div className="content-stretch flex gap-2 items-center relative shrink-0 w-full">
-                      <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[var(--text-helper)] text-sm whitespace-nowrap">
-                        <p className="leading-6">Análise</p>
-                      </div>
-                    </div>
-                    <div className="flex flex-col font-['Inter'] font-normal justify-center leading-7 min-w-full not-italic relative shrink-0 text-base text-[var(--text-opacity-dark)] w-[min-content] whitespace-pre-wrap">
-                      <p>{result.explanation}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Sources/Fontes */}
-                {result.sources && result.sources.length > 0 && (
-                  <div className="box-border content-stretch flex flex-col gap-2 items-start px-2 py-0 relative shrink-0 w-full">
-                    <div className="box-border content-stretch flex gap-2 items-center px-2 py-0 relative shrink-0 w-full">
-                      <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[var(--text-helper)] text-sm whitespace-nowrap">
-                        <p className="leading-6">Fontes</p>
-                      </div>
-                    </div>
-                    <div className="content-start flex flex-wrap gap-1 gap-x-2 items-start relative shrink-0 w-full">
-                      {result.sources.map((source: string, sourceIndex: number) => {
-                        let displayText = source;
-                        try {
-                          displayText = new URL(source).hostname.replace('www.', '');
-                        } catch {
-                          // Se não for uma URL válida, usa o texto original
-                          displayText = source.length > 30 ? source.substring(0, 30) + '...' : source;
-                        }
-                        
-                        return (
-                          <div key={sourceIndex} className="box-border content-stretch flex gap-2 items-center justify-center px-1.5 py-0.5 relative rounded-lg shrink-0">
-                            <a 
-                              href={source} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="font-['Inter'] font-normal leading-6 not-italic relative shrink-0 text-[var(--purple-hover)] text-[13px] hover:text-[var(--link-hover)]"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {displayText}
-                            </a>
-                            <div className="overflow-clip relative shrink-0 size-4">
-                              <ExternalLink className="size-4 text-[var(--purple-hover)]" />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          />
         ))}
 
         {/* Skeleton card no final da lista durante verificação */}

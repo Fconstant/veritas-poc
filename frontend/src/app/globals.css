@@ -167,11 +167,13 @@
   /* === Cores de Bordas === */
   --border-card: #d9d9d9;
   --border-analysis: #d8d8d8;
-  --border-hover-purple: #b09ac5;
+  --border-hover-purple: #af89f1;
+  --border-selected-purple: #844ae9;
 
   /* === Backgrounds === */
   --bg-analysis: rgba(245, 245, 245, 0.5);
   --bg-purple-light: rgba(132, 74, 233, 0.1);
+  --bg-purple-selected: rgba(132, 74, 233, 0.05);
 
   /* === Opacidades de Texto === */
   --text-opacity-dark: rgba(29, 30, 31, 0.9);
@@ -184,8 +186,8 @@
   --gradient-bg-end: #eaeaea;
 
   /* === Sombras Específicas === */
-  --shadow-card: 0px 20px 80px 0px rgba(137, 44, 219, 0.2);
-  --shadow-hover-accordion: 0 0 10px 0 rgba(0, 0, 0, 0.10);
+  --shadow-card-hover: 0px 4px 16px 0px rgba(137, 44, 219, 0.2);
+  --shadow-card-selected: 0px 4px 12px 0px rgba(95, 0, 179, 0.30);
 
   /* === Text Highlight Colors (Node 574:14996) === */
   --text-highlight-base: #707070;
