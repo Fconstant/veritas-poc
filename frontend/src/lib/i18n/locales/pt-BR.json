@@ -1,0 +1,141 @@
+{
+  "common": {
+    "appName": "Veritas",
+    "tagline": "Automatizando a verificação de fatos",
+    "loading": "Carregando",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "continue": "Continuar",
+    "back": "Voltar",
+    "new": "Novo",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "retry": "Tente Novamente",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "configured": "Configurado",
+    "settings": "Configurações"
+  },
+  "metadata": {
+    "title": "Veritas - Automatize a verificação de fatos",
+    "description": "Plataforma de verificação de fatos automatizada usando IA"
+  },
+  "header": {
+    "settingsAriaLabel": "Configurações de API",
+    "settingsTitle": "Configurar API Keys",
+    "homeAriaLabel": "Veritas Home"
+  },
+  "hero": {
+    "title": "Cole o texto.",
+    "titleHighlight": "verificação de fatos",
+    "titleContinuation": "Receba",
+    "subtitle": "Verificamos afirmações e retornamos citações — com privacidade em primeiro lugar.",
+    "textFiles": "Arquivos de Texto",
+    "audio": "Áudio",
+    "comingSoon": "em breve",
+    "and": "e"
+  },
+  "verificationForm": {
+    "label": "Verificar os fatos de...",
+    "placeholder": "Entre o texto que deseja verificar aqui...",
+    "useExample": "Usar Exemplo",
+    "checkFacts": "Verificar Fatos",
+    "tooltipWaitProcessing": "Aguarde o processamento atual terminar",
+    "tooltipExceedsLimit": "O texto excede o limite de {{limit}} caracteres. Remova {{excess}} caracteres para continuar.",
+    "tooltipEnterText": "Digite ou cole um texto para verificar"
+  },
+  "apiSetup": {
+    "welcome": "Bem-vindo ao Veritas",
+    "intro": "Para começar a verificar fatos, precisamos configurar duas chaves de API gratuitas. Não se preocupe, é rápido e fácil! 🚀",
+    "whyTitle": "Por que preciso disso?",
+    "whyDescription": "O Veritas usa inteligência artificial para verificar fatos. As APIs são gratuitas e permitem que você use o serviço sem custos.",
+    "googleTitle": "Google Gemini API",
+    "googleDescription": "Usada para análise inteligente de textos e verificação de afirmações.",
+    "googlePlaceholder": "Cole sua chave do Google Gemini aqui...",
+    "googleHelpText": "Como obter minha chave do Gemini?",
+    "tavilyTitle": "Tavily API",
+    "tavilyDescription": "Usada para buscar informações na web e validar fatos com fontes confiáveis.",
+    "tavilyPlaceholder": "Cole sua chave do Tavily aqui...",
+    "tavilyHelpText": "Como obter minha chave do Tavily?",
+    "startVerifying": "Começar a Verificar",
+    "usePreviousConfig": "Usar configuração anterior",
+    "fillBothKeys": "Preencha ambas as chaves de API para continuar",
+    "securityNote": "🔒 Suas chaves são armazenadas apenas no seu navegador e nunca são enviadas para nossos servidores."
+  },
+  "confirmationDialog": {
+    "newText": {
+      "description": "Tem certeza de que deseja criar um novo texto? Se continuar, tudo o que foi feito até agora será perdido.",
+      "confirm": "Novo Texto",
+      "cancel": "Voltar"
+    },
+    "cancelVerification": {
+      "description": "Tem certeza de que deseja cancelar esta verificação? Se você cancelar, tudo que foi feito até agora será perdido.",
+      "confirm": "Cancelar",
+      "cancel": "Voltar"
+    },
+    "goToSettings": {
+      "description": "Tem certeza de que deseja ir para configurações? Se continuar, tudo o que foi feito até agora será perdido.",
+      "confirm": "Ir para Configurações"
+    }
+  },
+  "results": {
+    "processedText": "Texto Processado",
+    "verifications": "Verificações",
+    "analysis": "Análise",
+    "sources": "Fontes",
+    "claimFound": "Afirmação encontrada",
+    "claimsFound": "Afirmações encontradas",
+    "noClaimSelected": "Nenhuma afirmação selecionada",
+    "firstClaim": "Já está na primeira afirmação",
+    "lastClaim": "Já está na última afirmação",
+    "status": {
+      "verifying": "Em Andamento",
+      "complete": "Completa",
+      "error": "Erro na Verificação"
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "retry": "Tente Novamente",
+      "copyAsText": "Copiar como Texto",
+      "copied": "Copiado!",
+      "new": "Novo"
+    },
+    "messages": {
+      "processing": "Processando resultados...",
+      "noResults": "Nenhum resultado encontrado!",
+      "error": "Erro na Verificação. Tente novamente."
+    },
+    "navigation": {
+      "noneSelected": "Nenhuma afirmação selecionada",
+      "firstClaim": "Já está na primeira afirmação",
+      "lastClaim": "Já está na última afirmação"
+    },
+    "export": {
+      "verifiedText": "TEXTO VERIFICADO",
+      "verificationResults": "RESULTADOS DA VERIFICAÇÃO",
+      "noResultsFound": "Nenhum resultado encontrado na verificação",
+      "verifiedClaim": "AFIRMAÇÃO VERIFICADA",
+      "analysis": "ANÁLISE",
+      "sources": "FONTES",
+      "generatedBy": "GERADO POR VERITAS - VERIFICADOR DE FATOS",
+      "date": "Data",
+      "totalClaims": "Total de afirmações verificadas: {{count}}"
+    }
+  },
+  "toast": {
+    "closeAriaLabel": "Fechar"
+  },
+  "errors": {
+    "connectionFailed": "Não foi possível conectar com o servidor. Verifique se o backend está rodando na porta 3000.",
+    "internalError": "Erro interno. Tente novamente mais tarde.",
+    "backendConnectionFailed": "Falha ao conectar com o backend"
+  },
+  "comingSoon": {
+    "textFiles": "Arquivos de Texto",
+    "audio": "Áudio",
+    "message": "estão chegando em breve",
+    "and": "e"
+  }
+}
+

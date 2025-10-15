@@ -13,6 +13,7 @@ import { useFactCheckStore } from '@/lib/store/factCheckStore';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
 import ApiSetupPage from '@/app/shared/components/ApiSetupPage';
 import { Button } from '@/app/shared/components/ui/button';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 // Constante para o texto de exemplo
 const EXAMPLE_FACT_CHECK_TEXT = "As vacinas contra COVID-19 foram desenvolvidas em tempo recorde em 2020. O Brasil iniciou sua campanha de vacinação em janeiro de 2021. Estudos mostram que as vacinas reduziram significativamente as hospitalizações e mortes pela doença.";
@@ -25,6 +26,7 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) => {
+  const { t } = useI18n();
   const nextRouter = useRouter();
   const router = propRouter || nextRouter;
   const { apiKeys, isLoading, saveApiKeys, hasApiKeys } = useApiKeys();
@@ -109,7 +111,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
       if (!isConnected) {
         setToast({
           type: 'error',
-          message: 'Não foi possível conectar com o servidor. Verifique se o backend está rodando na porta 3000.',
+          message: t.errors.connectionFailed,
           isVisible: true
         });
         return;
@@ -135,7 +137,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
       console.error('❌ Erro ao iniciar verificação:', error);
       setToast({
         type: 'error',
-        message: error instanceof Error ? error.message : 'Erro interno. Tente novamente mais tarde.',
+        message: error instanceof Error ? error.message : t.errors.internalError,
         isVisible: true
       });
 
@@ -143,7 +145,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         setToast(prev => ({ ...prev, isVisible: false }));
       }, 5000);
     }
-  }, [textValue, router, apiKeys?.google, apiKeys?.tavily]);
+  }, [textValue, router, apiKeys?.google, apiKeys?.tavily, t.errors.connectionFailed, t.errors.internalError]);
 
   const handleTextChange = useCallback((text: string) => {
     setTextValue(text);
@@ -159,7 +161,7 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#f5f5f5] to-[#eaeaea]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#22c55e] mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
+          <p className="text-gray-600">{t.common.loading}...</p>
         </div>
       </div>
     );

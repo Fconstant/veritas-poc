@@ -7,6 +7,7 @@ import { Plus, Type } from 'lucide-react';
 import InteractiveText from './InteractiveText';
 import type { ResultData } from '@/lib/types/results';
 import ResultsSectionTitle from './ResultsSectionTitle';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 interface ProcessedTextPanelProps {
   text: string;
@@ -25,6 +26,8 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
   selectedClaimId,
   className
 }) => {
+  const { t } = useI18n();
+
   return (
     <div className={cn("flex flex-col h-full", className)}>
       {/* Header */}
@@ -32,7 +35,7 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
         <div className="content-stretch flex items-center justify-between relative shrink-0 w-full">
           <ResultsSectionTitle
             icon={<Type className="size-[24px] text-slate-900" />}
-            text="Texto Processado"
+            text={t.results.processedText}
           />
           <Button
             onClick={onNewVerification}
@@ -41,7 +44,7 @@ const ProcessedTextPanel: React.FC<ProcessedTextPanelProps> = ({
             className="flex items-center gap-2"
           >
             <Plus className="size-4" />
-            Novo
+            {t.results.actions.new}
           </Button>
         </div>
       </div>

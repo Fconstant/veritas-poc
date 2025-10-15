@@ -7,6 +7,7 @@ import { ResultsHeader, VerificationStatus } from './ResultsHeader';
 import { Button } from '@/app/shared/components/ui/button';
 // import ResultCard from './ResultCard';
 import type { ResultData } from '@/lib/types/results';
+import { useI18n } from '@/lib/i18n/I18nContext';
 // ResultCard desativado: estados por resultado não são suportados no momento.
 // O painel agora exibe apenas o status global via ResultsHeader.
 
@@ -31,6 +32,8 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   onResultClick,
   selectedResultId
 }) => {
+  const { t } = useI18n();
+
   // Mapear status do ResultsPanel para VerificationStatus do ResultsHeader
   const getVerificationStatus = (): VerificationStatus => {
     switch (status) {
@@ -57,16 +60,16 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
   const prevDisabledTooltip =
     selectedIndex === -1
-      ? "Nenhuma afirmação selecionada"
+      ? t.results.navigation.noneSelected
       : selectedIndex === 0
-      ? "Já está na primeira afirmação"
+      ? t.results.navigation.firstClaim
       : undefined;
 
   const nextDisabledTooltip =
     selectedIndex === -1
-      ? "Nenhum afirmação selecionado"
+      ? t.results.navigation.noneSelected
       : selectedIndex === results.length - 1
-      ? "Já está na última afirmação"
+      ? t.results.navigation.lastClaim
       : undefined;
 
   const handlePrev = () => {
@@ -89,7 +92,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
                 <div className="absolute bg-[var(--skeleton-bg-light)] left-1/2 rounded-full size-4 top-1/2 -translate-x-1/2 -translate-y-1/2" />
                 <div className="absolute bg-[var(--skeleton-bg-medium)] left-1/2 rounded-full size-2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
               </div>
-              
+
               {/* Text skeleton */}
               <div className="content-stretch flex flex-[1_0_0] flex-col gap-3 items-start min-h-px min-w-px relative shrink-0">
                 {/* Primeira linha do skeleton */}
@@ -113,10 +116,10 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
               <AlertCircle className="size-12 text-[var(--text-error)]" />
             </div>
           </div>
-          
+
           {/* Texto */}
           <div className="flex flex-col font-['Inter'] font-normal justify-center leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[var(--text-active)] text-sm whitespace-nowrap">
-            <p className="leading-6 overflow-ellipsis overflow-hidden">Erro na Verificação. Tente novamente.</p>
+            <p className="leading-6 overflow-ellipsis overflow-hidden">{t.results.messages.error}</p>
           </div>
         </div>
       );
@@ -133,21 +136,21 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
                 <CheckCircle2 className="size-12 text-[var(--purple-button)]" />
               </div>
             </div>
-            
+
             {/* Texto */}
             <div className="flex flex-col font-['Inter'] font-normal justify-center leading-[0] not-italic overflow-ellipsis overflow-hidden relative shrink-0 text-[var(--text-active)] text-sm whitespace-nowrap">
-              <p className="leading-6 overflow-ellipsis overflow-hidden">Nenhum resultado encontrado!</p>
+              <p className="leading-6 overflow-ellipsis overflow-hidden">{t.results.messages.noResults}</p>
             </div>
           </div>
         );
       }
-      
+
       // Estado de processamento (mantém o design original)
       return (
         <div className="flex flex-col items-center justify-center h-64 text-center">
           <CheckCircle2 className="size-12 text-muted-foreground mb-4" />
           <p className="text-muted-foreground">
-            Processando resultados...
+            {t.results.messages.processing}
           </p>
         </div>
       );
@@ -156,7 +159,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     return (
       <div className="space-y-4">
         {results.map((result: ResultData, index: number) => (
-          <div 
+          <div
             key={result.id}
             id={`result-${result.id}`}
             className={cn(
@@ -185,7 +188,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
                   <div className="bg-[var(--bg-analysis)] border border-[var(--border-analysis)] border-solid box-border content-stretch flex flex-col gap-2 items-start p-4 relative rounded-xl shrink-0 w-full">
                     <div className="content-stretch flex gap-2 items-center relative shrink-0 w-full">
                       <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[var(--text-helper)] text-sm whitespace-nowrap">
-                        <p className="leading-6">Análise</p>
+                        <p className="leading-6">{t.results.analysis}</p>
                       </div>
                     </div>
                     <div className="flex flex-col font-['Inter'] font-normal justify-center leading-7 min-w-full not-italic relative shrink-0 text-base text-[var(--text-opacity-dark)] w-[min-content] whitespace-pre-wrap">
@@ -199,7 +202,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
                   <div className="box-border content-stretch flex flex-col gap-2 items-start px-2 py-0 relative shrink-0 w-full">
                     <div className="box-border content-stretch flex gap-2 items-center px-2 py-0 relative shrink-0 w-full">
                       <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[var(--text-helper)] text-sm whitespace-nowrap">
-                        <p className="leading-6">Fontes</p>
+                        <p className="leading-6">{t.results.sources}</p>
                       </div>
                     </div>
                     <div className="content-start flex flex-wrap gap-1 gap-x-2 items-start relative shrink-0 w-full">
@@ -211,12 +214,12 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
                           // Se não for uma URL válida, usa o texto original
                           displayText = source.length > 30 ? source.substring(0, 30) + '...' : source;
                         }
-                        
+
                         return (
                           <div key={sourceIndex} className="box-border content-stretch flex gap-2 items-center justify-center px-1.5 py-0.5 relative rounded-lg shrink-0">
-                            <a 
-                              href={source} 
-                              target="_blank" 
+                            <a
+                              href={source}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="font-['Inter'] font-normal leading-6 not-italic relative shrink-0 text-[var(--purple-hover)] text-[13px] hover:text-[var(--link-hover)]"
                               onClick={(e) => e.stopPropagation()}
@@ -246,7 +249,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
                 <div className="absolute bg-[var(--skeleton-bg-light)] left-1/2 rounded-full size-4 top-1/2 -translate-x-1/2 -translate-y-1/2" />
                 <div className="absolute bg-[var(--skeleton-bg-medium)] left-1/2 rounded-full size-2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
               </div>
-              
+
               {/* Text skeleton */}
               <div className="content-stretch flex flex-[1_0_0] flex-col gap-3 items-start min-h-px min-w-px relative shrink-0">
                 {/* Primeira linha do skeleton */}

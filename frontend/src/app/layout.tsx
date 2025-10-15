@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Inria_Serif, Merriweather } from "next/font/google";
 import "./globals.css";
+import { I18nProvider } from "@/lib/i18n/I18nContext";
 
 // Fontes do Figma conforme especificado no plano
 const inter = Inter({
@@ -35,7 +36,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${inriaSerif.variable} ${merriweather.variable} antialiased`}
       >
-        {children}
+        <I18nProvider>
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );
