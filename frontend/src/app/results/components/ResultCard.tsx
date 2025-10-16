@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, AlertTriangle } from 'lucide-react';
+import { Button } from '@/app/shared/components/ui/button';
 
 interface ResultCardProps {
   // Content
@@ -43,13 +44,15 @@ const ResultCard: React.FC<ResultCardProps> = ({
         // Default outline
         "outline outline-1 outline-zinc-300 outline-offset-[-1px]",
         // Hover state
-        "bg-[#FAF7FF] hover:outline-2 hover:outline-[var(--border-hover-purple)] hover:outline-offset-[-2px] hover:shadow-[var(--shadow-card-hover)]",
+        "hover:bg-[#FAF7FF] hover:outline-2 hover:outline-[var(--border-hover-purple)] hover:outline-offset-[-2px] hover:shadow-[var(--shadow-card-hover)]",
         // Selected state
         isSelected && [
           "outline-2 outline-[var(--border-selected-purple)] outline-offset-[-2px]",
           "bg-white",
           "shadow-[var(--shadow-card-selected)]"
         ],
+        // Scroll margin for proper spacing when scrolling into view
+        "scroll-mt-4",
         className
       )}
       onClick={onClick}
@@ -98,15 +101,15 @@ const ResultCard: React.FC<ResultCardProps> = ({
           )}
 
           {/* Sources/Fontes */}
-          {sources && sources.length > 0 && (
-            <div className="box-border content-stretch flex flex-col gap-2 items-start px-2 py-0 relative shrink-0 w-full">
-              <div className="box-border content-stretch flex gap-2 items-center px-2 py-0 relative shrink-0 w-full">
-                <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[var(--text-helper)] text-sm whitespace-nowrap">
-                  <p className="leading-6">Fontes</p>
-                </div>
+          <div className="box-border content-stretch flex flex-col gap-2 items-start px-2 py-0 relative shrink-0 w-full">
+            <div className="box-border content-stretch flex gap-2 items-center px-2 py-0 relative shrink-0 w-full">
+              <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[var(--text-helper)] text-sm whitespace-nowrap">
+                <p className="leading-6">Fontes</p>
               </div>
-              <div className="content-start flex flex-wrap gap-1 gap-x-2 items-start relative shrink-0 w-full">
-                {sources.map((source: string, sourceIndex: number) => {
+            </div>
+            <div className="content-start flex flex-wrap gap-1 gap-x-2 items-start relative shrink-0 w-full">
+              {sources && sources.length > 0 ? (
+                sources.map((source: string, sourceIndex: number) => {
                   let displayText = source;
                   try {
                     displayText = new URL(source).hostname.replace('www.', '');
@@ -114,51 +117,39 @@ const ResultCard: React.FC<ResultCardProps> = ({
                     // Se não for uma URL válida, usa o texto original
                     displayText = source.length > 30 ? source.substring(0, 30) + '...' : source;
                   }
-                  
-                  const isFirstLink = sourceIndex === 0;
-                  
+
                   return (
-                    <div 
-                      key={sourceIndex} 
-                      className={cn(
-                        "box-border content-stretch flex gap-2 items-center justify-center px-1.5 py-0.5 relative rounded-lg shrink-0",
-                        isFirstLink && "bg-neutral-100"
-                      )}
+                    <Button
+                      key={sourceIndex}
+                      variant="link"
+                      size="sm"
+                      asChild
+                      className="rounded-lg"
                     >
-                      <a 
-                        href={source} 
-                        target="_blank" 
+                      <a
+                        href={source}
+                        target="_blank"
                         rel="noopener noreferrer"
-                        className={cn(
-                          "font-['Inter'] font-normal leading-6 not-italic relative shrink-0 text-[13px]",
-                          isFirstLink ? [
-                            "text-[var(--purple-link)] underline decoration-solid",
-                            "[text-underline-offset:55%]"
-                          ] : "text-[var(--purple-hover)]",
-                          "hover:text-[var(--link-hover)]"
-                        )}
                         onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-2"
                       >
-                        {displayText}
+                        <span className="text-[13px]">{displayText}</span>
+                        <ExternalLink className="size-4" />
                       </a>
-                      <div className="overflow-clip relative shrink-0 size-4">
-                        <ExternalLink 
-                          className={cn(
-                            "size-4",
-                            isFirstLink ? "text-[var(--purple-link)]" : "text-[var(--purple-hover)]"
-                          )} 
-                        />
-                      </div>
-                    </div>
+                    </Button>
                   );
-                })}
-              </div>
+                })
+              ) : (
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#351397] text-[#8a5cda] text-[14px] leading-normal">
+                  <AlertTriangle className="size-4" />
+                  <span>Nenhuma fonte encontrada</span>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
 export default ResultCard;

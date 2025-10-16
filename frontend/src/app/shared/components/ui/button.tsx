@@ -18,7 +18,7 @@ const buttonVariants = cva(
           "font-semibold bg-transparent text-[#8a5cda] border border-[#351397] hover:bg-neutral-100 hover:text-[#5d13dd] disabled:opacity-50 disabled:text-[#9d6eed] disabled:hover:bg-transparent disabled:hover:text-[#9d6eed] disabled:hover:opacity-50",
         // Link (Figma: Link SM/Default)
         link:
-          "font-normal bg-transparent text-[#8a5cda] hover:text-[#5d13dd] hover:bg-[#f6f6f6] hover:underline disabled:text-[#8a5cda] disabled:opacity-50 disabled:hover:text-[#8a5cda] disabled:hover:bg-transparent disabled:hover:no-underline disabled:hover:opacity-50 focus-visible:ring-0 focus-visible:ring-offset-0",
+          "font-normal bg-transparent text-[#8a5cda] hover:text-[#5d13dd] hover:underline disabled:text-[#8a5cda] disabled:opacity-50 disabled:hover:text-[#8a5cda] disabled:hover:bg-transparent disabled:hover:no-underline disabled:hover:opacity-50 focus-visible:ring-0 focus-visible:ring-offset-0",
       },
       size: {
         // SM: 32px height para filled/outlined

@@ -68,11 +68,39 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       : undefined;
 
   const handlePrev = () => {
-    if (canGoPrev) onResultClick?.(results[selectedIndex - 1].id);
+    if (canGoPrev) {
+      const prevResult = results[selectedIndex - 1];
+      onResultClick?.(prevResult.id);
+      
+      // Scroll para o resultado anterior
+      setTimeout(() => {
+        const resultElement = document.getElementById(`result-${prevResult.id}`);
+        if (resultElement) {
+          resultElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 50);
+    }
   };
 
   const handleNext = () => {
-    if (canGoNext) onResultClick?.(results[selectedIndex + 1].id);
+    if (canGoNext) {
+      const nextResult = results[selectedIndex + 1];
+      onResultClick?.(nextResult.id);
+      
+      // Scroll para o próximo resultado
+      setTimeout(() => {
+        const resultElement = document.getElementById(`result-${nextResult.id}`);
+        if (resultElement) {
+          resultElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 50);
+    }
   };
 
   const renderResults = () => {

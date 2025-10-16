@@ -337,7 +337,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     if (resultElement) {
       resultElement.scrollIntoView({ 
         behavior: 'smooth', 
-        block: 'center' 
+        block: 'start' 
       });
     }
   }, []);
@@ -367,7 +367,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
       </div>
       
       <div className="max-w-[1440px] mx-auto px-[80px] sm:px-4 lg:px-26 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 h-[calc(100vh-7rem)] gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] h-[calc(100vh-7rem)] gap-20">
           {/* Coluna Esquerda - Texto Processado */}
           <div className="rounded-lg">
             <ProcessedTextPanel

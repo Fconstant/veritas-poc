@@ -103,7 +103,7 @@ export default function VerificationPage() {
               className="font-[var(--font-inter)] font-medium text-[28px] leading-[40px] tracking-[0.28px] text-center min-w-full w-[min-content]"
               style={{ color: 'var(--text-title)' }}
             >
-              Entre o texto para verificar
+              Entre texto para verificar
             </h1>
             <ComingSoonBanner />
           </div>
