@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 interface TaglineProps {
   className?: string;
@@ -7,6 +10,7 @@ interface TaglineProps {
 }
 
 const Tagline: React.FC<TaglineProps> = ({ className, size = 'md' }) => {
+  const { t } = useI18n();
   const sizeClasses = {
     sm: 'text-sm',
     md: 'text-base',
@@ -22,7 +26,7 @@ const Tagline: React.FC<TaglineProps> = ({ className, size = 'md' }) => {
       )}
       style={{ fontFamily: 'var(--font-inter)' }}
     >
-      Automatize a verificação de fatos
+      {t.tagline.text}
     </p>
   );
 };

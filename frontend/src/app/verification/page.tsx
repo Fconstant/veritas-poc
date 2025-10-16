@@ -7,6 +7,7 @@ import ComingSoonBanner from '@/app/shared/components/ComingSoonBanner';
 import VerificationTextArea from '@/app/shared/components/VerificationTextArea';
 import { factCheckService } from '@/lib/services/factCheckService';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 // Constante para o texto de exemplo (conforme memória do PR)
 const EXAMPLE_FACT_CHECK_TEXT = "As vacinas contra COVID-19 foram desenvolvidas em tempo recorde em 2020. O Brasil iniciou sua campanha de vacinação em janeiro de 2021. Estudos mostram que as vacinas reduziram significativamente as hospitalizações e mortes pela doença.";
@@ -14,9 +15,9 @@ const EXAMPLE_FACT_CHECK_TEXT = "As vacinas contra COVID-19 foram desenvolvidas 
 /**
  * Verification Page - Página de verificação de fatos
  * Design v0.2: Node 650:16293 (Empty State) e 650:16447 (Entered State)
- * 
+ *
  * Fluxo: First Access → Setup → **Verification** → Results
- * 
+ *
  * Especificações:
  * - Background: Gradiente #f5f5f5 → #eaeaea
  * - Top-bar: Com botão "Configurations" que volta para Setup
@@ -27,6 +28,7 @@ const EXAMPLE_FACT_CHECK_TEXT = "As vacinas contra COVID-19 foram desenvolvidas 
 export default function VerificationPage() {
   const router = useRouter();
   const { apiKeys } = useApiKeys();
+  const { t } = useI18n();
   const [text, setText] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
 
@@ -43,16 +45,16 @@ export default function VerificationPage() {
 
     try {
       setIsVerifying(true);
-      
+
       // Testa conectividade primeiro
       const isConnected = await factCheckService.testConnection();
-      
+
       if (!isConnected) {
-        alert('Não foi possível conectar com o servidor. Verifique se o backend está rodando na porta 3000.');
+        alert(t.errors.connectionFailed);
         setIsVerifying(false);
         return;
       }
-      
+
       // Envia requisição para o backend com as API keys
       await factCheckService.requestFactCheck(text, {
         apiKeys: {
@@ -66,10 +68,10 @@ export default function VerificationPage() {
 
       // Redireciona para a página de resultados
       router.push('/results');
-      
+
     } catch (error) {
       console.error('❌ Erro ao iniciar verificação:', error);
-      alert(error instanceof Error ? error.message : 'Erro interno. Tente novamente mais tarde.');
+      alert(error instanceof Error ? error.message : t.errors.internalError);
       setIsVerifying(false);
     }
   };
@@ -78,7 +80,7 @@ export default function VerificationPage() {
     <div className="relative min-h-screen w-full bg-gradient-to-b from-[var(--bg-gradient-start)] to-[var(--bg-gradient-end)]">
       {/* Background overlay - z-1 */}
       <div className="absolute inset-0 opacity-70 z-[1]">
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-b from-transparent from-[62.687%] to-[var(--bg-overlay)] to-[97.25%]"
         />
       </div>
@@ -86,9 +88,9 @@ export default function VerificationPage() {
       {/* Top-bar - z-30 */}
       <div className="absolute top-0 left-0 right-0 z-30">
         <div className="max-w-[1440px] mx-auto px-20">
-          <Header 
-            showSettings={true} 
-            onSettingsClick={handleConfigurationsClick} 
+          <Header
+            showSettings={true}
+            onSettingsClick={handleConfigurationsClick}
           />
         </div>
       </div>
@@ -96,14 +98,14 @@ export default function VerificationPage() {
       {/* Verification Content - z-20 */}
       <div className="relative z-20 flex items-start justify-center min-h-screen px-4 pt-[84px] pb-12">
         <div className="flex flex-col items-center w-[570px] pt-[64px] gap-8">
-          
+
           {/* Header com Título e Coming Soon */}
           <div className="flex flex-col gap-4 items-center w-full">
-            <h1 
+            <h1
               className="font-[var(--font-inter)] font-medium text-[28px] leading-[40px] tracking-[0.28px] text-center min-w-full w-[min-content]"
               style={{ color: 'var(--text-title)' }}
             >
-              Entre o texto para verificar
+              {t.verification.title}
             </h1>
             <ComingSoonBanner />
           </div>

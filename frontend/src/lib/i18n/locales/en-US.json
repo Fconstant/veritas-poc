@@ -136,6 +136,81 @@
     "audio": "Audio",
     "message": "are coming soon",
     "and": "and"
+  },
+  "firstAccess": {
+    "title": {
+      "part1": "Paste a text.",
+      "part2": "We'll",
+      "part3": "check the facts"
+    },
+    "subtitle": "Automatic fact-checking with verifiable sources and evidence — privacy first.",
+    "cta": "Set up to get started",
+    "badge": "It's free!"
+  },
+  "setup": {
+    "title": "Configure API Keys",
+    "verifications": "Verifications"
+  },
+  "verification": {
+    "title": "Enter text to verify"
+  },
+  "processing": {
+    "title": "Reading Text",
+    "subtitle": "Processing your text for fact-checking..."
+  },
+  "helperAccordion": {
+    "title": "Why do I need this?",
+    "items": {
+      "ai": "Veritas uses artificial intelligence and performs web searches using AI",
+      "free": "API keys are free and enable the use of the service",
+      "purpose": "Google Gemini is for AI analysis, and Tavily is for internet searches",
+      "privacy": "🔒 Keys stay only in your browser — never on our servers"
+    }
+  },
+  "apiFlow": {
+    "title": "Your keys",
+    "status": {
+      "notConfigured": "Not configured",
+      "invalid": "Invalid keys",
+      "validating": "Validating...",
+      "ready": "All set!"
+    },
+    "gemini": {
+      "label": "AI Key",
+      "sublabel": "(Google Gemini API)",
+      "link": "How to get a key?",
+      "placeholder": "Paste your key here..."
+    },
+    "tavily": {
+      "label": "Search Key",
+      "sublabel": "(Tavily API)",
+      "link": "How to get a key?",
+      "placeholder": "Paste your key here..."
+    },
+    "button": "Get Started",
+    "tooltips": {
+      "empty": "Fill in both API keys to continue",
+      "geminiOnly": "Fill in the Tavily key to continue",
+      "invalid": "The provided keys are invalid. Please check and try again",
+      "validating": "Please wait while we validate your API keys..."
+    },
+    "errors": {
+      "invalidFormat": "Invalid key format"
+    }
+  },
+  "verificationTextArea": {
+    "title": "Verify Facts from...",
+    "characterLimit": "{{count}}/{{limit}} characters limit",
+    "placeholder": "Enter the text you want to fact-check here...",
+    "useExample": "Use example",
+    "verify": "Verify facts",
+    "tooltips": {
+      "overLimit": "The text exceeds the {{limit}} character limit. Remove {{excess}} characters to continue.",
+      "empty": "Type or paste text to verify"
+    }
+  },
+  "tagline": {
+    "text": "Automate fact-checking"
   }
 }
 

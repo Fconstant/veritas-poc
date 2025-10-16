@@ -139,5 +139,80 @@ export interface TranslationKeys {
     message: string;
     and: string;
   };
+  firstAccess: {
+    title: {
+      part1: string;
+      part2: string;
+      part3: string;
+    };
+    subtitle: string;
+    cta: string;
+    badge: string;
+  };
+  setup: {
+    title: string;
+    verifications: string;
+  };
+  verification: {
+    title: string;
+  };
+  processing: {
+    title: string;
+    subtitle: string;
+  };
+  helperAccordion: {
+    title: string;
+    items: {
+      ai: string;
+      free: string;
+      purpose: string;
+      privacy: string;
+    };
+  };
+  apiFlow: {
+    title: string;
+    status: {
+      notConfigured: string;
+      invalid: string;
+      validating: string;
+      ready: string;
+    };
+    gemini: {
+      label: string;
+      sublabel: string;
+      link: string;
+      placeholder: string;
+    };
+    tavily: {
+      label: string;
+      sublabel: string;
+      link: string;
+      placeholder: string;
+    };
+    button: string;
+    tooltips: {
+      empty: string;
+      geminiOnly: string;
+      invalid: string;
+      validating: string;
+    };
+    errors: {
+      invalidFormat: string;
+    };
+  };
+  verificationTextArea: {
+    title: string;
+    characterLimit: string;
+    placeholder: string;
+    useExample: string;
+    verify: string;
+    tooltips: {
+      overLimit: string;
+      empty: string;
+    };
+  };
+  tagline: {
+    text: string;
+  };
 }
 

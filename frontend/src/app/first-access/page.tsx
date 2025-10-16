@@ -6,13 +6,14 @@ import { ArrowRight } from 'lucide-react';
 import Header from '@/app/shared/components/Header';
 import ComingSoonBanner from '@/app/shared/components/ComingSoonBanner';
 import { Button } from '@/app/shared/components/ui/button';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 /**
  * First Access Page - Home page para primeiros acessos
  * Design v0.2: Node 598:17066
- * 
+ *
  * Fluxo: First Access → Setup → Verification
- * 
+ *
  * Especificações:
  * - Background: Gradiente #f5f5f5 → #eaeaea
  * - Overlay: Imagem com 70% opacity + gradiente
@@ -23,6 +24,7 @@ import { Button } from '@/app/shared/components/ui/button';
  */
 export default function FirstAccessPage() {
   const router = useRouter();
+  const { t } = useI18n();
 
   const handleConfigureClick = () => {
     router.push('/setup');
@@ -33,7 +35,7 @@ export default function FirstAccessPage() {
       {/* Background overlay - z-1 */}
       <div className="absolute inset-0 opacity-70 z-[1]">
         {/* Imagem de fundo poderia ir aqui */}
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-b from-transparent from-[62.687%] to-[var(--bg-overlay)] to-[97.25%]"
         />
       </div>
@@ -48,24 +50,24 @@ export default function FirstAccessPage() {
       {/* Hero Content - z-20 */}
       <div className="relative z-20 flex items-center justify-center min-h-screen px-4">
         <div className="flex flex-col items-center text-center max-w-[786px] gap-6">
-          
+
           {/* Título Principal */}
           <h1 className="font-[var(--font-inter)] text-[64px] leading-[80px] tracking-[0.64px]">
             <span className="font-extralight" style={{ color: 'var(--purple-dark)' }}>
-              Cole um texto.{' '}
+              {t.firstAccess.title.part1}{' '}
             </span>
-            <span className="font-extralight">A gente </span>
+            <span className="font-extralight">{t.firstAccess.title.part2} </span>
             <span className="font-bold" style={{ color: 'var(--purple-accent)' }}>
-              confere os fatos
+              {t.firstAccess.title.part3}
             </span>
           </h1>
 
           {/* Subtítulo */}
-          <p 
+          <p
             className="font-[var(--font-inter)] font-normal text-[20px] leading-[32px] tracking-[0.2px]"
             style={{ color: 'var(--text-tertiary)' }}
           >
-            Checagem automática, com fontes e evidências verificáveis — privacidade em primeiro lugar.
+            {t.firstAccess.subtitle}
           </p>
 
           {/* CTA Button */}
@@ -74,16 +76,16 @@ export default function FirstAccessPage() {
             size="default"
             onClick={handleConfigureClick}
           >
-            Configure para começar
+            {t.firstAccess.cta}
             <ArrowRight className="w-6 h-6" />
           </Button>
 
           {/* Badge "É grátis!" */}
-          <p 
+          <p
             className="font-[var(--font-inter)] font-normal text-[14px] leading-[24px]"
             style={{ color: 'var(--text-muted)' }}
           >
-            É grátis!
+            {t.firstAccess.badge}
           </p>
 
           {/* Coming Soon Banner */}

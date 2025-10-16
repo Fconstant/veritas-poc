@@ -136,6 +136,81 @@
     "audio": "Áudio",
     "message": "estão chegando em breve",
     "and": "e"
+  },
+  "firstAccess": {
+    "title": {
+      "part1": "Cole um texto.",
+      "part2": "A gente",
+      "part3": "confere os fatos"
+    },
+    "subtitle": "Checagem automática, com fontes e evidências verificáveis — privacidade em primeiro lugar.",
+    "cta": "Configure para começar",
+    "badge": "É grátis!"
+  },
+  "setup": {
+    "title": "Configurar Chaves de API",
+    "verifications": "Verificações"
+  },
+  "verification": {
+    "title": "Entre o texto para verificar"
+  },
+  "processing": {
+    "title": "Lendo Texto",
+    "subtitle": "Processando seu texto para verificação de fatos..."
+  },
+  "helperAccordion": {
+    "title": "Por que preciso disso?",
+    "items": {
+      "ai": "O Veritas usa inteligência artificial e faz buscas na web utilizando IA",
+      "free": "As chaves de API são grátis e liberam o uso do serviço",
+      "purpose": "Google Gemini é para as análises com IA, e o Tavily é para buscar na internet",
+      "privacy": "🔒 As chaves ficam só no seu navegador — nunca nos nossos servidores"
+    }
+  },
+  "apiFlow": {
+    "title": "Suas chaves",
+    "status": {
+      "notConfigured": "Não configuradas",
+      "invalid": "Chaves inválidas",
+      "validating": "Validando...",
+      "ready": "Tudo pronto!"
+    },
+    "gemini": {
+      "label": "Chave da IA",
+      "sublabel": "(Google Gemini API)",
+      "link": "Como obter chave?",
+      "placeholder": "Cole sua chave aqui..."
+    },
+    "tavily": {
+      "label": "Chave de Busca",
+      "sublabel": "(Tavily API)",
+      "link": "Como obter chave?",
+      "placeholder": "Cole sua chave aqui..."
+    },
+    "button": "Começar",
+    "tooltips": {
+      "empty": "Preencha as duas chaves de API para continuar",
+      "geminiOnly": "Preencha a chave do Tavily para continuar",
+      "invalid": "As chaves fornecidas são inválidas. Verifique e tente novamente",
+      "validating": "Aguarde enquanto validamos suas chaves de API..."
+    },
+    "errors": {
+      "invalidFormat": "Formato de chave inválido"
+    }
+  },
+  "verificationTextArea": {
+    "title": "Verificar Fatos de...",
+    "characterLimit": "{{count}}/{{limit}} characters limit",
+    "placeholder": "Entre o texto que deseja conferir as afirmações aqui...",
+    "useExample": "Usar exemplo",
+    "verify": "Verificar fatos",
+    "tooltips": {
+      "overLimit": "O texto excede o limite de {{limit}} caracteres. Remova {{excess}} caracteres para continuar.",
+      "empty": "Digite ou cole um texto para verificar"
+    }
+  },
+  "tagline": {
+    "text": "Automatize a verificação de fatos"
   }
 }
 

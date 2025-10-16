@@ -36,7 +36,7 @@ import { useI18n } from '@/lib/i18n/I18nContext';
 
 function MyComponent() {
   const { t } = useI18n();
-  
+
   return <h1>{t.common.appName}</h1>;
 }
 ```
@@ -51,11 +51,11 @@ import { useI18n, interpolate } from '@/lib/i18n/I18nContext';
 function MyComponent() {
   const { t } = useI18n();
   const count = 5;
-  
+
   const message = interpolate(t.results.export.totalClaims, { count });
   // Result: "Total de afirmações verificadas: 5" (PT-BR)
   // Result: "Total verified claims: 5" (EN-US)
-  
+
   return <p>{message}</p>;
 }
 ```
@@ -67,7 +67,7 @@ import { useI18n } from '@/lib/i18n/I18nContext';
 
 function MyComponent() {
   const { locale, setLocale } = useI18n();
-  
+
   return (
     <button onClick={() => setLocale('en-US')}>
       Switch to English
@@ -92,11 +92,26 @@ The translation files are organized by feature/component:
   "results": { /* Results page */ },
   "toast": { /* Toast notifications */ },
   "errors": { /* Error messages */ },
-  "comingSoon": { /* Coming soon features */ }
+  "comingSoon": { /* Coming soon features */ },
+  "firstAccess": { /* First access page */ },
+  "setup": { /* Setup page */ },
+  "verification": { /* Verification page */ },
+  "processing": { /* Processing page */ },
+  "helperAccordion": { /* Helper accordion component */ },
+  "apiFlow": { /* API registration flow */ },
+  "verificationTextArea": { /* Verification text area */ },
+  "tagline": { /* Tagline component */ }
 }
 ```
 
 ## Internationalized Components
+
+### Pages
+- ✅ FirstAccessPage (`/first-access`)
+- ✅ SetupPage (`/setup`)
+- ✅ VerificationPage (`/verification`)
+- ✅ ProcessingConfirmationPage (`/processing`)
+- ✅ ResultsPage (`/results`)
 
 ### Shared Components
 - ✅ Header
@@ -106,6 +121,10 @@ The translation files are organized by feature/component:
 - ✅ ComingSoonBanner
 - ✅ LoadingSpinner
 - ✅ LanguageSwitcher
+- ✅ HelperAccordion
+- ✅ Tagline
+- ✅ VerificationTextArea
+- ✅ APIsRegistrationFlow
 
 ### Home Page Components
 - ✅ HeroSection
