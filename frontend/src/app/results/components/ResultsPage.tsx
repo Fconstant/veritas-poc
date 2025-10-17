@@ -359,15 +359,15 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   return (
     <div className={cn('min-h-screen', className)} style={{ backgroundColor: 'var(--veritas-results-background)' }}>
       {/* Header (mesmo layout do /verification) */}
-      <div className="max-w-[1440px] mx-auto px-20">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-20">
         <Header 
           showSettings={true} 
           onSettingsClick={handleConfigurationsClick} 
         />
       </div>
       
-      <div className="max-w-[1440px] mx-auto px-[80px] sm:px-4 lg:px-26 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] h-[calc(100vh-7rem)] gap-20">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-20 xl:px-[80px] py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] min-h-[calc(100vh-7rem)] lg:h-[calc(100vh-7rem)] gap-4 sm:gap-6 lg:gap-12 xl:gap-20">
           {/* Coluna Esquerda - Texto Processado */}
           <div className="rounded-lg">
             <ProcessedTextPanel

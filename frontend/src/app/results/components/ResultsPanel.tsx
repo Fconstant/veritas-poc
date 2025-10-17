@@ -229,7 +229,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       )}
     >
       {/* Header */}
-      <div className="box-border content-stretch flex flex-col gap-4 items-start pt-4 relative shrink-0 w-full">
+      <div className="box-border content-stretch flex flex-col gap-3 sm:gap-4 items-start pt-3 sm:pt-4 relative shrink-0 w-full">
         <div className="content-stretch flex items-start relative shrink-0 w-full">
           <ResultsHeader
             status={getVerificationStatus()}
@@ -245,7 +245,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
       {/* Results Content */}
       <div className={cn(
-        'box-border content-justify flex flex-col gap-4 items-center px-2 py-4 relative shrink-0 w-full',
+        'box-border content-justify flex flex-col gap-3 sm:gap-4 items-center px-1 sm:px-2 py-3 sm:py-4 relative shrink-0 w-full',
         // Flex behavior: sempre flex-1 com overflow-y-auto para rolagem quando necessário
         'flex-1 overflow-y-auto',
         // Justificação condicional
@@ -256,22 +256,22 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
 
       {/* Footer - apenas quando há resultados */}
       {status === 'complete' && results.length > 0 && (
-        <div className="box-border content-stretch flex flex-col gap-4 items-start pb-6 pt-0 px-0 relative shrink-0 w-full">
+        <div className="box-border content-stretch flex flex-col gap-3 sm:gap-4 items-start pb-4 sm:pb-6 pt-0 px-0 relative shrink-0 w-full">
           <div className="h-0 relative shrink-0 w-full">
             <div className="absolute bottom-0 left-0 right-0 top-[-1px] border-t border-[var(--helper-border)]" />
           </div>
-          <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
+          <div className="content-stretch flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 relative shrink-0 w-full">
             <div className="content-stretch flex gap-2 items-center relative self-stretch shrink-0">
-              <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic opacity-50 relative shrink-0 text-sm text-slate-900 whitespace-nowrap">
+              <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic opacity-50 relative shrink-0 text-xs sm:text-sm text-slate-900 whitespace-nowrap">
                 <p className="leading-5">{results.length} {results.length === 1 ? 'Afirmação encontrada' : 'Afirmações encontradas'}</p>
               </div>
             </div>
-            <div className="content-stretch flex gap-2 items-center relative shrink-0">
-              <Button variant="link" size="sm" disabled={!canGoPrev} disabledTooltip={prevDisabledTooltip} onClick={handlePrev} className="px-1 py-0.5">
+            <div className="content-stretch flex gap-1 sm:gap-2 items-center relative shrink-0">
+              <Button variant="link" size="sm" disabled={!canGoPrev} disabledTooltip={prevDisabledTooltip} onClick={handlePrev} className="px-0.5 sm:px-1 py-0.5 text-xs sm:text-sm">
                 <ChevronLeft className="size-4" />
                 Anterior
               </Button>
-              <Button variant="link" size="sm" disabled={!canGoNext} disabledTooltip={nextDisabledTooltip} onClick={handleNext} className="px-1 py-0.5">
+              <Button variant="link" size="sm" disabled={!canGoNext} disabledTooltip={nextDisabledTooltip} onClick={handleNext} className="px-0.5 sm:px-1 py-0.5 text-xs sm:text-sm">
                 Próximo
                 <ChevronRight className="size-4" />
               </Button>
@@ -280,24 +280,24 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
         </div>
       )}
 
-      {/* Footer para estado partial (em andamento) */}
+      {/* Footer para estado partial (em andamento) */
       {status === 'partial' && results.length > 0 && (
-        <div className="box-border content-stretch flex flex-col gap-4 items-start pb-6 pt-0 px-0 relative shrink-0 w-full">
+        <div className="box-border content-stretch flex flex-col gap-3 sm:gap-4 items-start pb-4 sm:pb-6 pt-0 px-0 relative shrink-0 w-full">
           <div className="h-0 relative shrink-0 w-full">
             <div className="absolute bottom-0 left-0 right-0 top-[-1px] border-t border-[var(--helper-border)]" />
           </div>
-          <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
+          <div className="content-stretch flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 relative shrink-0 w-full">
             <div className="content-stretch flex gap-2 items-center relative self-stretch shrink-0">
-              <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic opacity-50 relative shrink-0 text-sm text-slate-900 whitespace-nowrap">
+              <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic opacity-50 relative shrink-0 text-xs sm:text-sm text-slate-900 whitespace-nowrap">
                 <p className="leading-5">{results.length} {results.length === 1 ? 'Afirmação encontrada' : 'Afirmações encontradas'}</p>
               </div>
             </div>
-            <div className="content-stretch flex gap-2 items-center relative shrink-0">
-              <Button variant="link" size="sm" disabled={!canGoPrev} disabledTooltip={prevDisabledTooltip} onClick={handlePrev}>
+            <div className="content-stretch flex gap-1 sm:gap-2 items-center relative shrink-0">
+              <Button variant="link" size="sm" disabled={!canGoPrev} disabledTooltip={prevDisabledTooltip} onClick={handlePrev} className="text-xs sm:text-sm">
                 <ChevronLeft className="size-4" />
                 Anterior
               </Button>
-              <Button variant="link" size="sm" disabled={!canGoNext} disabledTooltip={nextDisabledTooltip} onClick={handleNext}>
+              <Button variant="link" size="sm" disabled={!canGoNext} disabledTooltip={nextDisabledTooltip} onClick={handleNext} className="text-xs sm:text-sm">
                 Próximo
                 <ChevronRight className="size-4" />
               </Button>

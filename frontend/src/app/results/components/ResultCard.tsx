@@ -57,9 +57,9 @@ const ResultCard: React.FC<ResultCardProps> = ({
       )}
       onClick={onClick}
     >
-      <div className="box-border content-stretch flex flex-col gap-4 items-start overflow-clip pb-4 pt-6 px-4 relative rounded-[inherit] w-full">
+      <div className="box-border content-stretch flex flex-col gap-3 sm:gap-4 items-start overflow-clip pb-3 sm:pb-4 pt-4 sm:pt-6 px-3 sm:px-4 relative rounded-[inherit] w-full">
         {/* Claim Text com numeração */}
-        <div className="box-border content-stretch flex gap-2 items-start justify-center pl-0 pr-4 py-0 relative rounded-lg shrink-0 w-full">
+        <div className="box-border content-stretch flex gap-2 items-start justify-center pl-0 pr-2 sm:pr-4 py-0 relative rounded-lg shrink-0 w-full">
           <div className="flex-[1_0_0] flex-col justify-center min-h-px min-w-px not-italic relative shrink-0 text-sm text-[var(--text-opacity-dark)]">
             <ol 
               className="list-decimal" 
@@ -88,13 +88,13 @@ const ResultCard: React.FC<ResultCardProps> = ({
         <div className="content-stretch flex flex-col gap-3 items-center relative shrink-0 w-full">
           {/* Explanation/Análise */}
           {explanation && (
-            <div className="bg-[var(--bg-analysis)] border border-[var(--border-analysis)] border-solid box-border content-stretch flex flex-col gap-2 items-start p-4 relative rounded-xl shrink-0 w-full">
+            <div className="bg-[var(--bg-analysis)] border border-[var(--border-analysis)] border-solid box-border content-stretch flex flex-col gap-2 items-start p-3 sm:p-4 relative rounded-xl shrink-0 w-full">
               <div className="content-stretch flex gap-2 items-center relative shrink-0 w-full">
                 <div className="flex flex-col font-['Inter'] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[var(--text-helper)] text-sm whitespace-nowrap">
                   <p className="leading-6">Análise</p>
                 </div>
               </div>
-              <div className="flex flex-col font-['Inter'] font-normal justify-center leading-7 min-w-full not-italic relative shrink-0 text-base text-[var(--text-opacity-dark)] w-[min-content] whitespace-pre-wrap">
+              <div className="flex flex-col font-['Inter'] font-normal justify-center leading-6 sm:leading-7 min-w-full not-italic relative shrink-0 text-sm sm:text-base text-[var(--text-opacity-dark)] w-[min-content] whitespace-pre-wrap">
                 <p>{explanation}</p>
               </div>
             </div>

@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
   return (
     <header
       className={cn(
-        'flex flex-col gap-4 pt-4 pb-0 relative w-full bg-neutral-100',
+        'flex flex-col gap-3 sm:gap-4 pt-3 sm:pt-4 pb-0 relative w-full bg-neutral-100',
         className
       )}
     >
@@ -40,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
           className="flex flex-col leading-[0]"
         >
           <span 
-            className="font-bold text-2xl leading-8 tracking-[0.48px] whitespace-pre-wrap"
+            className="font-bold text-xl sm:text-2xl leading-7 sm:leading-8 tracking-[0.48px] whitespace-pre-wrap"
             style={{ 
               color: 'var(--text-primary)',
               fontFamily: 'var(--font-inria-serif), "Inria Serif", Georgia, serif'
@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
             Veritas
           </span>
           <span 
-            className="font-normal text-xs leading-5 tracking-[0.24px] whitespace-pre-wrap opacity-90"
+            className="font-normal text-[10px] sm:text-xs leading-4 sm:leading-5 tracking-[0.24px] whitespace-pre-wrap opacity-90"
             style={{ 
               color: 'var(--text-tagline)',
               fontFamily: 'var(--font-inter), Inter, sans-serif'
@@ -70,9 +70,11 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
               onClick={onSettingsClick}
               aria-label="Configurações de API"
               title="Configurar API Keys"
+              className="text-sm sm:text-base"
             >
-              <Settings className="w-6 h-6" />
-              Configurações
+              <Settings className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="hidden sm:inline">Configurações</span>
+              <span className="sm:hidden">Config</span>
             </Button>
           )
         )}
