@@ -99,7 +99,7 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
               placeholder={t.apiSetup.googlePlaceholder}
               value={googleKey}
               onChange={setGoogleKey}
-              helpUrl="https://aistudio.google.com/app/apikey"
+              helpUrl="https://www.youtube.com/watch?v=eExl7-zSnKg"
               helpText={t.apiSetup.googleHelpText}
               isConfigured={googleKey.trim().length > 0}
             />
@@ -110,7 +110,7 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
               placeholder={t.apiSetup.tavilyPlaceholder}
               value={tavilyKey}
               onChange={setTavilyKey}
-              helpUrl="https://tavily.com/"
+              helpUrl="https://www.youtube.com/watch?v=eExl7-zSnKg"
               helpText={t.apiSetup.tavilyHelpText}
               isConfigured={tavilyKey.trim().length > 0}
             />
