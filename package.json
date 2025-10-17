@@ -1,0 +1,14 @@
+{
+	"name": "veritas",
+	"version": "0.1.0",
+	"private": true,
+	"packageManager": "pnpm@10.18.1",
+	"scripts": {
+		"dev": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+		"build": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter backend build\" \"pnpm --filter frontend build\"",
+		"start": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter backend start\" \"pnpm --filter frontend start\""
+	},
+	"devDependencies": {
+		"concurrently": "^9.2.1"
+	}
+}

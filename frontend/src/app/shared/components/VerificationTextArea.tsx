@@ -4,6 +4,7 @@ import React from 'react';
 import { FileText, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/app/shared/components/ui/button';
+import { useI18n, interpolate } from '@/lib/i18n/I18nContext';
 
 // Constante extraída conforme memória do PR
 const TEXT_TO_BE_REVIEWED_LENGTH = 5000;
@@ -19,7 +20,7 @@ interface VerificationTextAreaProps {
 /**
  * VerificationTextArea - Componente de entrada de texto para verificação
  * Design v0.2: Node 650:16293 (Verification Empty State)
- * 
+ *
  * Especificações:
  * - Width: 570px
  * - Background card: #f2f2f2
@@ -38,6 +39,7 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
   onVerify,
   className
 }) => {
+  const { t } = useI18n();
   const charCount = value.length;
   const isDisabled = charCount === 0;
   const isOverLimit = charCount > TEXT_TO_BE_REVIEWED_LENGTH;
@@ -52,16 +54,19 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
   // Mensagem do tooltip para botão desabilitado
   const getDisabledTooltip = () => {
     if (isOverLimit) {
-      return `O texto excede o limite de ${TEXT_TO_BE_REVIEWED_LENGTH} caracteres. Remova ${charCount - TEXT_TO_BE_REVIEWED_LENGTH} caracteres para continuar.`;
+      return interpolate(t.verificationTextArea.tooltips.overLimit, {
+        limit: TEXT_TO_BE_REVIEWED_LENGTH.toString(),
+        excess: (charCount - TEXT_TO_BE_REVIEWED_LENGTH).toString()
+      });
     }
     if (isDisabled) {
-      return "Digite ou cole um texto para verificar";
+      return t.verificationTextArea.tooltips.empty;
     }
     return null;
   };
 
   return (
-    <div 
+    <div
       className={cn(
         "flex flex-col gap-6 items-center w-full max-w-[570px] rounded-[24px] border backdrop-blur-[1.5px] pb-8 px-6 pt-0",
         "bg-[var(--card-bg)] border-[var(--card-border)] shadow-[0px_20px_80px_0px_rgba(137,44,219,0.20)]",
@@ -76,15 +81,15 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
             <div className="flex gap-2 items-center">
               <FileText className="w-6 h-6 opacity-50" />
               <span className="font-[var(--font-inter)] font-medium text-[16px] leading-[24px] text-slate-900">
-                Verificar Fatos de...
+                {t.verificationTextArea.title}
               </span>
             </div>
             {/* Character Counter */}
-            <span 
+            <span
               className="font-[var(--font-inter)] font-medium text-[14px] leading-[24px]"
               style={{ color: getCounterColor() }}
             >
-              {charCount}/{TEXT_TO_BE_REVIEWED_LENGTH} characters limit
+              {interpolate(t.verificationTextArea.characterLimit, { count: charCount.toString(), limit: TEXT_TO_BE_REVIEWED_LENGTH.toString() })}
             </span>
           </div>
         </div>
@@ -95,9 +100,9 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
             <textarea
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              placeholder="Entre o texto que deseja conferir as afirmações aqui..."
+              placeholder={t.verificationTextArea.placeholder}
               className="w-full min-h-[200px] bg-transparent font-[var(--font-merriweather)] text-[14px] leading-[28px] tracking-[0.14px] resize-none outline-none"
-              style={{ 
+              style={{
                 color: value ? 'var(--text-active)' : 'var(--text-placeholder)',
               }}
             />
@@ -113,7 +118,7 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
           size="default"
           onClick={onUseExample}
         >
-          Usar exemplo
+          {t.verificationTextArea.useExample}
         </Button>
 
         {/* Botão Verificar fatos */}
@@ -125,7 +130,7 @@ export const VerificationTextArea: React.FC<VerificationTextAreaProps> = ({
           disabledTooltip={getDisabledTooltip()}
         >
           <Sparkles className="w-6 h-6" />
-          Verificar fatos
+          {t.verificationTextArea.verify}
         </Button>
       </div>
     </div>

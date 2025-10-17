@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import Header from '@/app/shared/components/Header';
 import AnimatedDots from '@/app/shared/components/AnimatedDots';
 import { Loader2 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 interface ProcessingConfirmationPageProps {
   className?: string;
@@ -21,6 +22,7 @@ const ProcessingConfirmationPage: React.FC<ProcessingConfirmationPageProps> = ({
   redirectDelay = 2500
 }) => {
   const router = useRouter();
+  const { t } = useI18n();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -75,12 +77,12 @@ const ProcessingConfirmationPage: React.FC<ProcessingConfirmationPageProps> = ({
             {/* Texto de Confirmação */}
             <div className="text-center space-y-2">
               <AnimatedDots
-                text="Lendo Texto"
+                text={t.processing.title}
                 className="text-lg font-medium text-[var(--text-primary)] [font-family:var(--font-inter)]"
                 interval={500}
               />
               <p className="text-sm text-[var(--text-muted)] [font-family:var(--font-inter)]">
-                Processando seu texto para verificação de fatos...
+                {t.processing.subtitle}
               </p>
             </div>
 

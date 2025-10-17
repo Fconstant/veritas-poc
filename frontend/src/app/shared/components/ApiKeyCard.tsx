@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Eye, EyeOff, CheckCircle2, ExternalLink } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 export interface ApiKeyCardProps {
   title: string;
@@ -25,6 +26,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({
   isConfigured = false,
   className
 }) => {
+  const { t } = useI18n();
   const [showKey, setShowKey] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -39,7 +41,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({
       {isConfigured && (
         <div className="absolute -top-3 right-6 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-md">
           <CheckCircle2 className="w-3.5 h-3.5" />
-          Configurado
+          {t.common.configured}
         </div>
       )}
 

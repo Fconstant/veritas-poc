@@ -2,6 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 import { Button } from '@/app/shared/components/ui/button';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 interface HomePageToastProps {
   type: 'success' | 'error' | 'info';
@@ -18,6 +19,8 @@ const HomePageToast: React.FC<HomePageToastProps> = ({
   onClose,
   className
 }) => {
+  const { t } = useI18n();
+
   const getIcon = () => {
     switch (type) {
       case 'success':
@@ -56,20 +59,20 @@ const HomePageToast: React.FC<HomePageToastProps> = ({
         <div className="flex-shrink-0 mt-0.5">
           {getIcon()}
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900">
             {message}
           </p>
         </div>
-        
+
         <Button
           variant="link"
           size="sm"
           onClick={onClose}
           className="flex-shrink-0 ml-2 text-gray-400 hover:text-gray-600 transition-colors p-1"
         >
-          <span className="sr-only">Fechar</span>
+          <span className="sr-only">{t.toast.closeAriaLabel}</span>
           <X className="size-4" />
         </Button>
       </div>

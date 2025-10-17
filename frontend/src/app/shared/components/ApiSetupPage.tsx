@@ -6,6 +6,7 @@ import { CheckCircle2, ArrowRight, Info } from 'lucide-react';
 import ApiKeyCard from './ApiKeyCard';
 import Header from './Header';
 import { Button } from '@/app/shared/components/ui/button';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 interface ApiSetupPageProps {
   onComplete: (keys: { google: string; tavily: string }) => void;
@@ -18,6 +19,7 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
   initialKeys,
   className
 }) => {
+  const { t } = useI18n();
   const [googleKey, setGoogleKey] = useState(initialKeys?.google || '');
   const [tavilyKey, setTavilyKey] = useState(initialKeys?.tavily || '');
   const [isValid, setIsValid] = useState(false);
@@ -63,20 +65,19 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
       {/* Main Content */}
       <div className="relative z-20 flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 py-20">
         <div className="w-full max-w-4xl mx-auto">
-          
+
           {/* Welcome Section */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#22c55e] to-[#16a34a] rounded-2xl mb-6 shadow-lg">
               <CheckCircle2 className="w-8 h-8 text-white" />
             </div>
-            
+
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Bem-vindo ao Veritas
+              {t.apiSetup.welcome}
             </h1>
-            
+
             <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Para começar a verificar fatos, precisamos configurar duas chaves de API gratuitas.
-              Não se preocupe, é rápido e fácil! 🚀
+              {t.apiSetup.intro}
             </p>
           </div>
 
@@ -85,8 +86,7 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
             <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-sm text-blue-900 leading-relaxed">
-                <strong className="font-semibold">Por que preciso disso?</strong> O Veritas usa inteligência artificial 
-                para verificar fatos. As APIs são gratuitas e permitem que você use o serviço sem custos.
+                <strong className="font-semibold">{t.apiSetup.whyTitle}</strong> {t.apiSetup.whyDescription}
               </p>
             </div>
           </div>
@@ -94,24 +94,24 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
           {/* API Keys Cards */}
           <div className="space-y-6 mb-8">
             <ApiKeyCard
-              title="Google Gemini API"
-              description="Usada para análise inteligente de textos e verificação de afirmações."
-              placeholder="Cole sua chave do Google Gemini aqui..."
+              title={t.apiSetup.googleTitle}
+              description={t.apiSetup.googleDescription}
+              placeholder={t.apiSetup.googlePlaceholder}
               value={googleKey}
               onChange={setGoogleKey}
-              helpUrl="https://aistudio.google.com/app/apikey"
-              helpText="Como obter minha chave do Gemini?"
+              helpUrl="https://www.youtube.com/watch?v=eExl7-zSnKg"
+              helpText={t.apiSetup.googleHelpText}
               isConfigured={googleKey.trim().length > 0}
             />
 
             <ApiKeyCard
-              title="Tavily API"
-              description="Usada para buscar informações na web e validar fatos com fontes confiáveis."
-              placeholder="Cole sua chave do Tavily aqui..."
+              title={t.apiSetup.tavilyTitle}
+              description={t.apiSetup.tavilyDescription}
+              placeholder={t.apiSetup.tavilyPlaceholder}
               value={tavilyKey}
               onChange={setTavilyKey}
-              helpUrl="https://tavily.com/"
-              helpText="Como obter minha chave do Tavily?"
+              helpUrl="https://www.youtube.com/watch?v=eExl7-zSnKg"
+              helpText={t.apiSetup.tavilyHelpText}
               isConfigured={tavilyKey.trim().length > 0}
             />
           </div>
@@ -124,10 +124,10 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
               onClick={handleContinue}
               disabled={!isValid}
               disabledTooltip={
-                !isValid && "Preencha ambas as chaves de API para continuar"
+                !isValid && t.apiSetup.fillBothKeys
               }
             >
-              Começar a Verificar
+              {t.apiSetup.startVerifying}
               <ArrowRight className="w-6 h-6" />
             </Button>
 
@@ -137,7 +137,7 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
                 size="default"
                 onClick={handleSkip}
               >
-                Usar configuração anterior
+                {t.apiSetup.usePreviousConfig}
               </Button>
             )}
           </div>
@@ -145,7 +145,7 @@ const ApiSetupPage: React.FC<ApiSetupPageProps> = ({
           {/* Security Note */}
           <div className="mt-8 text-center">
             <p className="text-xs text-gray-500">
-              🔒 Suas chaves são armazenadas apenas no seu navegador e nunca são enviadas para nossos servidores.
+              {t.apiSetup.securityNote}
             </p>
           </div>
 

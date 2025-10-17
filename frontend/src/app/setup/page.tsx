@@ -8,13 +8,14 @@ import APIsRegistrationFlow from '@/app/shared/components/APIsRegistrationFlow';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
 import { Button } from '@/app/shared/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 /**
  * Setup Page - Configuração de API Keys
  * Design v0.2: Node 658:15976
- * 
+ *
  * Fluxo: First Access → **Setup** → Verification
- * 
+ *
  * Especificações:
  * - Background: Gradiente #f5f5f5 → #eaeaea + overlay
  * - Card: 570px width, centralizado vertical e horizontalmente
@@ -24,11 +25,12 @@ import { Sparkles } from 'lucide-react';
 export default function SetupPage() {
   const router = useRouter();
   const { apiKeys, saveApiKeys } = useApiKeys();
+  const { t } = useI18n();
 
   const handleComplete = async (keys: { gemini: string; tavily: string }) => {
     // Salva as keys no localStorage
     saveApiKeys({ google: keys.gemini, tavily: keys.tavily });
-    
+
     // Navega para a página de verificação
     router.push('/verification');
   };
@@ -43,7 +45,7 @@ export default function SetupPage() {
     <div className="relative min-h-screen w-full bg-gradient-to-b from-[var(--bg-gradient-start)] to-[var(--bg-gradient-end)]">
       {/* Background overlay - z-1 */}
       <div className="absolute inset-0 opacity-70 z-[1]">
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-b from-transparent from-[62.687%] to-[var(--bg-overlay)] to-[97.25%]"
         />
       </div>
@@ -58,11 +60,11 @@ export default function SetupPage() {
                 variant="link"
                 size="default"
                 onClick={handleGoToVerifications}
-                aria-label="Verificações"
-                title="Ir para Verificações"
+                aria-label={t.setup.verifications}
+                title={t.setup.verifications}
               >
                 <Sparkles className="w-6 h-6" />
-                Verificações
+                {t.setup.verifications}
               </Button>
             }
           />
@@ -72,13 +74,13 @@ export default function SetupPage() {
       {/* Setup Content - z-20 */}
       <div className="relative z-20 flex justify-center min-h-screen pt-21 pb-[120px]">
         <div className="flex flex-col items-center w-[570px] gap-5">
-          
+
           {/* Título */}
-          <h1 
+          <h1
             className="pt-16 font-[var(--font-inter)] font-medium text-[28px] leading-[40px] tracking-[0.28px] text-center w-full"
             style={{ color: 'var(--text-title)' }}
           >
-            Configurar Chaves de API
+            {t.setup.title}
           </h1>
 
           {/* Container com Helper + APIs Flow */}
@@ -90,7 +92,7 @@ export default function SetupPage() {
 
             {/* APIs Registration Flow */}
             <div className="relative z-10">
-              <APIsRegistrationFlow 
+              <APIsRegistrationFlow
                 onComplete={handleComplete}
                 initialKeys={apiKeys ? { gemini: apiKeys.google, tavily: apiKeys.tavily } : undefined}
               />

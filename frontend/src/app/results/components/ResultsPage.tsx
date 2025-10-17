@@ -12,6 +12,7 @@ import Header from '@/app/shared/components/Header';
 import { ConfirmationDialog } from '@/app/shared/components/ConfirmationDialog';
 import { useFactCheckStore } from '@/lib/store/factCheckStore';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
+import { useI18n, interpolate } from '@/lib/i18n/I18nContext';
 
 interface ResultsPageProps {
   text?: string;
@@ -26,6 +27,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   className,
   demoMode = false
 }) => {
+  const { t, locale } = useI18n();
   const router = useRouter();
   const verificationState = useFactCheckStore();
   const { apiKeys } = useApiKeys();
@@ -98,18 +100,18 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     if (verificationState.status === 'error' || verificationState.status === 'interrupted') {
       return 'error';
     }
-    
+
     // Se está finalizado mas sem resultados, retorna complete (o header vai mostrar o estado correto)
     if (verificationState.status === 'finished') {
       return 'complete';
     }
-    
+
     return 'loading';
   }, [verificationState.status, verificationState.results.length]);
 
   // Converte os resultados do backend para o formato do componente
   const convertedResults = verificationState.results.map(convertToResultData);
-  
+
   console.log('📊 Resultados convertidos:', {
     count: convertedResults.length,
     results: convertedResults
@@ -119,33 +121,33 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   const generateFormattedText = useCallback(() => {
     const originalText = verificationState.processedText || text || '';
     const results = convertedResults;
-    
+
     if (!originalText) return '';
-    
+
     let formattedText = '';
-    
+
     // Adiciona o texto original
-    formattedText += 'TEXTO VERIFICADO:\n';
+    formattedText += `${t.results.export.verifiedText}:\n`;
     formattedText += '==================\n\n';
     formattedText += originalText;
     formattedText += '\n\n';
-    
+
     // Se não há resultados, adiciona informação
     if (results.length === 0) {
-      formattedText += 'RESULTADOS DA VERIFICAÇÃO:\n';
+      formattedText += `${t.results.export.verificationResults}:\n`;
       formattedText += '=========================\n\n';
-      formattedText += 'Nenhum resultado encontrado na verificação.\n';
+      formattedText += `${t.results.export.noResultsFound}.\n`;
       return formattedText;
     }
-    
+
     // Adiciona os resultados da verificação
-    formattedText += 'RESULTADOS DA VERIFICAÇÃO:\n';
+    formattedText += `${t.results.export.verificationResults}:\n`;
     formattedText += '=========================\n\n';
-    
+
     results.forEach((result, index) => {
-      formattedText += `${index + 1}. AFIRMAÇÃO VERIFICADA:\n`;
+      formattedText += `${index + 1}. ${t.results.export.verifiedClaim}:\n`;
       formattedText += `${result.text}\n\n`;
-      
+
       // Status da verificação
       // let statusText = '';
       // switch (result.status) {
@@ -161,45 +163,45 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
       //   default:
       //     statusText = '❓ INDETERMINADO';
       // }
-      
+
       // formattedText += `Status: ${statusText}\n`;
       // formattedText += `Confiança: ${Math.round(result.confidence * 100)}%\n\n`;
-      
+
       // Análise/explicação
       if (result.explanation) {
-        formattedText += `ANÁLISE:\n`;
+        formattedText += `${t.results.export.analysis}:\n`;
         formattedText += `${result.explanation}\n\n`;
       }
-      
+
       // Fontes
       if (result.sources && result.sources.length > 0) {
-        formattedText += `FONTES:\n`;
+        formattedText += `${t.results.export.sources}:\n`;
         result.sources.forEach((source: string, sourceIndex: number) => {
           formattedText += `${sourceIndex + 1}. ${source}\n`;
         });
         formattedText += '\n';
       }
-      
+
       // Separador entre resultados
       if (index < results.length - 1) {
         formattedText += '---\n\n';
       }
     });
-    
+
     // Adiciona informações finais
     formattedText += '\n';
-    formattedText += 'GERADO POR VERITAS - VERIFICADOR DE FATOS\n';
-    formattedText += `Data: ${new Date().toLocaleDateString('pt-BR')}\n`;
-    formattedText += `Total de afirmações verificadas: ${results.length}\n`;
-    
+    formattedText += `${t.results.export.generatedBy}\n`;
+    formattedText += `${t.results.export.date}: ${new Date().toLocaleDateString(locale === 'pt-BR' ? 'pt-BR' : 'en-US')}\n`;
+    formattedText += interpolate(t.results.export.totalClaims, { count: results.length }) + '\n';
+
     return formattedText;
-  }, [verificationState.processedText, text, convertedResults]);
+  }, [verificationState.processedText, text, convertedResults, t, locale]);
 
   const handleCopyPlainText = useCallback(async () => {
     try {
       const textToCopy = generateFormattedText();
       if (!textToCopy) return;
-      
+
       if (navigator?.clipboard?.writeText) {
         await navigator.clipboard.writeText(textToCopy);
       } else {
@@ -221,7 +223,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   // Inicializa a conexão com o backend
   useEffect(() => {
     if (isInitialized) return;
-    
+
     // Modo demo: pula a conexão com backend
     if (demoMode) {
       console.log('🎭 Modo demo ativado - pulando conexão com backend');
@@ -232,7 +234,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     const initializeConnection = async () => {
       try {
         console.log('🔌 Inicializando conexão com o backend...');
-        
+
         // Testa a conexão
         const isConnected = await factCheckService.testConnection();
         if (!isConnected) {
@@ -256,7 +258,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   // Inicia a verificação automaticamente quando a página carrega
   useEffect(() => {
     if (!isInitialized) return;
-    
+
     // Modo demo: não inicia verificação
     if (demoMode) {
       console.log('🎭 Modo demo - usando dados mock da store');
@@ -287,7 +289,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
           console.warn('⚠️ API keys ausentes; abortando verificação automática na ResultsPage');
           return;
         }
-        
+
         const fingerprint = await factCheckService.requestFactCheck(serviceText, {
           researchThreshold: 0.5,
           apiKeys: {
@@ -295,7 +297,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
             tavily: apiKeys.tavily,
           },
         });
-        
+
         console.log('🔑 Fingerprint gerado:', fingerprint);
       } catch (error) {
         console.error('❌ Erro ao iniciar verificação:', error);
@@ -332,13 +334,13 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   const handleClaimClick = useCallback((claimId: string) => {
     console.log('🎯 CLAIM clicado:', claimId);
     setSelectedClaimId(claimId);
-    
+
     // Scroll para o resultado correspondente
     const resultElement = document.getElementById(`result-${claimId}`);
     if (resultElement) {
-      resultElement.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center' 
+      resultElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
       });
     }
   }, []);
@@ -346,13 +348,13 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
   const handleResultClick = useCallback((resultId: string) => {
     console.log('📊 Resultado clicado:', resultId);
     setSelectedClaimId(resultId);
-    
+
     // Scroll para o CLAIM correspondente no texto
     const claimElement = document.getElementById(`claim-${resultId}`);
     if (claimElement) {
-      claimElement.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center' 
+      claimElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
       });
     }
   }, []);
@@ -361,12 +363,12 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
     <div className={cn('min-h-screen', className)} style={{ backgroundColor: 'var(--veritas-results-background)' }}>
       {/* Header (mesmo layout do /verification) */}
       <div className="max-w-[1440px] mx-auto px-20">
-        <Header 
-          showSettings={true} 
-          onSettingsClick={handleConfigurationsClick} 
+        <Header
+          showSettings={true}
+          onSettingsClick={handleConfigurationsClick}
         />
       </div>
-      
+
       <div className="max-w-[1440px] mx-auto px-[80px] sm:px-4 lg:px-26 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 h-[calc(100vh-7rem)] gap-20">
           {/* Coluna Esquerda - Texto Processado */}

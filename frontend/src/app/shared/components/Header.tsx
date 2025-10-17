@@ -3,18 +3,21 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Settings } from 'lucide-react';
 import { Button } from '@/app/shared/components/ui/button';
+import { useI18n } from '@/lib/i18n/I18nContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface HeaderProps {
   className?: string;
   onSettingsClick?: () => void;
   showSettings?: boolean;
   rightContent?: React.ReactNode;
+  showLanguageSwitcher?: boolean;
 }
 
 /**
  * Header - Top-bar consistente em todas as páginas
  * Design v0.2: Conforme especificado no design document
- * 
+ *
  * Especificações:
  * - Logo: Inria Serif Bold, 24px, #102148
  * - Tagline: Inter Regular, 12px, #737b91, opacity 90%
@@ -23,7 +26,15 @@ interface HeaderProps {
  * - Padding: 16px top, 0px bottom
  * - Background: #f5f5f5 (neutral-100)
  */
-const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSettings = false, rightContent }) => {
+const Header: React.FC<HeaderProps> = ({
+  className,
+  onSettingsClick,
+  showSettings = false,
+  rightContent,
+  showLanguageSwitcher = true
+}) => {
+  const { t } = useI18n();
+
   return (
     <header
       className={cn(
@@ -34,48 +45,56 @@ const Header: React.FC<HeaderProps> = ({ className, onSettingsClick, showSetting
       {/* Container principal */}
       <div className="flex items-end justify-between">
         {/* Logo e Tagline à esquerda */}
-        <Link 
-          href="/" 
-          aria-label="Veritas Home"
+        <Link
+          href="/"
+          aria-label={t.header.homeAriaLabel}
           className="flex flex-col leading-[0]"
         >
-          <span 
+          <span
             className="font-bold text-2xl leading-8 tracking-[0.48px] whitespace-pre-wrap"
-            style={{ 
+            style={{
               color: 'var(--text-primary)',
               fontFamily: 'var(--font-inria-serif), "Inria Serif", Georgia, serif'
             }}
           >
-            Veritas
+            {t.common.appName}
           </span>
-          <span 
+          <span
             className="font-normal text-xs leading-5 tracking-[0.24px] whitespace-pre-wrap opacity-90"
-            style={{ 
+            style={{
               color: 'var(--text-tagline)',
               fontFamily: 'var(--font-inter), Inter, sans-serif'
             }}
           >
-            Automatizando a verificação de fatos
+            {t.common.tagline}
           </span>
         </Link>
-        
-        {/* Botão Configurations (Settings) */}
-        {rightContent ? (
-          rightContent
-        ) : (
-          showSettings && onSettingsClick && (
-            <Button
-              variant="link"
-              size="default"
-              onClick={onSettingsClick}
-              aria-label="Configurações de API"
-              title="Configurar API Keys"
-            >
-              <Settings className="w-6 h-6" />
-              Configurações
-            </Button>
-          )
-        )}
+
+        {/* Right side content */}
+        <div className="flex items-center gap-4">
+          {/* Language Switcher */}
+          {showLanguageSwitcher && (
+            <LanguageSwitcher variant="compact" />
+          )}
+
+          {/* Botão Configurations (Settings) */}
+          {rightContent ? (
+            rightContent
+          ) : (
+            showSettings && onSettingsClick && (
+              <Button
+                variant="link"
+                size="default"
+                onClick={onSettingsClick}
+                aria-label={t.header.settingsAriaLabel}
+                title={t.header.settingsTitle}
+              >
+                <Settings className="w-6 h-6" />
+                {t.common.settings}
+              </Button>
+            )
+          )}
+        </div>
       </div>
 
       {/* Divider */}

@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { Textarea } from '@/app/shared/components/ui/textarea';
 import { Button } from '@/app/shared/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { useI18n, interpolate } from '@/lib/i18n/I18nContext';
 
 // Constante para o comprimento máximo do texto a ser verificado
 export const TEXT_TO_BE_REVIEWED_LENGTH = 5000;
@@ -24,19 +25,23 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
   disabled = false,
   value = ""
 }) => {
+  const { t } = useI18n();
   const hasText = value.trim().length > 0;
   const isOverLimit = value.length > TEXT_TO_BE_REVIEWED_LENGTH;
 
   // Mensagem do tooltip para botão desabilitado
   const getDisabledTooltip = () => {
     if (disabled) {
-      return "Aguarde o processamento atual terminar";
+      return t.verificationForm.tooltipWaitProcessing;
     }
     if (isOverLimit) {
-      return `O texto excede o limite de ${TEXT_TO_BE_REVIEWED_LENGTH} caracteres. Remova ${value.length - TEXT_TO_BE_REVIEWED_LENGTH} caracteres para continuar.`;
+      return interpolate(t.verificationForm.tooltipExceedsLimit, {
+        limit: TEXT_TO_BE_REVIEWED_LENGTH,
+        excess: value.length - TEXT_TO_BE_REVIEWED_LENGTH
+      });
     }
     if (!hasText) {
-      return "Digite ou cole um texto para verificar";
+      return t.verificationForm.tooltipEnterText;
     }
     return null;
   };
@@ -49,8 +54,8 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
       {/* TextArea */}
       <div className="flex flex-col gap-2 w-full">
         <Textarea
-          label="Verificar os fatos de..."
-          placeholder="Entre o texto que deseja verificar aqui..."
+          label={t.verificationForm.label}
+          placeholder={t.verificationForm.placeholder}
           maxLength={TEXT_TO_BE_REVIEWED_LENGTH}
           value={value}
           onChange={onTextChange}
@@ -67,11 +72,11 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           onClick={onUseExample}
           disabled={disabled}
           disabledTooltip={
-            disabled ? "Aguarde o processamento atual terminar" : null
+            disabled ? t.verificationForm.tooltipWaitProcessing : null
           }
           className="px-4 py-3"
         >
-          Usar Exemplo
+          {t.verificationForm.useExample}
         </Button>
 
         <Button
@@ -83,7 +88,7 @@ const VerificationForm: React.FC<VerificationFormProps> = ({
           className="px-4 py-3"
         >
           <Sparkles className="size-5" />
-          Verificar Fatos
+          {t.verificationForm.checkFacts}
         </Button>
       </div>
     </div>

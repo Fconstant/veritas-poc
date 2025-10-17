@@ -10,6 +10,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/app/shared/components/ui/dialog"
+import { useI18n } from "@/lib/i18n/I18nContext"
 
 type ConfirmationDialogVariant = "cancel-verification" | "new-text"
 
@@ -36,6 +37,8 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   cancelText,
   className,
 }) => {
+  const { t } = useI18n();
+
   // Configurações específicas para cada variant
   const getVariantConfig = (variant: ConfirmationDialogVariant) => {
     switch (variant) {
@@ -44,9 +47,9 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           icon: FileText,
           iconColor: "text-[var(--purple-hover)]",
           bgColor: "bg-[var(--bg-purple-light)]",
-          defaultDescription: "Tem certeza de que deseja criar um novo texto? Se continuar, tudo o que foi feito até agora será perdido.",
-          defaultConfirmText: "Novo Texto",
-          defaultCancelText: "Voltar",
+          defaultDescription: t.confirmationDialog.newText.description,
+          defaultConfirmText: t.confirmationDialog.newText.confirm,
+          defaultCancelText: t.confirmationDialog.newText.cancel,
         }
       case "cancel-verification":
       default:
@@ -54,9 +57,9 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           icon: AlertTriangle,
           iconColor: "text-[var(--purple-hover)]",
           bgColor: "bg-[var(--bg-purple-light)]",
-          defaultDescription: "Tem certeza de que deseja cancelar esta verificação? Se você cancelar, tudo que foi feito até agora será perdido.",
-          defaultConfirmText: "Cancelar",
-          defaultCancelText: "Voltar",
+          defaultDescription: t.confirmationDialog.cancelVerification.description,
+          defaultConfirmText: t.confirmationDialog.cancelVerification.confirm,
+          defaultCancelText: t.confirmationDialog.cancelVerification.cancel,
         }
     }
   }

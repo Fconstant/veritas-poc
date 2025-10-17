@@ -6,6 +6,7 @@ import { Button } from "@/app/shared/components/ui/button"
 import { X, RotateCcw, Copy, CircleCheck, AlertCircle, Check, Sparkles } from "lucide-react"
 import AnimatedDots from "@/app/shared/components/AnimatedDots"
 import ResultsSectionTitle from "./ResultsSectionTitle"
+import { useI18n } from "@/lib/i18n/I18nContext"
 
 type VerificationStatus = "verifying" | "error" | "done" | "complete-no-results"
 
@@ -37,6 +38,7 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
   className,
   disabled = false,
 }) => {
+  const { t } = useI18n();
   const [isCopied, setIsCopied] = React.useState(false)
 
   const handleCopy = () => {
@@ -53,27 +55,27 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
     switch (status) {
       case "verifying":
         return {
-          text: "Em Andamento",
+          text: t.results.status.verifying,
           textColor: "text-slate-900",
           icon: (
             <div className="relative shrink-0 size-[24px]">
-              <div className="absolute bg-[#77e6a0] left-1/2 rounded-[9999px] size-[24px] top-1/2 translate-x-[-50%] translate-y-[-50%]" 
+              <div className="absolute bg-[#77e6a0] left-1/2 rounded-[9999px] size-[24px] top-1/2 translate-x-[-50%] translate-y-[-50%]"
                    style={{
                      animation: 'fadePulse 1.5s ease-in-out infinite'
                    }} />
               <div className="absolute bg-green-500 left-1/2 rounded-[9999px] size-[12px] top-1/2 translate-x-[-50%] translate-y-[-50%]" />
             </div>
           ),
-          buttonText: "Cancelar",
+          buttonText: t.results.actions.cancel,
           buttonIcon: <X className="size-4" />,
           onButtonClick: onCancel,
           useAnimatedDots: true,
           showButton: true,
         }
-      
+
       case "error":
         return {
-          text: "Erro na Verificação",
+          text: t.results.status.error,
           textColor: "text-[#cb1f1f]",
           icon: (
             <div className="box-border content-stretch flex gap-2 items-center justify-center p-[8px] relative rounded-[100px] shrink-0 size-[24px]">
@@ -82,15 +84,15 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
               </div>
             </div>
           ),
-          buttonText: "Tente Novamente",
+          buttonText: t.results.actions.retry,
           buttonIcon: <RotateCcw className="size-4" />,
           onButtonClick: onRetry,
           showButton: true,
         }
-      
+
       case "done":
         return {
-          text: "Completa",
+          text: t.results.status.complete,
           textColor: "text-slate-900",
           icon: (
             <div className="box-border content-stretch flex gap-2 items-center justify-center p-[8px] relative rounded-[100px] shrink-0 size-[24px]">
@@ -99,15 +101,15 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
               </div>
             </div>
           ),
-          buttonText: isCopied ? "Copiado!" : "Copiar como Texto",
+          buttonText: isCopied ? t.results.actions.copied : t.results.actions.copyAsText,
           buttonIcon: isCopied ? <Check className="size-4 text-green-500" /> : <Copy className="size-4" />,
           onButtonClick: handleCopy,
           showButton: true,
         }
-      
+
       case "complete-no-results":
         return {
-          text: "Completa",
+          text: t.results.status.complete,
           textColor: "text-slate-900",
           icon: (
             <div className="box-border content-stretch flex gap-2 items-center justify-center p-[8px] relative rounded-[100px] shrink-0 size-[24px]">
@@ -118,13 +120,13 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
           ),
           showButton: false,
         }
-      
+
       default:
         return {
-          text: "Em Andamento",
+          text: t.results.status.verifying,
           textColor: "text-slate-900",
           icon: null,
-          buttonText: "Cancelar",
+          buttonText: t.results.actions.cancel,
           buttonIcon: <X className="size-4" />,
           onButtonClick: onCancel,
           useAnimatedDots: true,
@@ -149,22 +151,22 @@ const ResultsHeader: React.FC<ResultsHeaderProps> = ({
             {/* Título "Verificações" */}
             <ResultsSectionTitle
               icon={<Sparkles className="size-[24px] text-slate-900" />}
-              text="Verificações"
+              text={t.results.verifications}
             />
-            
+
             {/* Status atual */}
             <div className="content-stretch flex gap-[8px] h-full items-center relative shrink-0">
               {/* Status Icon */}
               {config.icon}
-              
+
               {/* Status Text */}
               <div className={cn(
                 "flex flex-col font-[var(--font-inter)] font-medium justify-center leading-[0] not-italic relative shrink-0 text-[14px] whitespace-nowrap",
                 config.textColor
               )}>
                 {config.useAnimatedDots ? (
-                  <AnimatedDots 
-                    text={config.text} 
+                  <AnimatedDots
+                    text={config.text}
                     className="leading-[20px] whitespace-pre"
                     interval={500}
                   />

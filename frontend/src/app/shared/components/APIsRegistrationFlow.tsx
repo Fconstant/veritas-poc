@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Key, AlertTriangle, CheckCircle, AlertCircle, Loader2, Eye, EyeOff, ExternalLink, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/app/shared/components/ui/button';
+import { useI18n } from '@/lib/i18n/I18nContext';
 
 type APIFlowState = 'empty' | 'gemini-filled' | 'invalid' | 'validating' | 'valid';
 
@@ -36,6 +37,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
   onComplete,
   initialKeys
 }) => {
+  const { t } = useI18n();
   const [geminiKey, setGeminiKey] = useState(initialKeys?.gemini || '');
   const [tavilyKey, setTavilyKey] = useState(initialKeys?.tavily || '');
   const [showGemini, setShowGemini] = useState(false);
@@ -64,7 +66,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
 
       if (!isGeminiValid || !isTavilyValid) {
         setFlowState('invalid');
-        setErrorMessage('Formato de chave inválido');
+        setErrorMessage(t.apiFlow.errors.invalidFormat);
       } else {
         // Auto-validar com backend (simulado aqui)
         setFlowState('validating');
@@ -74,7 +76,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
         }, 1500);
       }
     }
-  }, [geminiKey, tavilyKey]);
+  }, [geminiKey, tavilyKey, t.apiFlow.errors.invalidFormat]);
 
   const handleComplete = () => {
     if (flowState === 'valid' && onComplete) {
@@ -86,13 +88,13 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
   const getDisabledTooltip = () => {
     switch (flowState) {
       case 'empty':
-        return "Preencha as duas chaves de API para continuar";
+        return t.apiFlow.tooltips.empty;
       case 'gemini-filled':
-        return "Preencha a chave do Tavily para continuar";
+        return t.apiFlow.tooltips.geminiOnly;
       case 'invalid':
-        return "As chaves fornecidas são inválidas. Verifique e tente novamente";
+        return t.apiFlow.tooltips.invalid;
       case 'validating':
-        return "Aguarde enquanto validamos suas chaves de API...";
+        return t.apiFlow.tooltips.validating;
       case 'valid':
         return null;
       default:
@@ -105,25 +107,25 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
       case 'empty':
       case 'gemini-filled':
         return {
-          text: 'Não configuradas',
+          text: t.apiFlow.status.notConfigured,
           icon: <AlertTriangle className="w-6 h-6" style={{ color: 'var(--warning-amber)' }} />,
           color: 'var(--text-helper)'
         };
       case 'invalid':
         return {
-          text: 'Chaves inválidas',
+          text: t.apiFlow.status.invalid,
           icon: <AlertCircle className="w-6 h-6" style={{ color: 'var(--error-red)' }} />,
           color: 'var(--error-red)'
         };
       case 'validating':
         return {
-          text: 'Validando...',
+          text: t.apiFlow.status.validating,
           icon: <Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--validating-purple)' }} />,
           color: 'var(--validating-purple)'
         };
       case 'valid':
         return {
-          text: 'Tudo pronto!',
+          text: t.apiFlow.status.ready,
           icon: <CheckCircle className="w-6 h-6" style={{ color: 'var(--success-green)' }} />,
           color: 'var(--success-green)'
         };
@@ -160,7 +162,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           <div className="flex gap-2 items-center">
             <Key className="w-6 h-6 opacity-50" />
             <span className="font-[var(--font-inter)] font-semibold text-[18px] leading-[24px] text-slate-900">
-              Suas chaves
+              {t.apiFlow.title}
             </span>
           </div>
           {/* Status Badge */}
@@ -187,8 +189,8 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           <div className="flex gap-2 items-center w-full">
             <div className="flex flex-1 gap-2 items-center min-h-0 min-w-0">
               <span className="font-[var(--font-inter)] text-[16px] leading-[24px]" style={{ color: 'var(--purple-medium)' }}>
-                <span className="font-medium">Chave da IA</span>
-                <span className="font-normal"> (Google Gemini API)</span>
+                <span className="font-medium">{t.apiFlow.gemini.label}</span>
+                <span className="font-normal"> {t.apiFlow.gemini.sublabel}</span>
               </span>
             </div>
             <a
@@ -199,7 +201,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
               style={{ color: 'var(--purple-link)' }}
               onClick={(e) => e.stopPropagation()}
             >
-              Como obter chave?
+              {t.apiFlow.gemini.link}
               <ExternalLink className="w-4 h-4" />
             </a>
           </div>
@@ -216,7 +218,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
                 setGeminiKey(e.target.value);
                 setErrorMessage('');
               }}
-              placeholder="Cole sua chave aqui..."
+              placeholder={t.apiFlow.gemini.placeholder}
               className="flex-1 bg-transparent font-[var(--font-merriweather)] text-[14px] leading-[28px] tracking-[0.14px] outline-none"
               style={{ color: geminiKey ? 'var(--text-active)' : 'var(--text-placeholder)' }}
               onClick={(e) => e.stopPropagation()}
@@ -245,8 +247,8 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           <div className="flex gap-2 items-center w-full">
             <div className="flex flex-1 gap-2 items-center min-h-0 min-w-0">
               <span className="font-[var(--font-inter)] text-[16px] leading-[24px]" style={{ color: 'var(--purple-medium)' }}>
-                <span className="font-medium">Chave de Busca</span>
-                <span className="font-normal"> (Tavily API)</span>
+                <span className="font-medium">{t.apiFlow.tavily.label}</span>
+                <span className="font-normal"> {t.apiFlow.tavily.sublabel}</span>
               </span>
             </div>
             <a
@@ -257,7 +259,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
               style={{ color: 'var(--purple-link)' }}
               onClick={(e) => e.stopPropagation()}
             >
-              Como obter chave?
+              {t.apiFlow.tavily.link}
               <ExternalLink className="w-4 h-4" />
             </a>
           </div>
@@ -278,7 +280,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
                 setTavilyKey(e.target.value);
                 setErrorMessage('');
               }}
-              placeholder="Cole sua chave aqui..."
+              placeholder={t.apiFlow.tavily.placeholder}
               className="flex-1 bg-transparent font-[var(--font-merriweather)] text-[14px] leading-[28px] tracking-[0.14px] outline-none"
               style={{ color: tavilyKey ? 'var(--text-active)' : 'var(--text-placeholder)' }}
               onClick={(e) => e.stopPropagation()}
@@ -318,7 +320,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           disabled={flowState !== 'valid'}
           disabledTooltip={getDisabledTooltip()}
         >
-          Começar
+          {t.apiFlow.button}
           <ArrowRight className="w-6 h-6" />
         </Button>
       </div>
