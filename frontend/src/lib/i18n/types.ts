@@ -51,6 +51,7 @@ export interface LiveCardTranslations {
     show: string;
     hide: string;
     count: string;
+    countOne: string;
     title: string;
     groups: Record<EvidenceRelation, string>;
     primarySources: string;

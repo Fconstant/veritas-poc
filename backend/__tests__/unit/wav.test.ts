@@ -78,11 +78,15 @@ describe('pcm16ToWav', () => {
   });
 
   it('rejects a payload that is not a whole number of stereo frames', () => {
-    expect(() => pcm16ToWav(Buffer.alloc(6), 16000, 2)).toThrow(InvalidPcmError);
+    expect(() => pcm16ToWav(Buffer.alloc(6), 16000, 2)).toThrow(
+      InvalidPcmError,
+    );
   });
 
   it('guards mono/stereo channel counts', () => {
-    expect(() => pcm16ToWav(Buffer.alloc(2), 16000, 0)).toThrow(InvalidPcmError);
+    expect(() => pcm16ToWav(Buffer.alloc(2), 16000, 0)).toThrow(
+      InvalidPcmError,
+    );
     expect(() => pcm16ToWav(Buffer.alloc(4), 16000, 3)).toThrow(/channels/);
     expect(() => pcm16ToWav(Buffer.alloc(2), 16000, 1.5)).toThrow(
       InvalidPcmError,

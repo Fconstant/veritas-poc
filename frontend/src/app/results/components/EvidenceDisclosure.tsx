@@ -30,6 +30,8 @@ export interface EvidenceDisclosureProps {
 
 const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--purple-button)] focus-visible:ring-offset-2';
+const GROUP_LABEL =
+  'text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--text-helper)]';
 
 interface EvidenceItemProps {
   item: ResolvedEvidence;
@@ -122,7 +124,8 @@ const EvidenceDisclosure: React.FC<EvidenceDisclosureProps> = ({
   const { t } = useI18n();
   const [open, setOpen] = React.useState(defaultOpen);
 
-  const reactId = React.useId().replace(/:/g, '');
+  // useId may contain characters that are unsafe for CSS selectors.
+  const reactId = React.useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const buttonId = `evidence-toggle-${reactId}`;
   const panelId = `evidence-panel-${reactId}`;
 
@@ -165,7 +168,12 @@ const EvidenceDisclosure: React.FC<EvidenceDisclosureProps> = ({
             {referenceCount > 0 && (
               <>
                 {' · '}
-                {interpolate(t.liveCard.evidence.count, { count: referenceCount })}
+                {interpolate(
+                  referenceCount === 1
+                    ? t.liveCard.evidence.countOne
+                    : t.liveCard.evidence.count,
+                  { count: referenceCount },
+                )}
               </>
             )}
           </span>
@@ -188,7 +196,7 @@ const EvidenceDisclosure: React.FC<EvidenceDisclosureProps> = ({
 
           return (
             <div key={group.relation} className="mb-3 last:mb-0">
-              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--text-helper)]">
+              <p className={cn(GROUP_LABEL, 'mb-1.5')}>
                 {groupLabel}
               </p>
               <ul aria-label={groupLabel} className="grid gap-2">
@@ -228,7 +236,7 @@ const EvidenceDisclosure: React.FC<EvidenceDisclosureProps> = ({
 
         {primarySources.length > 0 && (
           <div className="mt-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--text-helper)]">
+            <p className={GROUP_LABEL}>
               {t.liveCard.evidence.primarySources}
             </p>
             <ul className="mt-1 grid gap-1">

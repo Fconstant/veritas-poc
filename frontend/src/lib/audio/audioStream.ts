@@ -3,8 +3,8 @@
  * Audio chunking and streaming for Veritas Live (LIVE-003).
  *
  * Responsibilities:
- * - capture the tab audio through an `AudioWorklet` (no destination output, so
- *   there is no echo and the captured call is never replayed to the user);
+ * - capture the tab audio through an `AudioWorklet` without routing it to the
+ *   speakers (no echo: the processor never writes to its output);
  * - convert it to mono 16 kHz `pcm16le` chunks of ~100 ms with an explicit
  *   sample clock (`startSample`, `samples`);
  * - assign `chunkSeq` and hand the chunk to the transport;
@@ -202,7 +202,8 @@ export class AudioChunker {
 
   private running = false;
   private paused = false;
-  private pausedSinceLastChunk = false;
+  /** Set on pause() and cleared only when the paused span is reported as a gap. */
+  private pauseGapPending = false;
   private flushing = false;
   private flushWaiter: (() => void) | null = null;
 
@@ -428,7 +429,7 @@ export class AudioChunker {
     this.counters.invalidMessages = 0;
     this.counters.finalFlushChunks = 0;
     this.paused = false;
-    this.pausedSinceLastChunk = false;
+    this.pauseGapPending = false;
     this.flushWaiter = null;
 
     this.context = context;
@@ -498,14 +499,21 @@ export class AudioChunker {
     }
   }
 
-  /** Stops emitting chunks while keeping the share and the sample clock alive. */
+  /**
+   * Stops emitting chunks while keeping the share and the sample clock alive.
+   *
+   * The worklet is asked to flush its residual audio first, so the partial
+   * pre-pause chunk keeps its own `startSample` instead of being shifted after
+   * the paused interval.
+   */
   pause(): void {
     if (!this.running || this.paused) {
       return;
     }
 
     this.paused = true;
-    this.pausedSinceLastChunk = true;
+    this.pauseGapPending = true;
+    this.postToWorklet({ type: 'flush' });
     this.postToWorklet({ type: 'pause' });
   }
 
@@ -764,27 +772,29 @@ export class AudioChunker {
     const expected = this.flow.startSample;
 
     if (payloadStartSample === expected) {
-      this.pausedSinceLastChunk = false;
       return;
     }
 
     if (payloadStartSample > expected) {
       this.counters.clockSkips += 1;
-      const reason = this.pausedSinceLastChunk ? 'paused' : 'clock-skip';
+      const reason = this.pauseGapPending ? 'paused' : 'clock-skip';
+
+      if (this.pauseGapPending) {
+        this.pauseGapPending = false;
+      }
+
       for (const gap of this.flow.registerGap(
         reason,
         payloadStartSample - expected,
       )) {
         this.reportGap(gap);
       }
-      this.pausedSinceLastChunk = false;
       return;
     }
 
     // The worklet reported a chunk that overlaps audio already accounted for.
     // Keep the controller clock (never move it backwards).
     this.counters.clockOverlaps += 1;
-    this.pausedSinceLastChunk = false;
   }
 
   private deliverChunk(descriptor: ChunkDescriptor, buffer: ArrayBuffer): void {

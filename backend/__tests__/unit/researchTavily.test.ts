@@ -79,9 +79,7 @@ describe('TavilyResearchProvider', () => {
       },
     ]);
 
-    expect(fetchMock.mock.calls[0][0]).toBe(
-      'https://api.tavily.test/search',
-    );
+    expect(fetchMock.mock.calls[0][0]).toBe('https://api.tavily.test/search');
     expect(fetchMock.mock.calls[0][1]?.method).toBe('POST');
     expect(parseBody(fetchMock.mock.calls[0][1])).toMatchObject({
       api_key: 'tvly-test-key',
@@ -199,7 +197,9 @@ describe('TavilyResearchProvider', () => {
 
   it('never exposes the api key in error messages', async () => {
     const apiKey = 'tvly-secret-key-123456';
-    stubFetch(() => jsonResponse({ detail: `Invalid API key: ${apiKey}` }, 401));
+    stubFetch(() =>
+      jsonResponse({ detail: `Invalid API key: ${apiKey}` }, 401),
+    );
     const provider = new TavilyResearchProvider({ apiKey });
 
     const error = await captureError(provider.search('Pix'));

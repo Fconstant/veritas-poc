@@ -305,6 +305,7 @@
       "show": "See evidence and sources",
       "hide": "Hide evidence and sources",
       "count": "{{count}} references",
+      "countOne": "{{count}} reference",
       "title": "Documents and evidence",
       "groups": {
         "SUPPORTS": "Evidence that supports",

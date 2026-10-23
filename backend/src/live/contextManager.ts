@@ -141,6 +141,11 @@ export class ContextManager {
     return this.publish(included, lines);
   }
 
+  /** Convenience wrapper when only the formatted text is needed. */
+  getContextText(options: ContextWindowOptions = {}): string {
+    return this.getContext(options).text;
+  }
+
   /**
    * Dependencies of the most recently built window. Empty before the first
    * `getContext` call or after `clear`.

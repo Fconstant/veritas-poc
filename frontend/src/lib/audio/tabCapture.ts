@@ -101,16 +101,19 @@ export function mapDisplayMediaError(error: unknown): TabCaptureError {
     return error;
   }
 
+  const candidate = typeof error === 'object' && error !== null ? error : null;
+  // Browsers throw DOMException, but third-party wrappers may throw anything
+  // (including objects without a prototype), so never coerce blindly.
   const name =
-    typeof error === 'object' && error !== null && 'name' in error
-      ? String((error as { name?: unknown }).name)
+    candidate && typeof (candidate as { name?: unknown }).name === 'string'
+      ? (candidate as { name: string }).name
       : '';
   const detail =
-    typeof error === 'object' && error !== null && 'message' in error
-      ? String((error as { message?: unknown }).message)
+    candidate && typeof (candidate as { message?: unknown }).message === 'string'
+      ? (candidate as { message: string }).message
       : error instanceof Error
         ? error.message
-        : String(error);
+        : '';
 
   switch (name) {
     case 'NotAllowedError':

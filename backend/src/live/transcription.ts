@@ -205,10 +205,13 @@ export const defaultCommandRunner: CommandRunner = (spec) =>
       return;
     }
 
-    const timer = setTimeout(() => {
-      timeoutState.fired = true;
-      killChild();
-    }, Math.max(1, spec.timeoutMs));
+    const timer = setTimeout(
+      () => {
+        timeoutState.fired = true;
+        killChild();
+      },
+      Math.max(1, spec.timeoutMs),
+    );
 
     const finish = (result: CommandResult): void => {
       if (settled) {
@@ -279,10 +282,7 @@ const trimToUndefined = (value: string | undefined): string | undefined => {
   return trimmed !== undefined && trimmed.length > 0 ? trimmed : undefined;
 };
 
-const readPositiveInt = (
-  raw: string | undefined,
-  fallback: number,
-): number => {
+const readPositiveInt = (raw: string | undefined, fallback: number): number => {
   const parsed = Number(raw);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 };
@@ -422,9 +422,7 @@ export function parseWhisperJson(raw: string): TranscriptionResult {
   try {
     parsed = JSON.parse(raw) as unknown;
   } catch {
-    throw new TranscriptionParseError(
-      'Saída do whisper.cpp não é JSON válido',
-    );
+    throw new TranscriptionParseError('Saída do whisper.cpp não é JSON válido');
   }
   return parseWhisperResult(parsed);
 }
@@ -765,8 +763,7 @@ export class GeminiAudioAdapter implements TranscriptionProvider {
     this.timeoutMs =
       options.timeoutMs ??
       readPositiveInt(env['GEMINI_TIMEOUT_MS'], DEFAULT_GEMINI_TIMEOUT_MS);
-    this.fetchImpl =
-      options.fetchImpl ?? ((input, init) => fetch(input, init));
+    this.fetchImpl = options.fetchImpl ?? ((input, init) => fetch(input, init));
   }
 
   isAvailable(): Promise<boolean> {
@@ -972,6 +969,16 @@ export type CreateTranscriptionProviderOptions = {
 const isCloudTranscriptionAllowed = (env: NodeJS.ProcessEnv): boolean =>
   env['ALLOW_CLOUD_TRANSCRIPTION'] === 'true';
 
+/** `TRANSCRIPTION_PROVIDER` selects a preference; unknown values mean `auto`. */
+const preferredFromEnv = (
+  env: NodeJS.ProcessEnv,
+): TranscriptionProviderPreference => {
+  const raw = env['TRANSCRIPTION_PROVIDER']?.trim().toLowerCase();
+  return raw === 'whisper' || raw === 'gemini' || raw === 'unavailable'
+    ? raw
+    : 'auto';
+};
+
 const unavailableFor = (
   preferred: TranscriptionProviderPreference,
   hasGoogleKey: boolean,
@@ -1008,7 +1015,7 @@ export async function createTranscriptionProvider(
   options: CreateTranscriptionProviderOptions = {},
 ): Promise<TranscriptionProvider> {
   const env = options.env ?? process.env;
-  const preferred = options.preferred ?? 'auto';
+  const preferred = options.preferred ?? preferredFromEnv(env);
   const googleApiKey = options.googleApiKey?.trim() ?? '';
   const allowCloud = isCloudTranscriptionAllowed(env);
   const createWhisper =
@@ -1023,11 +1030,7 @@ export async function createTranscriptionProvider(
 
   if (preferred === 'gemini') {
     if (!allowCloud || googleApiKey.length === 0) {
-      return unavailableFor(
-        preferred,
-        googleApiKey.length > 0,
-        allowCloud,
-      );
+      return unavailableFor(preferred, googleApiKey.length > 0, allowCloud);
     }
     return createGemini(googleApiKey);
   }

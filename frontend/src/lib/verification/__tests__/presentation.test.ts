@@ -551,7 +551,10 @@ test('liveCard translations exist in every locale and mirror the contract enums'
   const pt = readLocale('pt-BR');
   const en = readLocale('en-US');
 
-  assert.deepEqual(collectKeyPaths(pt.liveCard), collectKeyPaths(en.liveCard));
+  assert.deepEqual(
+    collectKeyPaths(pt.liveCard).sort(),
+    collectKeyPaths(en.liveCard).sort(),
+  );
 
   const statuses = Object.keys(pt.liveCard.status as Record<string, string>);
   assert.deepEqual([...statuses].sort(), [...ALL_STATUSES].sort());

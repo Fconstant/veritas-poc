@@ -251,6 +251,47 @@ const GENERIC_CAPITALIZED: ReadonlySet<string> = new Set([
   'esta',
   'aquele',
   'aquela',
+  'em',
+  'no',
+  'na',
+  'nos',
+  'nas',
+  'de',
+  'do',
+  'da',
+  'dos',
+  'das',
+  'por',
+  'para',
+  'com',
+  'sem',
+  'que',
+  'se',
+  'como',
+  'mais',
+  'menos',
+  'muito',
+  'pouco',
+  'quase',
+  'depois',
+  'antes',
+  'durante',
+  'desde',
+  'ate',
+  'apos',
+  'entre',
+  'sobre',
+  'tambem',
+  'ainda',
+  'ja',
+  'nao',
+  'sim',
+  'so',
+  'apenas',
+  'todo',
+  'toda',
+  'todos',
+  'todas',
   'segundo',
   'conforme',
   'quando',
@@ -301,6 +342,7 @@ type CriticalSignature = {
   negated: boolean;
   entities: string[];
   subject: string | null;
+  scope: string | null;
   quantity: string | null;
 };
 
@@ -357,7 +399,8 @@ function sorted(values: Iterable<string>): string[] {
 function lexClaim(text: string): LexResult {
   const prepared = stripDiacritics(text.toLowerCase())
     .replaceAll('r$', ' reais ')
-    .replaceAll('us$', ' dolares ');
+    .replaceAll('us$', ' dolares ')
+    .replaceAll('por cento', ' % ');
 
   const tokens = new Set<string>();
   const numbers = new Set<string>();
@@ -472,8 +515,23 @@ function quantityKey(claim: Claim): string | null {
   return `${value}|${unit.units.at(0) ?? unit.tokens.join(' ')}`;
 }
 
-function criticalSignature(claim: Claim, text: string): CriticalSignature {
-  const lexed = lexClaim(text);
+function scopeKey(claim: Claim): string | null {
+  const scope = claim.atomicClaims.at(0)?.populationOrScope;
+  if (scope === undefined) {
+    return null;
+  }
+  const text = scope.trim();
+  if (text.length === 0) {
+    return null;
+  }
+  return lexClaim(text).tokens.join(' ');
+}
+
+function criticalSignature(
+  claim: Claim,
+  text: string,
+  lexed: LexResult,
+): CriticalSignature {
   return {
     numbers: lexed.numbers,
     units: lexed.units,
@@ -481,6 +539,7 @@ function criticalSignature(claim: Claim, text: string): CriticalSignature {
     negated: lexed.negated,
     entities: extractEntities(text),
     subject: subjectKey(claim),
+    scope: scopeKey(claim),
     quantity: quantityKey(claim),
   };
 }
@@ -511,6 +570,9 @@ function signaturesMatch(
   if (left.subject !== null && right.subject !== null && left.subject !== right.subject) {
     return false;
   }
+  if (left.scope !== null && right.scope !== null && left.scope !== right.scope) {
+    return false;
+  }
   if (
     left.quantity !== null &&
     right.quantity !== null &&
@@ -538,11 +600,15 @@ function jaccard(left: readonly string[], right: readonly string[]): number {
 }
 
 /**
- * Deterministic key for the literal (normalized) wording of a claim. Claims
- * with the same key are exact repetitions of each other.
+ * Deterministic key for the normalized wording of a claim, including its
+ * negation marker. Claims with the same key repeat the same proposition.
  */
 export function buildClaimKey(claim: Claim): string {
-  return lexClaim(claimText(claim)).tokens.join(' ');
+  return keyFromLexed(lexClaim(claimText(claim)));
+}
+
+function keyFromLexed(lexed: LexResult): string {
+  return `${lexed.negated ? 'nao:' : ''}${lexed.tokens.join(' ')}`;
 }
 
 /**
@@ -559,9 +625,9 @@ export function findDuplicate(
     Math.max(0, options.threshold ?? DEFAULT_PARAPHRASE_THRESHOLD),
   );
   const text = claimText(candidate);
-  const candidateTokens = lexClaim(text).tokens;
-  const candidateKey = candidateTokens.join(' ');
-  const candidateSignature = criticalSignature(candidate, text);
+  const candidateLexed = lexClaim(text);
+  const candidateKey = keyFromLexed(candidateLexed);
+  const candidateSignature = criticalSignature(candidate, text, candidateLexed);
   let best: DuplicateMatch | null = null;
 
   for (const claim of existing) {
@@ -577,19 +643,18 @@ export function findDuplicate(
     }
 
     const otherText = claimText(claim);
-    const otherTokens = lexClaim(otherText).tokens;
-    const similarity = jaccard(candidateTokens, otherTokens);
-
-    if (otherTokens.join(' ') === candidateKey) {
-      return { claim, kind: 'EXACT', similarity: 1 };
-    }
-
-    if (similarity < threshold) {
+    const otherLexed = lexClaim(otherText);
+    const otherSignature = criticalSignature(claim, otherText, otherLexed);
+    if (!signaturesMatch(candidateSignature, otherSignature)) {
       continue;
     }
 
-    const otherSignature = criticalSignature(claim, otherText);
-    if (!signaturesMatch(candidateSignature, otherSignature)) {
+    if (keyFromLexed(otherLexed) === candidateKey) {
+      return { claim, kind: 'EXACT', similarity: 1 };
+    }
+
+    const similarity = jaccard(candidateLexed.tokens, otherLexed.tokens);
+    if (similarity < threshold) {
       continue;
     }
 

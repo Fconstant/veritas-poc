@@ -96,7 +96,11 @@ const assertChannels = (channels: number): void => {
  * Throws {@link InvalidPcmError} for an odd byte count (a PCM16 sample is two
  * bytes) and for channel counts other than mono/stereo.
  */
-export function pcm16ToWav(pcm: Buffer, sampleRate = 16000, channels = 1): Buffer {
+export function pcm16ToWav(
+  pcm: Buffer,
+  sampleRate = 16000,
+  channels = 1,
+): Buffer {
   assertSampleRate(sampleRate);
   assertChannels(channels);
 
@@ -227,7 +231,10 @@ const assertNonNegativeFinite = (value: number, name: string): void => {
 };
 
 /** Converts milliseconds to a whole number of samples (16 kHz by default). */
-export function msToSamples(ms: number, sampleRate = PCM16_SAMPLE_RATE): number {
+export function msToSamples(
+  ms: number,
+  sampleRate = PCM16_SAMPLE_RATE,
+): number {
   assertNonNegativeFinite(ms, 'ms');
   return Math.round((ms * sampleRate) / 1000);
 }

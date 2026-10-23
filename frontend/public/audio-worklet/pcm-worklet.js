@@ -74,8 +74,12 @@ class PcmWorkletProcessor extends AudioWorkletProcessor {
     this.readPos = 0;
     /** Target-domain samples emitted so far, including paused/skipped audio. */
     this.emittedSamples = 0;
-    /** Fractional target samples accumulated while paused (avoids drift). */
-    this.pauseCarry = 0;
+    /**
+     * Source frames discarded while paused and not yet converted to the target
+     * domain. Integer accumulation keeps the paused clock exact (a 48 kHz source
+     * paused for 1 s advances exactly 16000 samples, no drift).
+     */
+    this.pauseSourceFrames = 0;
     this.paused = false;
     this.stopped = false;
 
@@ -149,14 +153,22 @@ class PcmWorkletProcessor extends AudioWorkletProcessor {
   }
 
   advancePausedClock(frames) {
-    this.pauseCarry += frames * (this.targetRate / this.sourceRate);
+    this.pauseSourceFrames += frames;
 
-    const whole = Math.floor(this.pauseCarry);
+    const targetSamples = Math.floor(
+      (this.pauseSourceFrames * this.targetRate) / this.sourceRate,
+    );
 
-    if (whole > 0) {
-      this.emittedSamples += whole;
-      this.pauseCarry -= whole;
+    if (targetSamples <= 0) {
+      return;
     }
+
+    this.emittedSamples += targetSamples;
+    // Keep the sub-sample remainder in the source domain so nothing is lost and
+    // nothing is counted twice across successive pause blocks.
+    this.pauseSourceFrames -= Math.ceil(
+      (targetSamples * this.sourceRate) / this.targetRate,
+    );
   }
 
   /** Number of target samples that can be produced from the buffered audio. */
@@ -275,11 +287,9 @@ class PcmWorkletProcessor extends AudioWorkletProcessor {
     switch (message.type) {
       case 'pause':
         this.paused = true;
-        this.pauseCarry = 0;
         break;
       case 'resume':
         this.paused = false;
-        this.pauseCarry = 0;
         break;
       case 'flush':
         this.flush();

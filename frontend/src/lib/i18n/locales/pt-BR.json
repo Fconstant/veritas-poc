@@ -305,6 +305,7 @@
       "show": "Ver provas e fontes",
       "hide": "Ocultar provas e fontes",
       "count": "{{count}} referências",
+      "countOne": "{{count}} referência",
       "title": "Documentos e evidências",
       "groups": {
         "SUPPORTS": "Evidências que sustentam",

@@ -94,10 +94,11 @@ export function redactSecrets(
   );
 }
 
-/** Collapses whitespace and truncates without breaking surrogate pairs. */
+/** Collapses whitespace and truncates by code point (keeps emoji intact). */
 export function summarizeText(input: string, maxChars: number): string {
   const singleLine = input.replace(/\s+/g, ' ').trim();
-  return singleLine.length > maxChars
-    ? `${singleLine.slice(0, maxChars)}…`
+  const characters = Array.from(singleLine);
+  return characters.length > maxChars
+    ? `${characters.slice(0, maxChars).join('')}…`
     : singleLine;
 }

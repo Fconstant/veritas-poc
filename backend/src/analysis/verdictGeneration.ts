@@ -76,7 +76,8 @@ export type GenerateVerificationArgs = {
   now?: () => Date;
 };
 
-const VERDICT_PROMPT = ChatPromptTemplate.fromTemplate(`Você é o motor de veredito do Veritas. Classifique a afirmação usando exclusivamente as evidências verificadas listadas.
+const VERDICT_PROMPT =
+  ChatPromptTemplate.fromTemplate(`Você é o motor de veredito do Veritas. Classifique a afirmação usando exclusivamente as evidências verificadas listadas.
 
 AFIRMAÇÃO:
 {claim}
@@ -104,7 +105,8 @@ JSON SCHEMA:
 {schema}
 `);
 
-const VERDICT_REPAIR_PROMPT = ChatPromptTemplate.fromTemplate(`A síntese anterior foi rejeitada pela validação de invariantes do Veritas. Corrija o JSON mantendo exatamente as mesmas evidências e regras.
+const VERDICT_REPAIR_PROMPT =
+  ChatPromptTemplate.fromTemplate(`A síntese anterior foi rejeitada pela validação de invariantes do Veritas. Corrija o JSON mantendo exatamente as mesmas evidências e regras.
 
 AFIRMAÇÃO:
 {claim}
@@ -136,7 +138,9 @@ function cleanList(values: readonly string[] | undefined): string[] {
   if (values === undefined) {
     return [];
   }
-  return values.map((value) => value.trim()).filter((value) => value.length > 0);
+  return values
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
 }
 
 function uniqueList(values: readonly string[]): string[] {
@@ -201,7 +205,9 @@ export function parseVerdictDraft(raw: string): VerdictDraft {
       .slice(0, 5)
       .map((issue) => `${issue.path.map(String).join('.')}: ${issue.message}`)
       .join('; ');
-    throw new ParsingError(`O veredito não seguiu o schema esperado (${issues}).`);
+    throw new ParsingError(
+      `O veredito não seguiu o schema esperado (${issues}).`,
+    );
   }
   return result.data;
 }
@@ -233,7 +239,10 @@ function sanitizeEvidence(
     if (!sourceIds.has(item.sourceId) || seenIds.has(item.id)) {
       continue;
     }
-    if (item.excerpt.trim().length === 0 || item.explanation.trim().length === 0) {
+    if (
+      item.excerpt.trim().length === 0 ||
+      item.explanation.trim().length === 0
+    ) {
       continue;
     }
     seenIds.add(item.id);
@@ -332,7 +341,9 @@ function validateCandidate(
   };
 }
 
-type DraftAttempt = { ok: true; draft: VerdictDraft } | { ok: false; issues: string[] };
+type DraftAttempt =
+  | { ok: true; draft: VerdictDraft }
+  | { ok: false; issues: string[] };
 
 async function requestDraft(
   llm: BaseChatModel,
@@ -364,9 +375,7 @@ function draftToVerification(
   verifiedEvidence: readonly Evidence[],
   gaps: readonly string[],
 ): Verification {
-  const verifiedById = new Map(
-    verifiedEvidence.map((item) => [item.id, item]),
-  );
+  const verifiedById = new Map(verifiedEvidence.map((item) => [item.id, item]));
   const refutingIds = new Set(
     verifiedEvidence
       .filter((item) => item.relation === 'REFUTES')
@@ -380,9 +389,9 @@ function draftToVerification(
   const limitations = cleanList(draft.limitations);
   const supportedAspects = cleanList(draft.supportedAspects);
   const contradiction = draft.contradiction?.trim() ?? '';
-  const contradictionEvidenceIds = (draft.contradictionEvidenceIds ?? []).filter(
-    (id) => refutingIds.has(id),
-  );
+  const contradictionEvidenceIds = (
+    draft.contradictionEvidenceIds ?? []
+  ).filter((id) => refutingIds.has(id));
   const mechanisms = collectMechanisms(draft.mechanisms, verifiedById);
 
   const completed = (
@@ -569,8 +578,7 @@ export async function generateVerification(
       status: 'COMPLETED',
       verdict: 'INCONCLUSIVE',
       conclusion: NO_EVIDENCE_CONCLUSION,
-      limitations:
-        gaps.length > 0 ? gaps : [NO_EVIDENCE_LIMITATION],
+      limitations: gaps.length > 0 ? gaps : [NO_EVIDENCE_LIMITATION],
     });
   }
 

@@ -142,7 +142,6 @@ const NUMBER_PATTERN = /\d/;
 const NEGATION_PATTERN =
   /\b(n[ãa]o|nunca|jamais|sem|nenhum|nenhuma|nenhuns|nenhumas|tampouco|sequer)\b/iu;
 const SENTENCE_END_PATTERN = /[.!?…](?=\s|$)/gu;
-const TERMINAL_PUNCTUATION_PATTERN = /[.!?…]$/u;
 
 /**
  * Detects the uncertainty signals the transcript layer is responsible for.
@@ -180,6 +179,40 @@ type Token = {
 };
 
 const EDGE_PUNCTUATION = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu;
+
+/**
+ * Words that must never be dropped on the strength of a one-word "overlap":
+ * negations (meaning-critical) and very common short tokens (noise).
+ */
+const AMBIGUOUS_SINGLE_WORD_OVERLAP: ReadonlySet<string> = new Set([
+  'nao',
+  'não',
+  'nunca',
+  'jamais',
+  'sem',
+  'nenhum',
+  'nenhuma',
+  'nem',
+  'tampouco',
+  'sequer',
+  'e',
+  'é',
+  'a',
+  'o',
+  'as',
+  'os',
+  'de',
+  'da',
+  'do',
+  'das',
+  'dos',
+  'em',
+  'no',
+  'na',
+  'um',
+  'uma',
+  'que',
+]);
 
 const tokenize = (text: string): Token[] => {
   const tokens: Token[] = [];
@@ -225,27 +258,42 @@ export function reconcileOverlap(
     Math.max(1, maxWords),
   );
 
+  // A terminator only limits the overlap when another sentence follows it:
+  // trailing punctuation (every whisper window ends with one) is not a barrier.
   let lastSentenceBreakEnd = 0;
   for (const match of previous.matchAll(SENTENCE_END_PATTERN)) {
-    lastSentenceBreakEnd = match.index + 1;
+    if (previous.slice(match.index + 1).trim().length > 0) {
+      lastSentenceBreakEnd = match.index + 1;
+    }
   }
 
   for (let overlap = limit; overlap > 0; overlap--) {
     const suffixStart = previousTokens.length - overlap;
-    const firstSuffixToken = previousTokens[suffixStart];
-    if (firstSuffixToken === undefined || firstSuffixToken.start < lastSentenceBreakEnd) {
+    const firstSuffixToken = previousTokens.at(suffixStart);
+    if (
+      overlap === 1 &&
+      firstSuffixToken !== undefined &&
+      AMBIGUOUS_SINGLE_WORD_OVERLAP.has(firstSuffixToken.normalized)
+    ) {
+      // A single shared short/negation token is not evidence of a re-decode.
+      continue;
+    }
+    if (
+      firstSuffixToken !== undefined &&
+      firstSuffixToken.start < lastSentenceBreakEnd
+    ) {
       // The candidate overlap would swallow a sentence boundary.
       continue;
     }
     let matches = true;
     for (let index = 0; index < overlap; index++) {
-      const left = previousTokens[previousTokens.length - overlap + index];
-      const right = incomingTokens[index];
-      if (
-        left === undefined ||
-        right === undefined ||
-        left.normalized !== right.normalized
-      ) {
+      const left = previousTokens.at(previousTokens.length - overlap + index);
+      const right = incomingTokens.at(index);
+      if (left === undefined || right === undefined) {
+        matches = false;
+        break;
+      }
+      if (left.normalized !== right.normalized) {
         matches = false;
         break;
       }
@@ -253,7 +301,7 @@ export function reconcileOverlap(
     if (!matches) {
       continue;
     }
-    const lastIncomingToken = incomingTokens[overlap - 1];
+    const lastIncomingToken = incomingTokens.at(overlap - 1);
     const remainder =
       lastIncomingToken === undefined
         ? incoming
@@ -330,6 +378,8 @@ type SegmentRecord = {
   structuralReasons: UncertaintyReason[];
   history: SegmentHistoryEntry[];
   dependencies: SegmentDependency[];
+  /** Set once a human correction confirmed the current text. */
+  confirmedByHuman: boolean;
 };
 
 const uniqueReasons = (
@@ -391,8 +441,7 @@ export class SpeechSegmenter {
     this.clock = options.clock ?? (() => new Date());
     this.gapMs = options.gapMs ?? DEFAULT_SEGMENT_GAP_MS;
     this.minFinalChars = options.minFinalChars ?? DEFAULT_MIN_FINAL_CHARS;
-    this.maxSegmentChars =
-      options.maxSegmentChars ?? DEFAULT_MAX_SEGMENT_CHARS;
+    this.maxSegmentChars = options.maxSegmentChars ?? DEFAULT_MAX_SEGMENT_CHARS;
     this.lowConfidenceThreshold =
       options.lowConfidenceThreshold ?? LOW_CONFIDENCE_THRESHOLD;
     this.blockOnCriticalTokensWithoutConfidence =
@@ -475,7 +524,20 @@ export class SpeechSegmenter {
         // An empty hypothesis on top of open audio means words were lost.
         structural.push('TRANSCRIPTION_ERROR');
       }
-      const reconciled = reconcileOverlap(record.segment.text, text);
+      // Only windows that actually overlap in the media clock can be a
+      // re-decode of the same audio. Without overlap the repeated words are
+      // new speech and must be kept (e.g. two consecutive negations).
+      const audioOverlap = startMs < record.segment.endMs;
+      const reconciled =
+        text.length === 0 || !audioOverlap
+          ? {
+              text:
+                text.length === 0
+                  ? record.segment.text
+                  : `${record.segment.text} ${text}`.trim(),
+              trimmedWords: 0,
+            }
+          : reconcileOverlap(record.segment.text, text);
       overlapWordsTrimmed = reconciled.trimmedWords;
       const mergedText = reconciled.text;
       const addedWords = mergedText !== record.segment.text;
@@ -484,7 +546,17 @@ export class SpeechSegmenter {
         ...record.structuralReasons,
         ...structural,
       ]);
-      record.windowIds.push(this.nextWindowId());
+      const windowId = this.nextWindowId();
+      record.windowIds.push(windowId);
+      record.dependencies = [
+        ...record.dependencies,
+        { kind: 'window', windowId },
+      ];
+      if (addedWords) {
+        // A correction only vouches for the text it confirmed; new words must
+        // earn certainty again.
+        record.confirmedByHuman = false;
+      }
       record.segment = {
         ...record.segment,
         text: mergedText,
@@ -515,7 +587,8 @@ export class SpeechSegmenter {
             record.segment.startMs,
             Math.round(
               record.segment.startMs +
-                ((originalEndMs - record.segment.startMs) * split.prefix.length) /
+                ((originalEndMs - record.segment.startMs) *
+                  split.prefix.length) /
                   totalChars,
             ),
           ),
@@ -597,9 +670,13 @@ export class SpeechSegmenter {
         (windowId): SegmentDependency => ({ kind: 'window', windowId }),
       ),
     ];
+    record.confirmedByHuman = true;
     record.segment = {
       ...record.segment,
       text: corrected,
+      // The current revision is human-confirmed: `confidence` describes the
+      // text we have now. The ASR confidence stays in `getHistory()`.
+      confidence: 1,
       revision: record.segment.revision + 1,
     };
     this.touch(record);
@@ -610,7 +687,10 @@ export class SpeechSegmenter {
     );
     record.segment =
       record.segment.status === 'PROVISIONAL'
-        ? { ...record.segment, uncertaintyReasons: this.provisionalReasons(record) }
+        ? {
+            ...record.segment,
+            uncertaintyReasons: this.provisionalReasons(record),
+          }
         : this.applyFinalState(record);
     this.touch(record);
     this.recordHistory(record);
@@ -642,7 +722,10 @@ export class SpeechSegmenter {
     );
   }
 
-  /** Revision history of a segment (oldest first, including the current one). */
+  /**
+   * Recorded revisions of a segment, oldest first: every finalized revision and
+   * every human correction (provisional updates are not archived).
+   */
   getHistory(segmentId: string): SegmentHistoryEntry[] {
     const record = this.records.get(segmentId);
     if (record === undefined) {
@@ -686,6 +769,7 @@ export class SpeechSegmenter {
     const segmentId = `${this.sessionId}-seg-${String(this.nextSegmentNumber)}`;
     this.nextSegmentNumber += 1;
     const confidence = clampConfidence(input.confidence);
+    const windowId = this.nextWindowId();
     const record: SegmentRecord = {
       segment: {
         id: segmentId,
@@ -693,17 +777,20 @@ export class SpeechSegmenter {
         revision: 0,
         status: 'PROVISIONAL',
         text: input.text,
-        ...(input.speakerId === undefined ? {} : { speakerId: input.speakerId }),
+        ...(input.speakerId === undefined
+          ? {}
+          : { speakerId: input.speakerId }),
         startMs: input.startMs,
         endMs: input.endMs,
         ...(confidence === undefined ? {} : { confidence }),
         createdAt: this.clock().toISOString(),
       },
       seq: this.nextSeq(),
-      windowIds: [this.nextWindowId()],
+      windowIds: [windowId],
       structuralReasons: uniqueReasons(input.structural),
       history: [],
-      dependencies: [],
+      dependencies: [{ kind: 'window', windowId }],
+      confirmedByHuman: false,
     };
     record.segment = this.applyProvisionalState(record);
     this.records.set(segmentId, record);
@@ -715,10 +802,16 @@ export class SpeechSegmenter {
     record.seq = this.nextSeq();
   }
 
+  private textualReasons(record: SegmentRecord): UncertaintyReason[] {
+    return record.confirmedByHuman
+      ? []
+      : detectUncertainty(record.segment.text, record.segment.confidence);
+  }
+
   private provisionalReasons(record: SegmentRecord): UncertaintyReason[] {
     return uniqueReasons([
       ...record.structuralReasons,
-      ...detectUncertainty(record.segment.text, record.segment.confidence),
+      ...this.textualReasons(record),
     ]);
   }
 
@@ -734,7 +827,7 @@ export class SpeechSegmenter {
     reasons: UncertaintyReason[];
   } {
     const confidence = record.segment.confidence;
-    const textual = detectUncertainty(record.segment.text, confidence);
+    const textual = this.textualReasons(record);
     const reasons = uniqueReasons([...record.structuralReasons, ...textual]);
     const criticalTextual = textual.some(
       (reason) => reason === 'NUMBER' || reason === 'NEGATION',
@@ -749,7 +842,8 @@ export class SpeechSegmenter {
       (reason) => reason === 'OVERLAP' || reason === 'TRANSCRIPTION_ERROR',
     );
     return {
-      blocking: lowConfidence || criticalWithoutConfidence || structuralBlocking,
+      blocking:
+        lowConfidence || criticalWithoutConfidence || structuralBlocking,
       reasons,
     };
   }
@@ -759,7 +853,7 @@ export class SpeechSegmenter {
     return {
       ...record.segment,
       status: 'PROVISIONAL',
-      ...(reasons.length > 0 ? { uncertaintyReasons: reasons } : {}),
+      uncertaintyReasons: reasons.length > 0 ? reasons : undefined,
     };
   }
 
@@ -768,7 +862,7 @@ export class SpeechSegmenter {
     return {
       ...record.segment,
       status: blocking ? 'BLOCKED' : 'FINAL',
-      ...(reasons.length > 0 ? { uncertaintyReasons: reasons } : {}),
+      uncertaintyReasons: reasons.length > 0 ? reasons : undefined,
     };
   }
 
@@ -802,7 +896,7 @@ export class SpeechSegmenter {
         ...dependency,
       })),
     };
-    const last = record.history[record.history.length - 1];
+    const last = record.history.at(-1);
     if (last !== undefined && last.revision === entry.revision) {
       record.history[record.history.length - 1] = entry;
       return;

@@ -39,6 +39,8 @@ const FOCUS_RING =
 
 const WARNING_TEXT =
   'text-[color-mix(in_srgb,var(--warning-amber)_80%,#111827)]';
+const SECTION_LABEL =
+  'text-[10px] font-bold uppercase tracking-[0.085em] text-[var(--purple-medium)]';
 
 type NoticeStatus = Exclude<ClaimStatus, 'COMPLETED'> | 'incomplete';
 
@@ -259,7 +261,7 @@ const VerificationCard: React.FC<VerificationCardProps> = ({
       )}
 
       <div className="space-y-2 px-4 pb-3 pt-3">
-        {definitive && verdict !== null ? (
+        {definitive ? (
           <div
             role="group"
             aria-label={t.liveCard.sections.conclusion}
@@ -273,18 +275,16 @@ const VerificationCard: React.FC<VerificationCardProps> = ({
             </p>
           </div>
         ) : (
-          !definitive && (
-            <StatusNotice
-              status={noticeStatus}
-              title={notice.title}
-              body={notice.body}
-            />
-          )
+          <StatusNotice
+            status={noticeStatus}
+            title={notice.title}
+            body={notice.body}
+          />
         )}
 
         {definitive && verdict === 'FALSE' && contradiction !== null && (
           <div className="rounded-[8px] border border-l-[3px] border-[var(--divider)] border-l-[var(--purple-button)] bg-[#f9f7fc] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.085em] text-[var(--purple-medium)]">
+            <p className={SECTION_LABEL}>
               {t.liveCard.sections.contradiction}
             </p>
             <p className="mt-1.5 break-words text-[12px] leading-[1.62] text-[var(--text-primary)]">
@@ -303,7 +303,7 @@ const VerificationCard: React.FC<VerificationCardProps> = ({
 
         {definitive && verdict === 'MISLEADING' && (
           <div className="rounded-[8px] border border-[var(--divider)] bg-[#f9f7fc] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.085em] text-[var(--purple-medium)]">
+            <p className={SECTION_LABEL}>
               {t.liveCard.sections.trueComponent}
             </p>
             {supportedAspects.length > 0 ? (
@@ -325,7 +325,7 @@ const VerificationCard: React.FC<VerificationCardProps> = ({
               )
             )}
 
-            <p className="mt-2.5 text-[10px] font-bold uppercase tracking-[0.085em] text-[var(--purple-medium)]">
+            <p className={cn(SECTION_LABEL, 'mt-2.5')}>
               {t.liveCard.sections.distortion}
             </p>
             <p className="mt-1 break-words text-[12px] leading-[1.6] text-[var(--text-primary)]">
@@ -336,7 +336,7 @@ const VerificationCard: React.FC<VerificationCardProps> = ({
 
         {definitive && verdict === 'SUPPORTED' && supportedAspects.length > 0 && (
           <div className="rounded-[8px] border border-[color-mix(in_srgb,var(--success-green)_30%,white)] bg-[color-mix(in_srgb,var(--success-green)_7%,white)] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.085em] text-[var(--purple-medium)]">
+            <p className={SECTION_LABEL}>
               {t.liveCard.sections.supportedAspects}
             </p>
             <ul className="mt-1.5 grid gap-1">
@@ -354,7 +354,7 @@ const VerificationCard: React.FC<VerificationCardProps> = ({
 
         {definitive && verdict === 'INCONCLUSIVE' && (
           <div className="rounded-[8px] border border-[var(--divider)] bg-[var(--bg-overlay)] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.085em] text-[var(--purple-medium)]">
+            <p className={SECTION_LABEL}>
               {t.liveCard.sections.missing}
             </p>
             {limitations.length > 0 ? (
@@ -380,7 +380,7 @@ const VerificationCard: React.FC<VerificationCardProps> = ({
 
         {definitive && verification.mechanisms.length > 0 && (
           <div role="group" aria-label={t.liveCard.sections.mechanism}>
-            <p className="flex items-start gap-1.5 text-[10px] font-bold uppercase tracking-[0.085em] text-[var(--purple-medium)]">
+            <p className={cn(SECTION_LABEL, 'flex items-start gap-1.5')}>
               <TriangleAlert aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
               <span>{t.liveCard.sections.mechanism}</span>
             </p>
@@ -410,7 +410,7 @@ const VerificationCard: React.FC<VerificationCardProps> = ({
                       </p>
                       {linkedEvidence.length > 0 && (
                         <div className="mt-1.5">
-                          <p className="text-[9px] font-bold uppercase tracking-[0.06em] text-[var(--text-helper)]">
+                          <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--text-helper)]">
                             {t.liveCard.mechanismEvidenceLabel}
                           </p>
                           <ul className="mt-1 flex flex-wrap gap-x-2 gap-y-1">

@@ -75,19 +75,19 @@ const okRunner =
   (spec: CommandSpec): Promise<CommandResult> => {
     captured.push(spec);
     const outputIndex = spec.args.indexOf('-of');
-    const base = spec.args[outputIndex + 1];
+    const base = spec.args.at(outputIndex + 1);
     if (outputIndex < 0 || base === undefined) {
       return Promise.reject(new Error('missing -of argument'));
     }
-    return fs
-      .writeFile(`${base}.json`, json, 'utf8')
-      .then((): CommandResult => ({
+    return fs.writeFile(`${base}.json`, json, 'utf8').then(
+      (): CommandResult => ({
         code: 0,
         stdout: '',
         stderr: '',
         timedOut: false,
         aborted: false,
-      }));
+      }),
+    );
   };
 
 const WHISPER_JSON = JSON.stringify({
@@ -147,7 +147,9 @@ describe('parseWhisperJson', () => {
   it('derives a confidence signal from probability or avg_logprob', () => {
     const withProbability = parseWhisperJson(
       JSON.stringify({
-        transcription: [{ offsets: { from: 0, to: 10 }, probability: 0.9, text: 'a' }],
+        transcription: [
+          { offsets: { from: 0, to: 10 }, probability: 0.9, text: 'a' },
+        ],
       }),
     );
     expect(withProbability.confidence).toBeCloseTo(0.9);
@@ -205,7 +207,9 @@ describe('WhisperCppAdapter', () => {
 
   afterEach(async () => {
     await Promise.all(
-      cleanups.splice(0).map((dir) => fs.rm(dir, { recursive: true, force: true })),
+      cleanups
+        .splice(0)
+        .map((dir) => fs.rm(dir, { recursive: true, force: true })),
     );
   });
 
@@ -272,7 +276,10 @@ describe('WhisperCppAdapter', () => {
     });
 
     expect(await adapter.isAvailable()).toBe(true);
-    expect(captured[0]).toMatchObject({ command: 'whisper-cli', args: ['--help'] });
+    expect(captured[0]).toMatchObject({
+      command: 'whisper-cli',
+      args: ['--help'],
+    });
   });
 
   it('writes a WAV window, runs whisper.cpp and parses JSON output', async () => {
@@ -297,7 +304,7 @@ describe('WhisperCppAdapter', () => {
     expect(args).toContain('-nt');
     expect(captured[0]?.command).toBe('/opt/whisper/whisper-cli');
 
-    const wavPath = args[args.indexOf('-f') + 1];
+    const wavPath = args.at(args.indexOf('-f') + 1);
     expect(wavPath).toBeDefined();
     if (wavPath === undefined) {
       return;
@@ -420,15 +427,25 @@ describe('GeminiAudioAdapter', () => {
   const successfulResponse = (payload: unknown): Response =>
     new Response(
       JSON.stringify({
-        candidates: [{ content: { parts: [{ text: JSON.stringify(payload) }] } }],
+        candidates: [
+          { content: { parts: [{ text: JSON.stringify(payload) }] } },
+        ],
       }),
       { status: 200, headers: { 'content-type': 'application/json' } },
     );
 
   it('posts inline WAV audio with the key in a header, never in the URL', async () => {
-    const requests: { url: string; init: RequestInit }[] = [];
+    const requests: {
+      url: string;
+      init: RequestInit;
+      bodyText: string;
+    }[] = [];
     const fetchImpl: FetchLike = (url, init) => {
-      requests.push({ url, init });
+      requests.push({
+        url,
+        init,
+        bodyText: typeof init.body === 'string' ? init.body : '',
+      });
       return Promise.resolve(
         successfulResponse({
           text: 'O Pix foi criado em 2015.',
@@ -453,7 +470,7 @@ describe('GeminiAudioAdapter', () => {
     });
 
     const result = await adapter.transcribe(pcm(), options());
-    const request = requests[0];
+    const request = requests.at(0);
 
     expect(request?.url).toBe(
       'https://gemini.example/v1beta/models/gemini-test-model:generateContent',
@@ -464,7 +481,7 @@ describe('GeminiAudioAdapter', () => {
       'x-goog-api-key': 'AIza-secret-key-1234567890',
     });
 
-    const body = JSON.parse(String(request?.init.body)) as {
+    const body = JSON.parse(request?.bodyText ?? '{}') as {
       contents: {
         parts: {
           text?: string;
@@ -480,7 +497,7 @@ describe('GeminiAudioAdapter', () => {
     expect(wav.length).toBe(WAV_HEADER_BYTES + pcm().length);
     expect(parseWavHeader(wav).dataBytes).toBe(pcm().length);
     expect(body.contents[0]?.parts[0]?.text).toContain('JSON');
-    expect(String(request?.init.body)).not.toContain('AIza-secret');
+    expect(request?.bodyText).not.toContain('AIza-secret');
 
     expect(result.text).toBe('O Pix foi criado em 2015.');
     expect(result.confidence).toBeCloseTo(0.8);
@@ -537,9 +554,7 @@ describe('GeminiAudioAdapter', () => {
       .transcribe(pcm(), options())
       .catch((thrown: unknown) => thrown);
     expect(error).toBeInstanceOf(TranscriptionError);
-    expect((error as TranscriptionError).code).toBe(
-      'TRANSCRIPTION_HTTP_ERROR',
-    );
+    expect((error as TranscriptionError).code).toBe('TRANSCRIPTION_HTTP_ERROR');
     expect((error as Error).message).toContain('403');
     expect((error as Error).message).not.toContain('AIza');
   });
@@ -590,13 +605,11 @@ describe('GeminiAudioAdapter', () => {
         env: {},
         fetchImpl,
       });
-      const pending = adapter.transcribe(pcm(), options());
-      const assertion = expect(pending).rejects.toBeInstanceOf(
-        TranscriptionTimeoutError,
-      );
-
+      const pending = adapter
+        .transcribe(pcm(), options())
+        .catch((thrown: unknown) => thrown);
       await vi.advanceTimersByTimeAsync(60);
-      await assertion;
+      await expect(pending).resolves.toBeInstanceOf(TranscriptionTimeoutError);
     } finally {
       vi.useRealTimers();
     }
@@ -621,9 +634,7 @@ describe('parseGeminiTranscriptionResponse', () => {
     ).toThrow(TranscriptionParseError);
     expect(() =>
       parseGeminiTranscriptionResponse({
-        candidates: [
-          { content: { parts: [{ text: '{"text":42}' }] } },
-        ],
+        candidates: [{ content: { parts: [{ text: '{"text":42}' }] } }],
       }),
     ).toThrow(TranscriptionParseError);
   });
@@ -744,8 +755,41 @@ describe('createTranscriptionProvider', () => {
 
     expect(provider).toBeInstanceOf(UnavailableTranscriptionProvider);
     expect(geminiCreated).toBe(0);
-    const error = await provider.transcribe().catch((thrown: unknown) => thrown);
+    const error = await provider
+      .transcribe(Buffer.alloc(2), options())
+      .catch((thrown: unknown) => thrown);
     expect((error as Error).message).toContain('ALLOW_CLOUD_TRANSCRIPTION');
+  });
+
+  it('honours TRANSCRIPTION_PROVIDER=gemini from the environment', async () => {
+    const gemini = new FakeProvider('gemini');
+    const provider = await createTranscriptionProvider({
+      googleApiKey: googleKey,
+      env: {
+        TRANSCRIPTION_PROVIDER: 'gemini',
+        ALLOW_CLOUD_TRANSCRIPTION: 'true',
+      },
+      createWhisperProvider: () => new FakeProvider('whisper', true),
+      createGeminiProvider: () => gemini,
+    });
+
+    expect(provider).toBe(gemini);
+  });
+
+  it('still refuses the cloud when TRANSCRIPTION_PROVIDER=gemini but not allowed', async () => {
+    let geminiCreated = 0;
+    const provider = await createTranscriptionProvider({
+      googleApiKey: googleKey,
+      env: { TRANSCRIPTION_PROVIDER: 'gemini' },
+      createWhisperProvider: () => new FakeProvider('whisper', true),
+      createGeminiProvider: () => {
+        geminiCreated += 1;
+        return new FakeProvider('gemini');
+      },
+    });
+
+    expect(provider).toBeInstanceOf(UnavailableTranscriptionProvider);
+    expect(geminiCreated).toBe(0);
   });
 
   it('returns unavailable when whisper is preferred but missing', async () => {

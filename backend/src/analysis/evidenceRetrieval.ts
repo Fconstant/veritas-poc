@@ -29,6 +29,8 @@ export type RetrievalClaim = {
 export type RetrievalFailure = {
   url: string;
   reason: string;
+  /** Provider failure taxonomy, when the failure came from the provider. */
+  kind?: ResearchErrorKind;
 };
 
 export type RetrievalResult = {
@@ -93,7 +95,9 @@ export function buildSearchQuery(claim: RetrievalClaim): string {
     return atomic;
   }
   const normalized = claim.normalizedClaim.trim();
-  return normalized.length > 0 ? normalized : claim.originalQuote?.trim() ?? '';
+  return normalized.length > 0
+    ? normalized
+    : (claim.originalQuote?.trim() ?? '');
 }
 
 export function canonicalizeUrl(rawUrl: string): string | undefined {
@@ -164,10 +168,10 @@ function normalizePublishedAt(raw: string | undefined): string | undefined {
   return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
 }
 
-function describeFailure(error: unknown): string {
+function describeFailure(url: string, error: unknown): RetrievalFailure {
   return error instanceof ResearchError
-    ? FAILURE_REASON_BY_KIND[error.kind]
-    : 'falha ao recuperar o documento';
+    ? { url, reason: FAILURE_REASON_BY_KIND[error.kind], kind: error.kind }
+    : { url, reason: 'falha ao recuperar o documento' };
 }
 
 function dedupeHits(hits: readonly SearchHit[]): SearchHit[] {
@@ -255,10 +259,7 @@ export async function retrieveEvidence(
 
   for (const outcome of outcomes) {
     if ('error' in outcome) {
-      failures.push({
-        url: outcome.hit.url,
-        reason: describeFailure(outcome.error),
-      });
+      failures.push(describeFailure(outcome.hit.url, outcome.error));
       continue;
     }
 

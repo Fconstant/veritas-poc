@@ -48,7 +48,8 @@ export type EvidenceDraftResponse = z.infer<
   typeof LLM_EVIDENCE_RESPONSE_SCHEMA
 >;
 
-const EVALUATION_PROMPT = ChatPromptTemplate.fromTemplate(`Você é o avaliador documental do Veritas. Classifique apenas o que está escrito nos documentos inspecionados.
+const EVALUATION_PROMPT =
+  ChatPromptTemplate.fromTemplate(`Você é o avaliador documental do Veritas. Classifique apenas o que está escrito nos documentos inspecionados.
 
 AFIRMAÇÃO A VERIFICAR:
 {claim}
@@ -89,7 +90,9 @@ function cleanList(values: readonly string[] | undefined): string[] {
   if (values === undefined) {
     return [];
   }
-  return values.map((value) => value.trim()).filter((value) => value.length > 0);
+  return values
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
 }
 
 function modelText(response: unknown): string {
@@ -154,7 +157,10 @@ export function parseEvidenceResponse(raw: string): EvidenceDraftResponse {
 
 function renderClaim(claim: EvaluationClaim): string {
   const lines = [`Afirmação normalizada: ${claim.normalizedClaim.trim()}`];
-  if (claim.originalQuote !== undefined && claim.originalQuote.trim().length > 0) {
+  if (
+    claim.originalQuote !== undefined &&
+    claim.originalQuote.trim().length > 0
+  ) {
     lines.push(`Citação original: "${claim.originalQuote.trim()}"`);
   }
   return lines.join('\n');
@@ -190,15 +196,16 @@ function renderDocuments(
       content.length > cap
         ? `${content.slice(0, cap)}\n[conteúdo truncado para inspeção]`
         : content;
-    const part = [
+    const header = [
       `[${source.id}] ${source.title}`,
       `URL: ${source.url}`,
       `Publicador: ${source.publisher} (${source.type})`,
-      'CONTEÚDO:',
-      '"""',
-      body,
-      '"""',
-    ].join('\n');
+      `Acesso: ${source.accessedAt}`,
+    ];
+    if (source.publishedAt !== undefined) {
+      header.push(`Publicação: ${source.publishedAt}`);
+    }
+    const part = [...header, 'CONTEÚDO:', '"""', body, '"""'].join('\n');
     parts.push(part);
     used += part.length;
   }

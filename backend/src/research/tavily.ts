@@ -36,7 +36,9 @@ const asRecord = (value: unknown): JsonRecord | undefined =>
   isRecord(value) ? value : undefined;
 
 const readString = (value: unknown): string | undefined =>
-  typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined;
+  typeof value === 'string' && value.trim().length > 0
+    ? value.trim()
+    : undefined;
 
 const readNumber = (value: unknown): number | undefined =>
   typeof value === 'number' && Number.isFinite(value) ? value : undefined;
@@ -358,10 +360,7 @@ function parseExtractPayload(
   }
 
   if (!Array.isArray(results) && !Array.isArray(record['failed_results'])) {
-    throw new ResearchError(
-      'INVALID',
-      'Resposta de extração sem resultados.',
-    );
+    throw new ResearchError('INVALID', 'Resposta de extração sem resultados.');
   }
 
   throw new ResearchError(
