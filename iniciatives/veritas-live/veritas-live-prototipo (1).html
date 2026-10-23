@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f5">
+<title>Veritas Live — Protótipo · Verificação com evidências</title>
+<style>
+:root{--purple-primary:#351397;--purple-button:#844ae9;--purple-link:#5d13dd;--purple-hover:#8a5cda;--purple-dark:#381257;--purple-medium:#553484;--bg-gradient-start:#f5f5f5;--bg-gradient-end:#eaeaea;--card-bg:#f2f2f2;--card-border:#b8b8b8;--divider:#d7d4de;--text-primary:#102148;--text-title:#60526c;--text-muted:#6e678a;--text-helper:#716793;--text-active:#383838;--success:#22c55e;--warning:#aa710e;--error:#ef4444;--bg-analysis:rgba(245,245,245,.65);--shadow-card:0 20px 80px rgba(137,44,219,.12);--radius:16px;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;--serif:Merriweather,Georgia,Cambria,"Times New Roman",serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:var(--sans);background:linear-gradient(160deg,var(--bg-gradient-start) 20%,var(--bg-gradient-end));color:var(--text-active);min-height:100vh}button,textarea,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}button:focus-visible,a:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #ad7df6;outline-offset:3px}button:active:not(:disabled){transform:translateY(1px)}svg{width:18px;height:18px;vertical-align:middle;flex:none}
+.topbar{max-width:1430px;margin:0 auto;padding:20px 44px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(53,19,151,.1)}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:#381257}.brand-symbol{background:linear-gradient(140deg,#351397,#844ae9);color:#fff;width:34px;height:34px;display:grid;place-items:center;border-radius:11px;box-shadow:0 5px 15px #844ae938}.brand-symbol svg{width:22px;height:22px}.brand-name{font-size:23px;font-weight:750;letter-spacing:-1.2px}.brand-product{font-size:11px;font-weight:700;color:#6e678a;background:#fff;border:1px solid #e0d8ea;border-radius:7px;padding:4px 7px;margin-left:2px;letter-spacing:.07em}.top-right{display:flex;align-items:center;gap:18px;font-size:13px;color:var(--text-muted)}.top-right a{color:var(--purple-link);text-decoration:none}.demo-pill{display:flex;align-items:center;gap:7px;background:#ece4fa;border:1px solid #dac8f0;border-radius:999px;color:#553484;font-weight:600;padding:6px 12px;font-size:11px}
+.container{max-width:1350px;margin:0 auto;padding:38px 44px 35px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:750;color:#755a97;margin:0 0 11px}.page-title{font-size:clamp(28px,3.3vw,42px);line-height:1.2;letter-spacing:-1.5px;color:var(--purple-dark);margin:0 0 12px;font-weight:650}.intro{max-width:700px;color:#766d83;font-size:15px;line-height:1.7;margin:0}.setup-heading{margin-bottom:27px}.setup-grid{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(305px,.94fr);gap:30px;align-items:start}.panel{background:#fff;border:1px solid #dfdbe5;border-radius:19px;box-shadow:0 8px 36px rgba(31,14,57,.04);overflow:hidden}.panel.glow{box-shadow:var(--shadow-card)}.panel-pad{padding:26px}.panel-title{font-size:18px;font-weight:700;color:#292236;margin:0 0 8px;letter-spacing:-.3px}.muted{color:#81788b;font-size:13px;line-height:1.55;margin:0}.mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:4px;border-radius:12px;background:#eeebf2;padding:5px;margin:22px 0}.mode-toggle button{border:0;border-radius:8px;background:transparent;color:#756b81;padding:13px 8px;font-size:13px;font-weight:680;display:flex;align-items:center;justify-content:center;gap:8px}.mode-toggle button.active{background:#fff;box-shadow:0 2px 8px #39205b17;color:#5d13dd}.field-label{display:block;font-weight:650;color:#544661;font-size:13px;margin:0 0 9px}.input-select,textarea{width:100%;padding:14px 13px;border:1px solid #cfc0de;border-radius:9px;background:#fff;color:#423a4b}.input-select{min-height:51px}.help-row{display:flex;align-items:flex-start;gap:9px;color:#81768e;font-size:12px;line-height:1.5;margin:12px 0 0}.help-row svg{width:15px;height:15px;margin-top:1px;color:#8c6ab4}.cta{display:inline-flex;justify-content:center;align-items:center;gap:10px;border-radius:8px;min-height:47px;padding:11px 18px;font-size:14px;font-weight:700;background:#844ae9;border:1px solid #351397;color:white;box-shadow:0 8px 24px #532cdb44;transition:.15s}.cta:hover{background:#5d13dd}.cta.secondary{background:white;color:#6e44ad;border:1px solid #c9b4e1;box-shadow:none}.cta.ghost{background:transparent;color:#70598f;border:1px solid #d9cce6;box-shadow:none}.cta.stop{background:#fff;color:#a33a54;border:1px solid #e5c3cd;box-shadow:none}.cta.stop:hover{background:#fff6f8}.full{width:100%}.setup-cta{margin-top:23px}.steps{display:flex;flex-direction:column;gap:18px;margin-top:18px}.step{display:flex;gap:12px;align-items:flex-start}.step-icon{background:#f3edfc;border:1px solid #e6d9fa;color:#844ae9;width:39px;height:39px;border-radius:12px;display:grid;place-items:center;flex:none}.step strong{display:block;color:#3e314c;font-size:13px;margin:2px 0 5px}.step span{display:block;color:#81788b;font-size:12px;line-height:1.55}.quiet-note{margin-top:22px;font-size:12px;color:#8c8495;line-height:1.55;padding:12px 14px;border-radius:10px;background:#faf8fc}.textbox{min-height:145px;resize:vertical;font:14px/1.7 var(--serif)}
+/* Live workspace */
+.live-header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:23px}.live-header .page-title{margin-bottom:9px}.live-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:15px}.status-pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:#eafaf0;border:1px solid #c3edcf;padding:8px 11px;font-size:12px;color:#277549;font-weight:700}.status-pill .dot{width:8px;height:8px;border-radius:999px;background:var(--success)}.status-pill.running .dot{animation:pulse 1.5s infinite}.status-pill.paused{background:#fff6e7;color:#906215;border-color:#f8e3bd}.status-pill.paused .dot{background:#e4a84b;animation:none}.stat-mini{font-size:12px;color:#7c7189;background:#fff;border:1px solid #e4ddec;padding:8px 11px;border-radius:999px;font-variant-numeric:tabular-nums}.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.controls .cta{min-height:42px;font-size:13px}.work-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:21px;align-items:start}.stream-panel,.results-panel{min-height:540px}.pane-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:20px 23px;border-bottom:1px solid #eeebf1}.pane-head h2{font-size:16px;display:flex;align-items:center;gap:9px;margin:0;color:#312640}.pane-head h2 svg{color:#8e6abe}.pane-side{font-size:12px;color:#8e8794}.pane-body{padding:17px 22px;max-height:550px;overflow-y:auto;scrollbar-color:#d8cfe4 transparent}.stream-item{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;padding:15px 0;border-bottom:1px solid #f0ebf2;animation:fadeUp .28s ease}.avatar{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:10px;font-weight:800;letter-spacing:.04em;background:#f0e6ff;color:#6541a0;border:1px solid #e3d0ff}.avatar.green{background:#e5f3f0;color:#277766;border-color:#cbebe2}.avatar.neutral{background:#eff1f6;color:#61718a;border-color:#e5e9ef}.stream-speaker{display:flex;align-items:center;gap:7px;margin:1px 0 7px}.stream-speaker strong{font-size:12px;color:#5c4a70}.stream-speaker time{font-size:11px;color:#9b90a5;font-variant-numeric:tabular-nums}.stream-content{font:14px/1.75 var(--serif);margin:0;color:#544c57}.claim-highlight{background:#efe5ff;color:#591ba7;padding:1px 3px;border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}.marker-inline{font:700 11px var(--sans);color:#844ae9;margin-left:5px}.stream-item.current .avatar{box-shadow:0 0 0 4px #eee5fc}.typing{color:#8d8693;font-style:italic}.empty-stream{display:grid;place-items:center;text-align:center;padding:85px 22px;color:#a399b0}.empty-stream svg{height:30px;width:30px;color:#a88dc8;margin-bottom:12px}
+.claim-filters{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:8px 11px;font-size:11px;font-weight:650;background:#fff;color:#776c80;border:1px solid #e8e0ee;border-radius:8px}.chip.active{background:#f0e9fc;color:#6632b2;border-color:#dfc9fa}.result-list{padding:16px;max-height:550px;overflow-y:auto}.result-card{padding:17px;border:1px solid #e1dae7;border-radius:14px;background:#fff;margin-bottom:12px;animation:fadeUp .25s ease;box-shadow:0 2px 12px #1e152608}.result-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.result-speaker{display:flex;align-items:center;gap:7px;color:#82768e;font-size:11px}.mini-avatar{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;color:#6d3ba9;background:#f0e5ff;font-size:9px;font-weight:750}.mini-avatar.green{color:#277766;background:#e5f3f0}.mini-avatar.neutral{color:#61718a;background:#eff1f6}.result-status{display:inline-flex;align-items:center;gap:6px;background:#f5efff;color:#7340b6;border-radius:99px;padding:6px 9px;font-size:10px;font-weight:700;white-space:nowrap}.result-status.pending{background:#fff5e8;color:#94631b}.result-status.done{background:#e7f5ef;color:#247550}.result-status .small-dot{height:6px;width:6px;border-radius:50%;background:currentColor}.result-claim{font:15px/1.58 var(--serif);margin:0 0 13px;color:#35303b}.analysis-box{background:#f7f6f9;padding:12px 13px;border:1px solid #ece9ef;border-radius:9px;color:#665d6b;font-size:12px;line-height:1.65}.analysis-box strong{display:block;font:650 11px var(--sans);margin-bottom:4px;color:#76678d}.source-row{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}.source-row span{font-size:11px;color:#9b91a5}.source-row button{border:0;background:transparent;color:#7044bc;font-weight:650;font-size:11px;padding:4px 0}.source-details{margin-top:10px;border-top:1px solid #f0eaf3;padding-top:9px;color:#766b81;font-size:11px;line-height:1.6}.source-details a{color:#6b3bb5}.empty-results{text-align:center;padding:70px 20px;color:#94899c;font-size:13px;line-height:1.55}.empty-results svg{width:29px;height:29px;color:#bca7d5;margin-bottom:8px}.mobile-tabs{display:none}.mobile-dock{display:none}.footnote{text-align:center;color:#948a9e;font-size:11px;margin-top:25px;line-height:1.5}.offline-note{display:flex;align-items:center;gap:8px;background:#f8f6fa;color:#857992;border-radius:10px;padding:11px 14px;margin-top:13px;font-size:11px}.offline-note svg{height:16px;width:16px}
+@keyframes pulse{50%{box-shadow:0 0 0 6px #22c55e20}}@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:980px){.topbar{padding:16px 24px}.container{padding:30px 24px}.setup-grid,.work-grid{grid-template-columns:1fr}.live-header{flex-direction:column}.panel-pad{padding:22px}}
+@media(max-width:720px){body{background:linear-gradient(#f7f7f7,#f0edf3)}.topbar{padding:13px 17px}.brand-name{font-size:20px}.brand-product{font-size:10px}.top-right a,.top-right .minor{display:none}.container{padding:21px 14px 112px}.page-title{font-size:28px;letter-spacing:-.8px}.intro{font-size:13px}.setup-heading{margin-bottom:19px}.setup-grid{gap:15px}.panel-pad{padding:19px}.mode-toggle{margin:17px 0}.panel-title{font-size:16px}.live-header{margin-bottom:16px;gap:12px}.live-header .page-title{font-size:25px}.live-meta{margin-top:12px}.controls{display:none}.work-grid{display:block}.stream-panel,.results-panel{min-height:0}.work-grid .pane{display:none}.work-grid .pane.show-mobile{display:block}.pane-head{padding:16px}.pane-head h2{font-size:14px}.pane-body,.result-list{max-height:none;min-height:310px;padding:10px 13px}.mobile-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;background:#ebe7f0;border-radius:11px;margin-bottom:12px}.mobile-tabs button{background:transparent;border:0;border-radius:8px;color:#7a6f85;font-size:13px;padding:11px 6px;font-weight:680}.mobile-tabs button.active{background:#fff;color:#5d13dd;box-shadow:0 2px 8px #20132b0e}.mobile-dock{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px calc(12px + env(safe-area-inset-bottom));position:fixed;bottom:0;left:0;right:0;z-index:30;background:#ffffffed;backdrop-filter:blur(16px);border-top:1px solid #e6e0ea}.mobile-dock .cta{flex:1;box-shadow:none;min-height:44px}.mobile-dock .status-pill{font-size:11px;padding:7px 9px}.result-card{padding:15px}.result-list{padding:11px}.footnote{margin-top:18px}}
+
+/* Resultado 2.0: veredito, contradição, mecanismo e prova por demanda */
+.work-grid{grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr)}
+.result-list{max-height:calc(100vh - 290px);min-height:540px}
+.pane-body{max-height:calc(100vh - 290px);min-height:540px}
+.result-card{padding:0;overflow:hidden;border-color:#ddd7e5;box-shadow:0 2px 10px #261c320b}
+.result-card:focus-within{border-color:#ba9bdf}
+.result-card .result-top{padding:16px 17px 0;margin-bottom:10px}
+.result-meta{font-size:10px;color:#93899e;margin-top:3px;padding-left:29px}
+.result-card .result-claim{padding:0 17px;margin-bottom:13px;font-size:15px;line-height:1.55}
+.verdict-block{margin:0 14px 13px;border-radius:11px;padding:12px 13px;border:1px solid #e7e4eb;background:#f8f7fa}
+.verdict-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px}
+.verdict-tag{display:inline-flex;align-items:center;gap:6px;font-weight:790;font-size:11px;letter-spacing:.045em;text-transform:uppercase;padding:6px 9px;border-radius:7px;white-space:nowrap}
+.verdict-tag.false{color:#b52b38;background:#ffeaeb}
+.verdict-tag.misleading{color:#8f5d13;background:#fff0cd}
+.verdict-tag.supported{color:#217044;background:#e5f7eb}
+.verdict-tag.undetermined{color:#685d7c;background:#f0edf5}
+.verdict-summary{color:#2b2338;font-size:13px;font-weight:730;line-height:1.48;margin:0}
+.verdict-proof{margin:0 14px 12px;padding:12px 14px;background:#f9f7fc;border:1px solid #eee7f5;border-left:3px solid #8d58d9;border-radius:8px}
+.verdict-proof strong,.mechanism-box strong{display:block;margin-bottom:6px;font-size:10px;letter-spacing:.085em;color:#6c5091;text-transform:uppercase}
+.verdict-proof p{margin:0;font-size:12px;line-height:1.62;color:#413950}
+.contrast{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.contrast>div{background:#fff;border:1px solid #eee7f5;border-radius:8px;padding:10px}
+.contrast small{display:block;color:#82748c;font-size:10px;line-height:1.2;margin-bottom:5px;font-weight:640}
+.contrast b{font-size:12px;color:#382e44;font-weight:700;line-height:1.42;display:block}
+.contrast .fact{border-color:#d6eadf;background:#f5fbf7}
+.mechanism-box{display:flex;align-items:flex-start;gap:10px;margin:0 16px 13px;color:#4e4558;font-size:12px;line-height:1.5}
+.mechanism-symbol{background:#f5efff;border:1px solid #e7dafb;color:#6632b2;font-weight:800;width:23px;height:23px;flex:none;display:grid;place-items:center;border-radius:8px;font-size:12px}
+.mechanism-box strong{margin:0 0 3px}
+.evidence-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;background:#faf9fc;padding:13px 17px;color:#6b36b2;border:0;border-top:1px solid #eee8f3;font-size:12px;font-weight:750}
+.evidence-toggle svg{transition:transform .2s}
+.evidence-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+.evidence-details{padding:15px 17px 18px;background:#fcfbfe;border-top:1px solid #f0eaf6}
+.evidence-title{font-size:11px;font-weight:780;color:#453352;margin:0 0 10px}
+.evidence-list{display:grid;gap:9px;margin-bottom:11px}
+.evidence-item{border:1px solid #e7e0ef;background:white;border-radius:10px;padding:10px 12px}
+.evidence-item a{font-size:12px;font-weight:700;color:#5d13dd;text-decoration:none;display:inline-flex;gap:5px;align-items:center}
+.evidence-item a:hover{text-decoration:underline}
+.evidence-item p{font-size:11px;line-height:1.6;margin:6px 0 0;color:#675e70}
+.evidence-limit{font-size:11px;line-height:1.55;color:#766b80;margin:0;background:#f3eff8;padding:10px;border-radius:9px}
+.pending-card .analysis-box{margin:0 16px 16px}
+.status-small{font-size:11px;color:#8a8190}
+.notice-evidence{font-size:11px;color:#826f91;padding:0 16px 12px}
+.result-status{flex:none}
+@media(max-width:980px){.work-grid{grid-template-columns:1fr}.result-list,.pane-body{max-height:none;min-height:260px}}
+@media(max-width:720px){.result-list,.pane-body{max-height:none;min-height:280px}.verdict-block{margin:0 11px 11px}.verdict-proof{margin:0 11px 11px}.contrast{grid-template-columns:1fr}.result-card .result-top{padding:14px 13px 0}.result-card .result-claim{padding:0 13px}.evidence-toggle{padding:13px}}
+
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 10v4M6 6v12M10 3v18M14 8v8M18 5v14M22 10v4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="i-text" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.7"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8V4Z" fill="currentColor"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5v14M17 5v14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m8.5 12 2.5 2.5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v6M12 7h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 8V3l-3 3a9 9 0 1 0 3 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M15 8h5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+</svg>
+<header class="topbar">
+ <a class="brand" href="#" id="logoLink"><span class="brand-symbol"><svg><use href="#i-check"></use></svg></span><span class="brand-name">veritas</span><span class="brand-product">LIVE</span></a>
+ <div class="top-right"><span class="minor">Fact-checking inteligente</span><a href="https://github.com/Fconstant/veritas-poc" target="_blank" rel="noopener">Projeto Veritas ↗</a><span class="demo-pill">PROTÓTIPO · MOCK</span></div>
+</header>
+<main class="container">
+<section id="setupScreen">
+ <div class="setup-heading"><p class="eyebrow">Uma nova maneira de verificar</p><h1 class="page-title">A verdade acompanha<br> a conversa.</h1><p class="intro">Transcreva uma conversa em andamento e acompanhe a análise das afirmações à medida que aparecem.</p></div>
+ <div class="setup-grid">
+  <div class="panel glow"><div class="panel-pad"><h2 class="panel-title">Como deseja verificar?</h2><p class="muted">Escolha como enviar o conteúdo para o Veritas.</p>
+   <div class="mode-toggle" role="tablist" aria-label="Modo de entrada"><button id="modeLive" class="active" role="tab" aria-selected="true"><svg><use href="#i-wave"></use></svg> Áudio ao vivo</button><button id="modeText" role="tab" aria-selected="false"><svg><use href="#i-text"></use></svg> Colar texto</button></div>
+   <div id="audioSetup"><label class="field-label" for="sourceSelect">Fonte de áudio</label><select class="input-select" id="sourceSelect"><option value="tab">Aba do navegador (desktop)</option><option value="mic">Microfone (TV ou outro dispositivo)</option></select><div class="help-row"><svg><use href="#i-info"></use></svg><span id="sourceHint">Na implementação real, o navegador solicitará permissão para compartilhar uma aba com áudio. Esta demo não captura som.</span></div><button class="cta full setup-cta" id="startLive"><svg><use href="#i-play"></use></svg> Simular escuta ao vivo <svg><use href="#i-arrow"></use></svg></button></div>
+   <div id="textSetup" hidden><label class="field-label" for="textInput">Texto para verificar</label><textarea id="textInput" class="textbox" placeholder="Cole uma afirmação ou um trecho de texto..."></textarea><button class="cta full setup-cta" id="startText"><svg><use href="#i-search"></use></svg> Simular verificação de texto <svg><use href="#i-arrow"></use></svg></button></div>
+  </div></div>
+  <div class="panel"><div class="panel-pad"><p class="eyebrow">Sem intervenção a cada frase</p><h2 class="panel-title">Deixe o Veritas trabalhar</h2><div class="steps"><div class="step"><span class="step-icon"><svg><use href="#i-wave"></use></svg></span><div><strong>1. Escuta contínua</strong><span>Áudio é transformado em transcrição progressiva.</span></div></div><div class="step"><span class="step-icon"><svg><use href="#i-text"></use></svg></span><div><strong>2. Identificação de afirmações</strong><span>Falas são agrupadas, contextualizadas e atribuídas a participantes.</span></div></div><div class="step"><span class="step-icon"><svg><use href="#i-search"></use></svg></span><div><strong>3. Pesquisa em paralelo</strong><span>O Veritas busca evidências enquanto a conversa continua.</span></div></div><div class="step"><span class="step-icon"><svg><use href="#i-shield"></use></svg></span><div><strong>4. Vereditos com provas</strong><span>Explica onde a afirmação contradiz evidências e como pode induzir ao erro.</span></div></div></div><div class="quiet-note">Demonstração com falas históricas publicadas em 2022 e 2026, misturadas apenas para testar a interface. O áudio e a sequência são simulados. Nenhuma API ou transmissão é acessada.</div></div></div>
+ </div>
+</section>
+<section id="liveScreen" hidden>
+ <div class="live-header"><div><p class="eyebrow">Veritas / Escuta automática</p><h1 class="page-title">Acompanhamento ao vivo</h1><p class="intro">Demonstração com afirmações históricas de anos diferentes. Cada conclusão mostra contradição, mecanismo e fontes.</p><div class="live-meta"><span class="status-pill running" id="liveStatus"><span class="dot"></span><span id="liveStatusText">Simulando escuta</span></span><span class="stat-mini" id="timer">00:00</span><span class="stat-mini" id="claimCount">0 afirmações</span><span class="stat-mini" id="liveSource">Áudio da aba · mock</span></div></div><div class="controls"><button class="cta secondary" id="pauseBtn"><svg><use href="#i-pause"></use></svg><span id="pauseText">Pausar</span></button><button class="cta stop" id="stopBtn"><svg><use href="#i-stop"></use></svg> Encerrar</button></div></div>
+ <div class="mobile-tabs" role="tablist" aria-label="Visualizar painel"><button id="mobileTrans" role="tab" aria-selected="false">Transcrição</button><button id="mobileClaims" class="active" role="tab" aria-selected="true">Verificações <span id="mobileCount"></span></button></div>
+ <div class="work-grid">
+  <section class="panel pane stream-panel" id="transPane"><div class="pane-head"><h2><svg><use href="#i-text"></use></svg> Transcrição</h2><span class="pane-side">Atualização contínua</span></div><div class="pane-body" id="transcriptItems" aria-live="polite" aria-relevant="additions"><div class="empty-stream"><div><svg><use href="#i-wave"></use></svg><div>Aguardando primeira fala simulada...</div></div></div></div></section>
+  <section class="panel pane results-panel show-mobile" id="claimsPane"><div class="pane-head"><h2><svg><use href="#i-shield"></use></svg> Verificações</h2><span class="pane-side" id="queueCount">Fila vazia</span></div><div class="pane-head" style="padding:12px 16px"><div class="claim-filters" role="group" aria-label="Filtrar afirmações"><button class="chip active" data-filter="all">Todas</button><button class="chip" data-filter="pending">Em análise</button><button class="chip" data-filter="done">Analisadas</button></div></div><div class="result-list" id="resultItems" aria-live="polite" aria-relevant="additions"><div class="empty-results"><svg><use href="#i-search"></use></svg><div>As afirmações encontradas aparecerão aqui.</div></div></div></section>
+ </div>
+ <div class="offline-note"><svg><use href="#i-info"></use></svg>Modo demo: sequência e tempos simulados. Os exemplos usam fatos documentados e links externos; o aplicativo não pesquisou nem verificou nada em tempo real.</div>
+ <div class="mobile-dock"><span class="status-pill running" id="dockStatus"><span class="dot"></span><span id="dockLabel">Ao vivo · mock</span></span><button class="cta secondary" id="mobilePause"><svg><use href="#i-pause"></use></svg><span id="mobilePauseText">Pausar</span></button><button class="cta stop" id="mobileStop" aria-label="Encerrar simulação"><svg><use href="#i-stop"></use></svg></button></div>
+</section>
+<p class="footnote">Veritas Live · Protótipo de experiência · Falas de fontes históricas, sem captação, transcrição ou checagem automática.</p>
+</main>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icon=n=>`<svg aria-hidden="true"><use href="#i-${n}"></use></svg>`;
+const people={
+ A:{name:'Jair Bolsonaro',short:'JB',style:''},
+ B:{name:'Flávio Bolsonaro',short:'FB',style:'green'},
+ M:{name:'Narração demonstrativa',short:'D',style:'neutral'}
+};
+const mockChecks={
+ pix:{
+  label:'FALSO',type:'false',headline:'A ideia não surgiu no governo Bolsonaro.',
+  contradiction:'O Banco Central criou um grupo de trabalho para pagamentos instantâneos em maio de 2018, no governo Michel Temer. Seus requisitos essenciais estavam definidos em dezembro de 2018, antes da posse de Jair Bolsonaro em janeiro de 2019.',
+  whatSaid:'A ideia começou no governo Bolsonaro.',whatFound:'O projeto já tinha requisitos definidos em 2018.',
+  mechanism:'Atribuição indevida de autoria',mechanismDetail:'Mistura o governo em que o Pix foi lançado (2020) com aquele em que o projeto já estava estruturado (2018). O Banco Central é uma instituição permanente.',
+  sources:[
+   {name:'Banco Central · Grupo de Trabalho',url:'https://www.bcb.gov.br/estabilidadefinanceira/gtpagamentos',detail:'Registra o GT e a conclusão dos requisitos fundamentais em dezembro de 2018.'},
+   {name:'Agência Brasil · Documentos do BC',url:'https://agenciabrasil.ebc.com.br/economia/noticia/2025-07/documentos-do-bc-mostram-que-bases-do-pix-foram-lancadas-em-2018',detail:'Apresenta a cronologia da preparação em 2018 e do lançamento em 2020.'},
+   {name:'Agência Lupa · Checagem de 2022',url:'https://www.agencialupa.org/jornalismo/2022/09/14/ratinho-bolsonaro-violencia-mulher-pix-auxilios/',detail:'Reproduz a declaração e confronta com a documentação original.'}
+  ],
+  limitation:'O lançamento em 2020 ocorreu sob Bolsonaro; isso não comprova a autoria da ideia.'
+ },
+ bolsa:{
+  label:'ENGANOSO',type:'misleading',headline:'O aumento existiu, mas não era permanente.',
+  contradiction:'O piso de R$ 600 passou a valer no governo Bolsonaro em 2022, mas apenas de agosto a dezembro daquele ano. A proposta de Orçamento enviada pelo mesmo governo para 2023 não previa a continuidade dos R$ 600.',
+  whatSaid:'Bolsonaro garantiu o piso de R$ 600.',whatFound:'O adicional terminou em dezembro de 2022.',
+  mechanism:'Omissão de prazo e de participação institucional',mechanismDetail:'Apresenta uma medida temporária como se ela explicasse, sozinha, o benefício mantido depois. A ampliação envolveu também o Congresso.',
+  sources:[
+   {name:'Emenda Constitucional 123/2022',url:'https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc123.htm',detail:'Prevê o acréscimo extraordinário, limitado a dezembro de 2022.'},
+   {name:'Senado · Orçamento de 2023',url:'https://www12.senado.leg.br/noticias/materias/2022/12/22/orcamento-e-aprovado-com-dinheiro-extra-para-programas-sociais-e-infraestrutura',detail:'Informa que a proposta original do governo não contemplava a manutenção dos R$ 600.'},
+   {name:'Agência Lupa · Debate da Band',url:'https://www.agencialupa.org/checagem/2026/10/18/ao-vivo-checagem-do-debate-entre-lula-e-flavio-bolsonaro-na-band/',detail:'Classifica a frase como exagerada e contextualiza o período.'}
+  ],
+  limitation:'Dizer que o benefício chegou a R$ 600 naquele governo é correto; a ressalva se aplica à ideia de garantia permanente e autoria exclusiva.'
+ },
+ viagens:{
+  label:'FALSO',type:'false',headline:'R$ 7 bilhões não foram gastos apenas pelo casal presidencial.',
+  contradiction:'A soma de aproximadamente R$ 7,14 bilhões se refere a despesas de viagens da estrutura do governo federal entre 2023 e 2025. O total inclui vários órgãos, autoridades e servidores, não apenas Lula e Janja.',
+  whatSaid:'R$ 7 bilhões gastos por Lula e Janja.',whatFound:'R$ 7,14 bilhões gastos pela estrutura federal inteira.',
+  mechanism:'Transferência indevida de um número verdadeiro',mechanismDetail:'Usa um total real, mas troca quem realizou as despesas: gastos de milhares de agentes passam a parecer gastos de duas pessoas.',
+  sources:[
+   {name:'Portal da Transparência · Viagens',url:'https://portaldatransparencia.gov.br/',detail:'Base pública para consultar despesas por órgão, período, passagens e diárias.'},
+   {name:'Agência Lupa · Setembro de 2026',url:'https://www.agencialupa.org/jornalismo/2026/09/25/e-falso-que-lula-gastou-r-735-bilhoes-em-viagens-com-janja/',detail:'Confronta a cifra de R$ 7,14 bilhões com R$ 150,5 milhões ligados à Presidência.'},
+   {name:'Aos Fatos · Debate de 18/10/2026',url:'https://www.aosfatos.org/noticias/checamos-lula-flavio-bolsonaro-debate-band/',detail:'Documenta a fala e explica por que ela atribui um valor agregado ao casal.'}
+  ],
+  limitation:'Os R$ 150,5 milhões em despesas da Presidência também não são exclusivos de Lula e Janja. Essa consulta não determina o gasto individual deles.'
+ }
+};
+// Falas reais de datas distintas foram colocadas nesta sequência somente para simular uma sessão.
+const samples=[
+ {speaker:'M',text:'Demonstração: três declarações históricas, apresentadas em sequência fictícia.'},
+ {speaker:'A',origin:'13/09/2022 · SBT',text:'O nosso governo, via Banco Central, teve a ideia de criar o PIX.',claim:true,check:'pix'},
+ {speaker:'M',text:'O Veritas compara a autoria alegada com a cronologia documental.'},
+ {speaker:'B',origin:'18/10/2026 · Debate Band',text:'Foi o presidente Bolsonaro que passou para no mínimo R$ 600 do Bolsa Família.',claim:true,check:'bolsa'},
+ {speaker:'M',text:'Nesta etapa, o prazo de vigência da medida muda a interpretação.'},
+ {speaker:'B',origin:'18/10/2026 · Debate Band',text:'R$ 7 bilhões que você [Lula] gastou em viagens com a Janja.',claim:true,check:'viagens'},
+ {speaker:'M',text:'A consulta às fontes permite identificar a quem o número realmente se refere.'}
+];
+let phase='setup',mode='live',paused=false,step=0,elapsed=0,job=null,source='tab',mobileView='claims',filter='all',transcripts=[],claims=[];
+const expanded=new Set();
+function time(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function start(kind){
+ clearInterval(job);phase='live';mode=kind;step=0;elapsed=0;paused=false;transcripts=[];claims=[];expanded.clear();filter='all';
+ document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x.dataset.filter==='all'));
+ $('setupScreen').hidden=true;$('liveScreen').hidden=false;
+ $('liveSource').textContent=kind==='text'?'Texto manual · mock':source==='tab'?'Áudio da aba · mock':'Microfone · mock';
+ $('timer').textContent='00:00';mobileView='claims';switchMobile();
+ if(kind==='text'){
+  const t=$('textInput').value.trim();
+  if(!t){stop();return}
+  addTranscript({speaker:'M',origin:'Texto inserido pelo usuário',text:t,claim:true,check:null});
+  claims[0].progress=2;paused=true;render();updateControls();
+ }else{tick();job=setInterval(tick,2600);updateControls()}
+}
+function addTranscript(sample){
+ const now=time(elapsed),id=transcripts.length+1;
+ transcripts.unshift({id,...sample,at:now});
+ if(sample.claim){claims.unshift({id,at:now,speaker:sample.speaker,origin:sample.origin||'',text:sample.text,check:sample.check,progress:0});}
+}
+function tick(){
+ if(paused)return;
+ elapsed+=3;$('timer').textContent=time(elapsed);
+ claims.forEach(x=>{if(x.progress<2)x.progress++});
+ if(step<samples.length){addTranscript(samples[step]);step++;}
+ render();
+}
+function render(){
+ renderTranscript();renderClaims();
+ $('claimCount').textContent=claims.length+' '+(claims.length===1?'afirmação':'afirmações');
+ $('mobileCount').textContent=claims.length?'· '+claims.length:'';
+ $('queueCount').textContent=claims.filter(x=>x.progress<2).length+' em análise';
+}
+function renderTranscript(){
+ const root=$('transcriptItems');
+ if(!transcripts.length){root.innerHTML='<div class="empty-stream">Aguardando fala...</div>';return}
+ root.innerHTML=transcripts.map((t,i)=>{
+  const p=people[t.speaker];
+  return `<article class="stream-item ${i===0?'current':''}"><div class="avatar ${p.style}">${p.short}</div><div><div class="stream-speaker"><strong>${safe(p.name)}</strong><time>${safe(t.at)}${t.origin?' · '+safe(t.origin):''}</time></div><p class="stream-content">${t.claim?`<span class="claim-highlight">${safe(t.text)}</span><span class="marker-inline">${t.id}</span>`:safe(t.text)}</p></div></article>`;
+ }).join('');
+}
+function renderClaims(){
+ const root=$('resultItems'),visible=claims.filter(x=>filter==='all'||(filter==='done'?x.progress>=2:x.progress<2));
+ if(!visible.length){root.innerHTML=`<div class="empty-results">${icon('search')}<div>${claims.length?'Nenhuma afirmação neste filtro.':'Buscando afirmações verificáveis na transcrição...'}</div></div>`;return}
+ root.innerHTML=visible.map(x=>{
+  const p=people[x.speaker],done=x.progress>=2,waiting=x.progress===0;
+  const check=x.check?mockChecks[x.check]:null;
+  const top=`<div class="result-top"><span class="result-speaker"><span class="mini-avatar ${p.style}">${p.short}</span>${safe(p.name)} · ${safe(x.at)}</span><span class="result-status ${done?'done':waiting?'':'pending'}"><span class="small-dot"></span>${done?'Concluída · demo':waiting?'Detectada':'Buscando fontes · demo'}</span></div>`;
+  const start=`<article class="result-card ${done?'':'pending-card'}" id="result-${x.id}">${top}${x.origin?`<div class="result-meta">${safe(x.origin)}</div>`:''}<p class="result-claim">“${safe(x.text)}”</p>`;
+  if(!done)return start+`<div class="analysis-box"><strong>${waiting?'Afirmação identificada':'Verificação demonstrativa em andamento'}</strong>${waiting?'A afirmação entrou na fila.':'Comparando a frase com documentos e dados históricos pré-selecionados...'}</div></article>`;
+  if(!check)return start+`<div class="verdict-block"><div class="verdict-head"><span class="verdict-tag undetermined">Sem verificação</span></div><p class="verdict-summary">Texto recebido, mas esta demonstração não analisa conteúdos livres.</p></div><p class="notice-evidence">A verificação real exigiria um mecanismo de pesquisa conectado e evidências específicas.</p></article>`;
+  const open=expanded.has(x.id);
+  const sources=check.sources.map(s=>`<div class="evidence-item"><a href="${safe(s.url)}" target="_blank" rel="noopener noreferrer">${safe(s.name)} ↗</a><p>${safe(s.detail)}</p></div>`).join('');
+  return start+`<div class="verdict-block"><div class="verdict-head"><span class="verdict-tag ${check.type}">${check.label==='FALSO'?'✕':'!'} ${safe(check.label)}</span></div><p class="verdict-summary">${safe(check.headline)}</p></div>
+   <div class="verdict-proof"><strong>Onde está a contradição?</strong><p>${safe(check.contradiction)}</p>
+   <div class="contrast"><div><small>O QUE A FALA SUGERE</small><b>${safe(check.whatSaid)}</b></div><div class="fact"><small>O QUE OS DOCUMENTOS MOSTRAM</small><b>${safe(check.whatFound)}</b></div></div></div>
+   <div class="mechanism-box"><span class="mechanism-symbol">!</span><div><strong>Como a frase pode induzir ao erro · ${safe(check.mechanism)}</strong><span>${safe(check.mechanismDetail)}</span></div></div>
+   <button class="evidence-toggle" type="button" data-evidence="${x.id}" aria-expanded="${open}" aria-controls="evidence-${x.id}">${icon('shield')} <span>${open?'Ocultar provas e fontes':'Ver provas e fontes'} · ${check.sources.length} referências</span><span aria-hidden="true">⌄</span></button>
+   <div class="evidence-details" id="evidence-${x.id}" ${open?'':'hidden'}><p class="evidence-title">Documentos e checagens relacionadas</p><div class="evidence-list">${sources}</div><p class="evidence-limit"><strong>Limite da conclusão:</strong> ${safe(check.limitation)}</p><p class="status-small">Exemplo preparado a partir de fontes públicas. Nenhuma nova checagem foi executada nesta demo.</p></div></article>`;
+ }).join('');
+ root.querySelectorAll('[data-evidence]').forEach(btn=>btn.addEventListener('click',()=>{
+  const id=Number(btn.dataset.evidence);if(expanded.has(id))expanded.delete(id);else expanded.add(id);
+  const details=$('evidence-'+id),isOpen=expanded.has(id);
+  details.hidden=!isOpen;btn.setAttribute('aria-expanded',String(isOpen));
+  btn.querySelector('span').textContent=isOpen?'Ocultar provas e fontes':'Ver provas e fontes';
+ }));
+}
+function updateControls(){
+ $('liveStatusText').textContent=paused?'Simulação pausada':'Simulando escuta';
+ $('liveStatus').className='status-pill '+(paused?'paused':'running');
+ $('dockStatus').className='status-pill '+(paused?'paused':'running');
+ $('dockLabel').textContent=paused?'Pausado · mock':'Ao vivo · mock';
+ $('pauseBtn').innerHTML=icon(paused?'play':'pause')+`<span id="pauseText">${paused?'Continuar':'Pausar'}</span>`;
+ $('mobilePause').innerHTML=icon(paused?'play':'pause')+`<span id="mobilePauseText">${paused?'Continuar':'Pausar'}</span>`;
+ $('pauseBtn').disabled=mode==='text';$('mobilePause').disabled=mode==='text';
+}
+function togglePause(){if(mode==='text')return;paused=!paused;updateControls()}
+function stop(){clearInterval(job);job=null;phase='setup';$('setupScreen').hidden=false;$('liveScreen').hidden=true;document.querySelector('main').scrollIntoView({behavior:'smooth',block:'start'})}
+function switchMobile(){
+ const t=mobileView==='transcript';
+ $('transPane').classList.toggle('show-mobile',t);$('claimsPane').classList.toggle('show-mobile',!t);
+ $('mobileTrans').classList.toggle('active',t);$('mobileClaims').classList.toggle('active',!t);
+ $('mobileTrans').setAttribute('aria-selected',String(t));$('mobileClaims').setAttribute('aria-selected',String(!t));
+}
+$('modeLive').addEventListener('click',()=>{
+ mode='live';$('audioSetup').hidden=false;$('textSetup').hidden=true;
+ $('modeLive').classList.add('active');$('modeText').classList.remove('active');
+ $('modeLive').setAttribute('aria-selected','true');$('modeText').setAttribute('aria-selected','false');
+});
+$('modeText').addEventListener('click',()=>{
+ mode='text';$('audioSetup').hidden=true;$('textSetup').hidden=false;
+ $('modeLive').classList.remove('active');$('modeText').classList.add('active');
+ $('modeText').setAttribute('aria-selected','true');$('modeLive').setAttribute('aria-selected','false');
+});
+$('sourceSelect').addEventListener('change',e=>{
+ source=e.target.value;
+ $('sourceHint').textContent=source==='mic'?'No celular, o microfone pode captar o áudio de uma TV. Esta demo não acessa o microfone.':'Na implementação real, o navegador solicitará permissão para compartilhar uma aba com áudio. Esta demo não captura som.';
+});
+$('startLive').addEventListener('click',()=>start('live'));
+$('startText').addEventListener('click',()=>{if(!$('textInput').value.trim()){alert('Insira algum texto para simular a entrada.');return}start('text')});
+$('pauseBtn').addEventListener('click',togglePause);$('mobilePause').addEventListener('click',togglePause);
+$('stopBtn').addEventListener('click',stop);$('mobileStop').addEventListener('click',stop);
+$('mobileTrans').addEventListener('click',()=>{mobileView='transcript';switchMobile()});
+$('mobileClaims').addEventListener('click',()=>{mobileView='claims';switchMobile()});
+document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{
+ filter=btn.dataset.filter;document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b===btn));renderClaims();
+}));
+$('logoLink').addEventListener('click',e=>{e.preventDefault();stop()});
+if(window.matchMedia('(max-width:720px)').matches){$('sourceSelect').value='mic';$('sourceSelect').dispatchEvent(new Event('change'))}
+})();
+</script>
+</body>
+</html>

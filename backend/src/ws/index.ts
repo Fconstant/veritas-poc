@@ -6,8 +6,34 @@ import {
   UpdateStatus,
 } from './types.js';
 import { ValidationError } from '#/utils/errors.js';
+import {
+  isOriginAllowed,
+  parseAllowedOrigins,
+  redactSecrets,
+} from '#/utils/security.js';
 
 export type * from './types.js';
+
+export type WebSocketServerOptions = {
+  /**
+   * Browser origins allowed to open a socket. Defaults to the local
+   * development origins; `main.ts` passes `CORS_ORIGINS` explicitly.
+   */
+  allowedOrigins?: readonly string[];
+};
+
+export const emitUpdateStatus = (
+  socket: Socket,
+  fingerprint: string,
+  status: UpdateStatus['data']['status'],
+  message?: string,
+) => {
+  const updateStatus: UpdateStatus = {
+    data: { status, message },
+    meta: { fingerprint },
+  };
+  socket.emit('UPDATE_STATUS', updateStatus);
+};
 
 // Socket.io server setup
 export function createWebSocketServer(
@@ -15,13 +41,21 @@ export function createWebSocketServer(
   onConnection: (
     socket: Socket<ClientToServerEvents, ServerToClientEvents>,
   ) => void,
+  options: WebSocketServerOptions = {},
 ) {
+  const allowedOrigins = [...(options.allowedOrigins ?? parseAllowedOrigins())];
+
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(
     httpServer,
     {
       cors: {
-        origin: '*', // TODO: Configure this properly for production
+        origin: allowedOrigins,
         methods: ['GET', 'POST'],
+      },
+      // CORS is enforced by the browser only, so unknown browser origins are
+      // also rejected at the handshake. Requests without Origin are allowed.
+      allowRequest: (req, callback) => {
+        callback(null, isOriginAllowed(req.headers.origin, allowedOrigins));
       },
     },
   );
@@ -44,16 +78,13 @@ export const handleWebSocketError = (
   fingerprint: string,
 ) => {
   if (error instanceof ValidationError) {
-    const errorMessage: UpdateStatus = {
-      data: { status: 'EXCEPTION', message: error.message },
-      meta: { fingerprint },
-    };
-    socket.emit('UPDATE_STATUS', errorMessage);
+    emitUpdateStatus(
+      socket,
+      fingerprint,
+      'EXCEPTION',
+      redactSecrets(error.message),
+    );
     return;
   }
-  const errorMessage: UpdateStatus = {
-    data: { status: 'EXCEPTION', message: 'Internal server error' },
-    meta: { fingerprint },
-  };
-  socket.emit('UPDATE_STATUS', errorMessage);
+  emitUpdateStatus(socket, fingerprint, 'EXCEPTION', 'Internal server error');
 };

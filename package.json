@@ -4,8 +4,9 @@
 	"private": true,
 	"packageManager": "pnpm@10.18.1",
 	"scripts": {
-		"dev": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
-		"build": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter backend build\" \"pnpm --filter frontend build\"",
+		"build:shared": "pnpm --filter @veritas/shared build",
+		"dev": "pnpm build:shared && concurrently -n shared,backend,frontend -c green,blue,magenta \"pnpm --filter @veritas/shared watch\" \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
+		"build": "pnpm build:shared && concurrently -n backend,frontend -c blue,magenta \"pnpm --filter backend build\" \"pnpm --filter frontend build\"",
 		"start": "concurrently -n backend,frontend -c blue,magenta \"pnpm --filter backend start\" \"pnpm --filter frontend start\""
 	},
 	"devDependencies": {

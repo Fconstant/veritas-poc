@@ -13,6 +13,10 @@ import {
 } from '../types/api';
 import { factCheckStore } from '../store/factCheckStore';
 
+type RequestOptions = Partial<Omit<FactCheckRequest, 'fingerprint' | 'apiKeys'>> & {
+  apiKeys?: { google?: string; tavily?: string };
+};
+
 export class FactCheckService {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
@@ -173,7 +177,7 @@ export class FactCheckService {
    */
   public async requestFactCheck(
     content: string, 
-    options: Partial<Omit<FactCheckRequest, 'fingerprint'>> = {}
+    options: RequestOptions = {}
   ): Promise<string> {
     if (!content.trim()) {
       throw new Error('Conteúdo não pode estar vazio');
@@ -203,7 +207,10 @@ export class FactCheckService {
       const request: FactCheckRequest = {
         fingerprint,
         researchThreshold: options.researchThreshold ?? API_CONFIG.DEFAULT_RESEARCH_THRESHOLD,
-        apiKeys: options.apiKeys
+        apiKeys: {
+          google: options.apiKeys?.google ?? '',
+          tavily: options.apiKeys?.tavily ?? ''
+        }
       };
 
       // Envia a requisição (garantir socket inicializado)

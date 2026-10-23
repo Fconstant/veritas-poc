@@ -1,4 +1,30 @@
 import { z } from 'zod';
+import type {
+  AudioChunk,
+  AudioChunkAckEvent,
+  ClaimDetectedEvent,
+  ClaimStatusUpdatedEvent,
+  CorrectTranscript,
+  DeleteSession,
+  ExportSession,
+  LiveGapEvent,
+  LiveMetricsEvent,
+  LiveSessionControl,
+  LiveSessionEndedEvent,
+  LiveSessionStartedEvent,
+  LiveSessionStateEvent,
+  ResumeSession,
+  RetryVerification,
+  SessionSnapshotEvent,
+  SpeakerMappingUpdatedEvent,
+  StartLiveSession,
+  TranscriptFinalEvent,
+  TranscriptPartialEvent,
+  TranscriptRevisedEvent,
+  UpdateSpeakerMapping,
+  VerificationInvalidatedEvent,
+  VerificationResultEvent,
+} from './live.js';
 
 // ===== Schemas Zod =====
 const METADATA_SCHEMA = z.object({
@@ -22,9 +48,9 @@ export const FACT_CHECK_REQUEST_SCHEMA = METADATA_SCHEMA.pick({
 }).extend({
   researchThreshold: z.number().gte(0).lte(1).optional(),
   apiKeys: z.object({
-    google: z.string().optional(),
-    tavily: z.string().optional(),
-  }).optional(),
+    google: z.string(),
+    tavily: z.string(),
+  }),
 });
 
 export const FACT_CHECK_RESULT_DATA_SCHEMA = z.object({
@@ -34,7 +60,7 @@ export const FACT_CHECK_RESULT_DATA_SCHEMA = z.object({
   flags: z
     .array(z.enum(['UNVERIFIABLE', 'MISLEADING', 'INCONCLUSIVE', 'AMBIGUOUS']))
     .optional(),
-  sources: z.array(z.string().url()).optional(),
+  sources: z.array(z.url()).optional(),
 });
 
 export const FACT_CHECK_RESULT_SCHEMA = buildResponseSchema(
@@ -69,16 +95,43 @@ export type ChunkCountData = ChunkCount['data'];
 // ===== Socket.IO Events =====
 export type ClientToServerEvents = {
   REQUEST_FACT_CHECK: (content: string, request: FactCheckRequest) => void;
+  START_LIVE_SESSION: (payload: StartLiveSession) => void;
+  AUDIO_CHUNK: (payload: AudioChunk) => void;
+  PAUSE_LIVE_SESSION: (payload: LiveSessionControl) => void;
+  RESUME_LIVE_SESSION: (payload: LiveSessionControl) => void;
+  END_LIVE_SESSION: (payload: LiveSessionControl) => void;
+  CANCEL_LIVE_SESSION: (payload: LiveSessionControl) => void;
+  RESUME_SESSION: (payload: ResumeSession) => void;
+  UPDATE_SPEAKER_MAPPING: (payload: UpdateSpeakerMapping) => void;
+  CORRECT_TRANSCRIPT: (payload: CorrectTranscript) => void;
+  RETRY_VERIFICATION: (payload: RetryVerification) => void;
+  EXPORT_SESSION: (payload: ExportSession) => void;
+  DELETE_SESSION: (payload: DeleteSession) => void;
 };
 
 export type ServerToClientEvents = {
   FACT_CHECK_RESULT: (data: FactCheckResult) => void;
   UPDATE_STATUS: (data: UpdateStatus) => void;
   CHUNK_COUNT: (data: ChunkCount) => void;
+  LIVE_SESSION_STARTED: (data: LiveSessionStartedEvent) => void;
+  LIVE_SESSION_STATE: (data: LiveSessionStateEvent) => void;
+  TRANSCRIPT_PARTIAL: (data: TranscriptPartialEvent) => void;
+  TRANSCRIPT_FINAL: (data: TranscriptFinalEvent) => void;
+  TRANSCRIPT_REVISED: (data: TranscriptRevisedEvent) => void;
+  SPEAKER_MAPPING_UPDATED: (data: SpeakerMappingUpdatedEvent) => void;
+  CLAIM_DETECTED: (data: ClaimDetectedEvent) => void;
+  CLAIM_STATUS_UPDATED: (data: ClaimStatusUpdatedEvent) => void;
+  VERIFICATION_RESULT: (data: VerificationResultEvent) => void;
+  VERIFICATION_INVALIDATED: (data: VerificationInvalidatedEvent) => void;
+  SESSION_SNAPSHOT: (data: SessionSnapshotEvent) => void;
+  LIVE_METRICS: (data: LiveMetricsEvent) => void;
+  LIVE_GAP: (data: LiveGapEvent) => void;
+  LIVE_SESSION_ENDED: (data: LiveSessionEndedEvent) => void;
+  AUDIO_CHUNK_ACK: (data: AudioChunkAckEvent) => void;
 };
 
 // ===== Estados da Verificação (Frontend) =====
-export type VerificationStatus = 
+export type VerificationStatus =
   | 'idle'
   | 'connecting'
   | 'processing'
