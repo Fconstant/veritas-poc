@@ -1,4 +1,80 @@
+import type {
+  ClaimStatus,
+  EvidenceRelation,
+  MechanismCode,
+  Verdict,
+} from '@veritas/shared';
+
 export type Locale = 'pt-BR' | 'en-US';
+
+export interface LiveCardNotice {
+  title: string;
+  body: string;
+}
+
+/**
+ * Copy for the three-layer verification card (LIVE-027).
+ * Status/verdict/mechanism keys mirror the shared contract so a new enum member
+ * fails to type-check until every locale is updated.
+ */
+export interface LiveCardTranslations {
+  unknownSpeaker: string;
+  transcriptUnconfirmed: string;
+  verdictAriaPrefix: string;
+  status: Record<ClaimStatus, string>;
+  verdict: Record<Verdict, string>;
+  mechanisms: Record<MechanismCode, string>;
+  mechanismEvidenceLabel: string;
+  sections: {
+    conclusion: string;
+    contradiction: string;
+    whatSaid: string;
+    whatFound: string;
+    trueComponent: string;
+    distortion: string;
+    supportedAspects: string;
+    missing: string;
+    mechanism: string;
+    mechanismHint: string;
+  };
+  card: {
+    quoteAriaLabel: string;
+    timestampAriaLabel: string;
+    revision: string;
+    select: string;
+  };
+  notices: Record<Exclude<ClaimStatus, 'COMPLETED'>, LiveCardNotice> & {
+    /** Defensive state: COMPLETED without a valid verdict must not be shown as a result. */
+    incomplete: LiveCardNotice;
+  };
+  evidence: {
+    show: string;
+    hide: string;
+    count: string;
+    title: string;
+    groups: Record<EvidenceRelation, string>;
+    primarySources: string;
+    primarySourceTag: string;
+    excerpt: string;
+    location: string;
+    publishedAt: string;
+    accessedAt: string;
+    unverifiedTitle: string;
+    unverifiedBody: string;
+    empty: string;
+    emptyHint: string;
+    linkHint: string;
+  };
+  limitations: {
+    title: string;
+  };
+  revision: {
+    label: string;
+    statusLabel: string;
+    updatedAt: string;
+    note: string;
+  };
+}
 
 export interface TranslationKeys {
   common: {
@@ -214,5 +290,6 @@ export interface TranslationKeys {
   tagline: {
     text: string;
   };
+  liveCard: LiveCardTranslations;
 }
 

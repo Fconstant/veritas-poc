@@ -211,6 +211,127 @@
   },
   "tagline": {
     "text": "Automate fact-checking"
+  },
+  "liveCard": {
+    "unknownSpeaker": "Authorship not confirmed",
+    "transcriptUnconfirmed": "Transcript not confirmed",
+    "verdictAriaPrefix": "Verdict",
+    "status": {
+      "DETECTED": "Detected",
+      "QUEUED": "Queued",
+      "RESEARCHING": "Searching sources",
+      "EVALUATING": "Weighing evidence",
+      "COMPLETED": "Completed",
+      "FAILED": "Technical failure",
+      "CANCELLED": "Cancelled",
+      "DEFERRED": "Deferred",
+      "BLOCKED": "Blocked"
+    },
+    "verdict": {
+      "SUPPORTED": "Supported",
+      "FALSE": "False",
+      "MISLEADING": "Misleading",
+      "INCONCLUSIVE": "Inconclusive"
+    },
+    "mechanisms": {
+      "FALSE_ORIGIN_ATTRIBUTION": "False attribution of origin or authorship",
+      "MISATTRIBUTED_AGGREGATE": "Aggregate figure attributed to the wrong universe",
+      "OMITTED_TIME_LIMIT": "Omitted duration or deadline",
+      "PROGRAM_CONFLATION": "Conflation of programs or institutions",
+      "INCOMPATIBLE_COMPARISON": "Comparison of incompatible measures",
+      "UNSUPPORTED_CAUSALITY": "Unsupported causality",
+      "SELECTIVE_PERIOD": "Selective time window",
+      "OVERGENERALIZATION": "Unwarranted generalization",
+      "SELECTIVE_EVIDENCE": "Selective use of evidence"
+    },
+    "mechanismEvidenceLabel": "Evidence that shows the mechanism",
+    "sections": {
+      "conclusion": "Conclusion",
+      "contradiction": "Where is the contradiction?",
+      "whatSaid": "What the statement suggests",
+      "whatFound": "What the evidence shows",
+      "trueComponent": "What is true in the statement",
+      "distortion": "What the distortion changes",
+      "supportedAspects": "What the statement gets right",
+      "missing": "What was missing",
+      "mechanism": "How the statement can mislead",
+      "mechanismHint": "Mechanisms describe the distance between the statement and the evidence; they do not assess intent."
+    },
+    "card": {
+      "quoteAriaLabel": "Original quote",
+      "timestampAriaLabel": "Statement time: {{timestamp}}",
+      "revision": "Revision {{revision}}",
+      "select": "Select verification"
+    },
+    "notices": {
+      "DETECTED": {
+        "title": "Statement detected",
+        "body": "The verification was registered and there is no conclusion yet."
+      },
+      "QUEUED": {
+        "title": "Queued",
+        "body": "Waiting for research capacity to start the verification."
+      },
+      "RESEARCHING": {
+        "title": "Searching sources",
+        "body": "The statement is being compared with public documents and data."
+      },
+      "EVALUATING": {
+        "title": "Weighing evidence",
+        "body": "The evidence found is being compared against the statement."
+      },
+      "FAILED": {
+        "title": "Technical failure",
+        "body": "The verification could not be completed because of a technical failure. This does not mean the statement is true or false."
+      },
+      "CANCELLED": {
+        "title": "Verification cancelled",
+        "body": "The verification was cancelled before completion; there is no conclusion."
+      },
+      "DEFERRED": {
+        "title": "Verification deferred",
+        "body": "No capacity or quota was available. The verification did not run and there is no conclusion."
+      },
+      "BLOCKED": {
+        "title": "Verification blocked",
+        "body": "The transcript has uncertain passages that may change the meaning of the statement. Fix or confirm the transcript to resume the verification."
+      },
+      "incomplete": {
+        "title": "Incomplete result",
+        "body": "The verification finished without a valid verdict. Nothing is shown as a conclusion."
+      }
+    },
+    "evidence": {
+      "show": "See evidence and sources",
+      "hide": "Hide evidence and sources",
+      "count": "{{count}} references",
+      "title": "Documents and evidence",
+      "groups": {
+        "SUPPORTS": "Evidence that supports",
+        "REFUTES": "Evidence that contradicts",
+        "CONTEXTUALIZES": "Contextual evidence"
+      },
+      "primarySources": "Primary sources",
+      "primarySourceTag": "Primary source",
+      "excerpt": "Excerpt",
+      "location": "Location in the document",
+      "publishedAt": "Published on",
+      "accessedAt": "Accessed on",
+      "unverifiedTitle": "Unverified evidence",
+      "unverifiedBody": "These excerpts were not inspected by the verifier and are not used as proof.",
+      "empty": "No inspected evidence",
+      "emptyHint": "This verification registered no evidence with an identifiable source.",
+      "linkHint": "Opens in a new tab"
+    },
+    "limitations": {
+      "title": "Limits of the conclusion"
+    },
+    "revision": {
+      "label": "Revision {{revision}}",
+      "statusLabel": "Status: {{status}}",
+      "updatedAt": "Updated on {{date}}",
+      "note": "Reviewable result: corrections to the transcript, authorship or evidence can invalidate this conclusion."
+    }
   }
 }
 

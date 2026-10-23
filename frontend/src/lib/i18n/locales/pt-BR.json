@@ -211,6 +211,127 @@
   },
   "tagline": {
     "text": "Automatize a verificação de fatos"
+  },
+  "liveCard": {
+    "unknownSpeaker": "Autoria não confirmada",
+    "transcriptUnconfirmed": "Transcrição não confirmada",
+    "verdictAriaPrefix": "Veredito",
+    "status": {
+      "DETECTED": "Detectada",
+      "QUEUED": "Na fila",
+      "RESEARCHING": "Buscando fontes",
+      "EVALUATING": "Avaliando evidências",
+      "COMPLETED": "Concluída",
+      "FAILED": "Falha técnica",
+      "CANCELLED": "Cancelada",
+      "DEFERRED": "Adiada",
+      "BLOCKED": "Bloqueada"
+    },
+    "verdict": {
+      "SUPPORTED": "Sustentada",
+      "FALSE": "Falsa",
+      "MISLEADING": "Enganosa",
+      "INCONCLUSIVE": "Inconclusiva"
+    },
+    "mechanisms": {
+      "FALSE_ORIGIN_ATTRIBUTION": "Falsa atribuição de origem ou autoria",
+      "MISATTRIBUTED_AGGREGATE": "Dado agregado atribuído ao universo errado",
+      "OMITTED_TIME_LIMIT": "Omissão de duração ou prazo",
+      "PROGRAM_CONFLATION": "Confusão entre programas ou instituições",
+      "INCOMPATIBLE_COMPARISON": "Comparação de métricas incompatíveis",
+      "UNSUPPORTED_CAUSALITY": "Causalidade não demonstrada",
+      "SELECTIVE_PERIOD": "Recorte temporal seletivo",
+      "OVERGENERALIZATION": "Generalização indevida",
+      "SELECTIVE_EVIDENCE": "Seleção parcial de evidências"
+    },
+    "mechanismEvidenceLabel": "Evidências que demonstram o mecanismo",
+    "sections": {
+      "conclusion": "Conclusão",
+      "contradiction": "Onde está a contradição?",
+      "whatSaid": "O que a fala sugere",
+      "whatFound": "O que as evidências mostram",
+      "trueComponent": "O que é verdadeiro na fala",
+      "distortion": "O que a distorção altera",
+      "supportedAspects": "O que a fala acerta",
+      "missing": "O que faltou verificar",
+      "mechanism": "Como a frase pode induzir ao erro",
+      "mechanismHint": "Mecanismos descrevem a distância entre a frase e as evidências; não avaliam intenção."
+    },
+    "card": {
+      "quoteAriaLabel": "Trecho original da fala",
+      "timestampAriaLabel": "Momento da fala: {{timestamp}}",
+      "revision": "Revisão {{revision}}",
+      "select": "Selecionar verificação"
+    },
+    "notices": {
+      "DETECTED": {
+        "title": "Afirmação identificada",
+        "body": "A verificação foi registrada e ainda não há conclusão."
+      },
+      "QUEUED": {
+        "title": "Na fila",
+        "body": "Aguardando capacidade de pesquisa para iniciar a verificação."
+      },
+      "RESEARCHING": {
+        "title": "Buscando fontes",
+        "body": "A fala está sendo comparada com documentos e dados públicos."
+      },
+      "EVALUATING": {
+        "title": "Avaliando evidências",
+        "body": "As evidências encontradas estão sendo confrontadas com a fala."
+      },
+      "FAILED": {
+        "title": "Falha técnica",
+        "body": "A verificação não foi concluída por uma falha técnica. Isso não indica que a afirmação seja verdadeira ou falsa."
+      },
+      "CANCELLED": {
+        "title": "Verificação cancelada",
+        "body": "A verificação foi cancelada antes de ser concluída; não há conclusão."
+      },
+      "DEFERRED": {
+        "title": "Verificação adiada",
+        "body": "Não havia capacidade ou cota disponível. A verificação não foi executada e não há conclusão."
+      },
+      "BLOCKED": {
+        "title": "Verificação bloqueada",
+        "body": "A transcrição tem trechos incertos que podem mudar o sentido da fala. Corrija ou confirme a transcrição para retomar a verificação."
+      },
+      "incomplete": {
+        "title": "Resultado incompleto",
+        "body": "A verificação terminou sem um veredito válido. Nada é apresentado como conclusão."
+      }
+    },
+    "evidence": {
+      "show": "Ver provas e fontes",
+      "hide": "Ocultar provas e fontes",
+      "count": "{{count}} referências",
+      "title": "Documentos e evidências",
+      "groups": {
+        "SUPPORTS": "Evidências que sustentam",
+        "REFUTES": "Evidências que contradizem",
+        "CONTEXTUALIZES": "Evidências de contexto"
+      },
+      "primarySources": "Fontes primárias",
+      "primarySourceTag": "Fonte primária",
+      "excerpt": "Trecho",
+      "location": "Local no documento",
+      "publishedAt": "Publicado em",
+      "accessedAt": "Acessado em",
+      "unverifiedTitle": "Evidência não verificada",
+      "unverifiedBody": "Estes trechos não foram inspecionados pelo verificador e não são usados como prova.",
+      "empty": "Nenhuma evidência inspecionada",
+      "emptyHint": "Esta verificação não registrou evidências com fonte identificável.",
+      "linkHint": "Abre em nova aba"
+    },
+    "limitations": {
+      "title": "Limites da conclusão"
+    },
+    "revision": {
+      "label": "Revisão {{revision}}",
+      "statusLabel": "Status: {{status}}",
+      "updatedAt": "Atualizada em {{date}}",
+      "note": "Resultado revisável: correções de transcrição, autoria ou evidência podem invalidar esta conclusão."
+    }
   }
 }
 

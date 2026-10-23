@@ -141,3 +141,6 @@ vite.config.ts.timestamp-*
 
 #Ignore cursor AI rules
 .cursor/rules/codacy.mdc
+
+# Command Code workspace (nested git; not part of Veritas source)
+untitled-project/
