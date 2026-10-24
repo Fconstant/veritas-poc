@@ -123,14 +123,16 @@ export async function testDifferentScenarios() {
           await factCheckService.requestFactCheck(scenario.text);
           console.log('⚠️  Esperava falha, mas sucedeu');
         } catch (error) {
-          console.log('✅ Falha esperada:', error.message);
+          const message = error instanceof Error ? error.message : String(error);
+          console.log('✅ Falha esperada:', message);
         }
       } else {
         const fingerprint = await factCheckService.requestFactCheck(scenario.text);
         console.log('✅ Sucesso:', fingerprint);
       }
     } catch (error) {
-      console.log('❌ Erro inesperado:', error.message);
+      const message = error instanceof Error ? error.message : String(error);
+      console.log('❌ Erro inesperado:', message);
     }
 
     // Aguardar um pouco entre testes
@@ -143,18 +145,15 @@ export async function testConnectivity() {
   console.log('🔌 Testando conectividade...');
 
   try {
-    // Tentar conectar
-    await factCheckService.connect();
+    const ok = await factCheckService.testConnection();
+    if (!ok) {
+      throw new Error('Falha no teste de conectividade');
+    }
     console.log('✅ Conectado com sucesso');
+    console.log('📡 Status da conexão:', factCheckService.isConnected());
 
-    // Verificar se está conectado
-    const isConnected = factCheckService.isConnected();
-    console.log('📡 Status da conexão:', isConnected);
-
-    // Desconectar
     factCheckService.disconnect();
     console.log('🔌 Desconectado');
-
   } catch (error) {
     console.error('❌ Erro de conectividade:', error);
     throw error;

@@ -5,6 +5,7 @@ import { Key, AlertTriangle, CheckCircle, AlertCircle, Loader2, Eye, EyeOff, Ext
 import { cn } from '@/lib/utils';
 import { Button } from '@/app/shared/components/ui/button';
 import { useI18n } from '@/lib/i18n/I18nContext';
+import { isValidGeminiApiKey, isValidTavilyApiKey } from '@/lib/utils/apiKeyValidation';
 
 type APIFlowState = 'empty' | 'gemini-filled' | 'invalid' | 'validating' | 'valid';
 
@@ -43,7 +44,8 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
   const [showGemini, setShowGemini] = useState(false);
   const [showTavily, setShowTavily] = useState(false);
   const [flowState, setFlowState] = useState<APIFlowState>('empty');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [geminiInvalid, setGeminiInvalid] = useState(false);
+  const [tavilyInvalid, setTavilyInvalid] = useState(false);
 
   // Sincroniza os campos quando initialKeys muda (ex.: após carregar do localStorage)
   // Não sobrescreve valores já digitados pelo usuário
@@ -55,32 +57,46 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
 
   // Determina o estado do fluxo baseado nos valores
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
     if (!geminiKey && !tavilyKey) {
       setFlowState('empty');
+      setGeminiInvalid(false);
+      setTavilyInvalid(false);
     } else if (geminiKey && !tavilyKey) {
       setFlowState('gemini-filled');
+      setGeminiInvalid(false);
+      setTavilyInvalid(false);
     } else if (geminiKey && tavilyKey) {
-      // Validação client-side básica
-      const isGeminiValid = geminiKey.startsWith('AI') && geminiKey.length === 39;
-      const isTavilyValid = tavilyKey.length > 10; // Validação simples
+      const geminiOk = isValidGeminiApiKey(geminiKey);
+      const tavilyOk = isValidTavilyApiKey(tavilyKey);
 
-      if (!isGeminiValid || !isTavilyValid) {
+      setGeminiInvalid(!geminiOk);
+      setTavilyInvalid(!tavilyOk);
+
+      if (!geminiOk || !tavilyOk) {
         setFlowState('invalid');
-        setErrorMessage(t.apiFlow.errors.invalidFormat);
       } else {
-        // Auto-validar com backend (simulado aqui)
         setFlowState('validating');
-        // Simula chamada ao backend
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           setFlowState('valid');
         }, 1500);
       }
+    } else {
+      // Só Tavily preenchido — ainda incompleto
+      setFlowState('empty');
+      setGeminiInvalid(false);
+      setTavilyInvalid(false);
     }
-  }, [geminiKey, tavilyKey, t.apiFlow.errors.invalidFormat]);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [geminiKey, tavilyKey]);
 
   const handleComplete = () => {
     if (flowState === 'valid' && onComplete) {
-      onComplete({ gemini: geminiKey, tavily: tavilyKey });
+      onComplete({ gemini: geminiKey.trim(), tavily: tavilyKey.trim() });
     }
   };
 
@@ -97,8 +113,10 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
         return t.apiFlow.tooltips.validating;
       case 'valid':
         return null;
-      default:
-        return null;
+      default: {
+        const _exhaustive: never = flowState;
+        return _exhaustive;
+      }
     }
   };
 
@@ -129,13 +147,17 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           icon: <CheckCircle className="w-6 h-6" style={{ color: 'var(--success-green)' }} />,
           color: 'var(--success-green)'
         };
+      default: {
+        const _exhaustive: never = flowState;
+        return _exhaustive;
+      }
     }
   };
 
   const statusBadge = getStatusBadge();
 
-  const getInputIcon = (hasValue: boolean, isGemini: boolean) => {
-    if (flowState === 'invalid') {
+  const getInputIcon = (fieldInvalid: boolean, hasValue: boolean, isGemini: boolean) => {
+    if (fieldInvalid) {
       return <AlertCircle className="w-5 h-5" style={{ color: 'var(--error-red)' }} />;
     }
     if (flowState === 'validating') {
@@ -208,22 +230,21 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           <div
             className={cn(
               "flex gap-2 items-center p-3 w-full rounded-lg border",
-              flowState === 'invalid' ? 'bg-[var(--error-background)] border-[var(--error-red)]' : 'bg-[var(--input-bg)] border-[var(--purple-primary)]'
+              geminiInvalid
+                ? 'bg-[var(--error-background)] border-[var(--error-red)]'
+                : 'bg-[var(--input-bg)] border-[var(--purple-primary)]'
             )}
           >
             <input
               type={showGemini ? 'text' : 'password'}
               value={geminiKey}
-              onChange={(e) => {
-                setGeminiKey(e.target.value);
-                setErrorMessage('');
-              }}
+              onChange={(e) => setGeminiKey(e.target.value)}
               placeholder={t.apiFlow.gemini.placeholder}
               className="flex-1 bg-transparent font-[var(--font-merriweather)] text-[14px] leading-[28px] tracking-[0.14px] outline-none"
               style={{ color: geminiKey ? 'var(--text-active)' : 'var(--text-placeholder)' }}
               onClick={(e) => e.stopPropagation()}
             />
-            {getInputIcon(!!geminiKey, true)}
+            {getInputIcon(geminiInvalid, !!geminiKey, true)}
             <button
               type="button"
               onClick={(e) => {
@@ -235,9 +256,9 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
               {showGemini ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
-          {flowState === 'invalid' && geminiKey && (
+          {geminiInvalid && (
             <p className="font-[var(--font-inter)] font-normal text-[12px]" style={{ color: 'var(--error-red)' }}>
-              {errorMessage}
+              {t.apiFlow.errors.invalidFormat}
             </p>
           )}
         </div>
@@ -266,7 +287,7 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
           <div
             className={cn(
               "flex gap-2 items-center p-3 w-full rounded-lg border",
-              flowState === 'invalid'
+              tavilyInvalid
                 ? 'bg-[var(--error-background)] border-[var(--error-red)]'
                 : flowState === 'empty'
                   ? 'bg-[var(--input-bg-secondary)] border-[var(--purple-primary)]'
@@ -276,16 +297,13 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
             <input
               type={showTavily ? 'text' : 'password'}
               value={tavilyKey}
-              onChange={(e) => {
-                setTavilyKey(e.target.value);
-                setErrorMessage('');
-              }}
+              onChange={(e) => setTavilyKey(e.target.value)}
               placeholder={t.apiFlow.tavily.placeholder}
               className="flex-1 bg-transparent font-[var(--font-merriweather)] text-[14px] leading-[28px] tracking-[0.14px] outline-none"
               style={{ color: tavilyKey ? 'var(--text-active)' : 'var(--text-placeholder)' }}
               onClick={(e) => e.stopPropagation()}
             />
-            {getInputIcon(!!tavilyKey, false)}
+            {getInputIcon(tavilyInvalid, !!tavilyKey, false)}
             <button
               type="button"
               onClick={(e) => {
@@ -297,9 +315,9 @@ export const APIsRegistrationFlow: React.FC<APIsRegistrationFlowProps> = ({
               {showTavily ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
-          {flowState === 'invalid' && tavilyKey && (
+          {tavilyInvalid && (
             <p className="font-[var(--font-inter)] font-normal text-[12px]" style={{ color: 'var(--error-red)' }}>
-              {errorMessage}
+              {t.apiFlow.errors.invalidFormat}
             </p>
           )}
         </div>

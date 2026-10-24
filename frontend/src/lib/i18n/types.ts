@@ -1,4 +1,81 @@
+import type {
+  ClaimStatus,
+  EvidenceRelation,
+  MechanismCode,
+  Verdict,
+} from '@veritas/shared';
+
 export type Locale = 'pt-BR' | 'en-US';
+
+export interface LiveCardNotice {
+  title: string;
+  body: string;
+}
+
+/**
+ * Copy for the three-layer verification card (LIVE-027).
+ * Status/verdict/mechanism keys mirror the shared contract so a new enum member
+ * fails to type-check until every locale is updated.
+ */
+export interface LiveCardTranslations {
+  unknownSpeaker: string;
+  transcriptUnconfirmed: string;
+  verdictAriaPrefix: string;
+  status: Record<ClaimStatus, string>;
+  verdict: Record<Verdict, string>;
+  mechanisms: Record<MechanismCode, string>;
+  mechanismEvidenceLabel: string;
+  sections: {
+    conclusion: string;
+    contradiction: string;
+    whatSaid: string;
+    whatFound: string;
+    trueComponent: string;
+    distortion: string;
+    supportedAspects: string;
+    missing: string;
+    mechanism: string;
+    mechanismHint: string;
+  };
+  card: {
+    quoteAriaLabel: string;
+    timestampAriaLabel: string;
+    revision: string;
+    select: string;
+  };
+  notices: Record<Exclude<ClaimStatus, 'COMPLETED'>, LiveCardNotice> & {
+    /** Defensive state: COMPLETED without a valid verdict must not be shown as a result. */
+    incomplete: LiveCardNotice;
+  };
+  evidence: {
+    show: string;
+    hide: string;
+    count: string;
+    countOne: string;
+    title: string;
+    groups: Record<EvidenceRelation, string>;
+    primarySources: string;
+    primarySourceTag: string;
+    excerpt: string;
+    location: string;
+    publishedAt: string;
+    accessedAt: string;
+    unverifiedTitle: string;
+    unverifiedBody: string;
+    empty: string;
+    emptyHint: string;
+    linkHint: string;
+  };
+  limitations: {
+    title: string;
+  };
+  revision: {
+    label: string;
+    statusLabel: string;
+    updatedAt: string;
+    note: string;
+  };
+}
 
 export interface TranslationKeys {
   common: {
@@ -213,6 +290,80 @@ export interface TranslationKeys {
   };
   tagline: {
     text: string;
+  };
+  liveCard: LiveCardTranslations;
+  live: {
+    modeToggleAria: string;
+    modeLive: string;
+    modeText: string;
+    controls: {
+      start: string;
+      pause: string;
+      resume: string;
+      stop: string;
+      pauseDisabled: string;
+      resumeDisabled: string;
+      stopDisabled: string;
+    };
+    status: Record<string, string>;
+    feedback: Record<string, string>;
+    setup: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      sourceLabel: string;
+      sourceMic: string;
+      defaultMic: string;
+      unnamedMic: string;
+      showDevices: string;
+      loadingDevices: string;
+      consentLabel: string;
+      consentRequired: string;
+      sourceHint: string;
+      privacyNote: string;
+    };
+    /** Microphone capture errors, keyed by `MicCaptureErrorCode`. */
+    micErrors: Record<
+      | 'UNSUPPORTED'
+      | 'INSECURE_CONTEXT'
+      | 'PERMISSION_DENIED'
+      | 'NO_DEVICE'
+      | 'DEVICE_IN_USE'
+      | 'DEVICE_DISCONNECTED'
+      | 'NO_AUDIO_TRACK'
+      | 'CAPTURE_FAILED',
+      string
+    >;
+    transcript: {
+      title: string;
+      subtitle: string;
+      empty: string;
+      unknownSpeaker: string;
+      unconfirmedSpeaker: string;
+      speechTimeHint: string;
+      revisionConflict: string;
+      correct: string;
+      correctLabel: string;
+      saveCorrection: string;
+      claimChip: string;
+      revision: string;
+      gapsNotice: string;
+      status: {
+        PROVISIONAL: string;
+        FINAL: string;
+        BLOCKED: string;
+      };
+      uncertainty: Record<string, string>;
+    };
+    workspace: {
+      eyebrow: string;
+      title: string;
+      intro: string;
+      resultsTitle: string;
+      resultsEmpty: string;
+      claimCount: string;
+      claimCountOne: string;
+    };
   };
 }
 

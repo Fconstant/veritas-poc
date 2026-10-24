@@ -24,5 +24,17 @@ export {
   
   // Estados da Verificação
   type VerificationStatus,
-  type VerificationState
+  type VerificationState,
+  type LiveCaptureFeedback,
+
+  // Live progressive contracts (LIVE-027/028)
+  type Verification,
+  type SessionSnapshotData,
+  type VerificationInvalidatedData,
+  type Claim,
+  type LiveGapData,
+  type LiveMetricsData,
+  type LiveSessionState,
+  type SpeakerMapping,
+  type TranscriptSegment,
 } from '@veritas/shared';

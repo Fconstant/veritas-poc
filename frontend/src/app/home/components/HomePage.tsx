@@ -8,12 +8,19 @@ import Header from '@/app/shared/components/Header';
 import HeroSection from './HeroSection';
 import VerificationForm from './VerificationForm';
 import HomePageToast from './HomePageToast';
+import ModeToggle from '@/app/live/components/ModeToggle';
+import LiveSetupPanel, {
+  type LiveStartRequest,
+} from '@/app/live/components/LiveSetupPanel';
+import LiveAudioControls from '@/app/live/components/LiveAudioControls';
 import { factCheckService } from '@/lib/services/factCheckService';
 import { useFactCheckStore } from '@/lib/store/factCheckStore';
 import { useApiKeys } from '@/lib/hooks/useApiKeys';
 import ApiSetupPage from '@/app/shared/components/ApiSetupPage';
 import { Button } from '@/app/shared/components/ui/button';
 import { useI18n } from '@/lib/i18n/I18nContext';
+import { liveSessionController } from '@/lib/live/liveSessionController';
+import type { LiveInputMode } from '@/lib/live/liveUiState';
 
 // Constante para o texto de exemplo
 const EXAMPLE_FACT_CHECK_TEXT = "As vacinas contra COVID-19 foram desenvolvidas em tempo recorde em 2020. O Brasil iniciou sua campanha de vacinação em janeiro de 2021. Estudos mostram que as vacinas reduziram significativamente as hospitalizações e mortes pela doença.";
@@ -31,6 +38,8 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
   const router = propRouter || nextRouter;
   const { apiKeys, isLoading, saveApiKeys, hasApiKeys } = useApiKeys();
   const [textValue, setTextValue] = useState<string>("");
+  const [inputMode, setInputMode] = useState<LiveInputMode>('text');
+  const [startingLive, setStartingLive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const verificationState = useFactCheckStore();
   const [toast, setToast] = useState<{
@@ -48,9 +57,10 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
     setTextValue(EXAMPLE_FACT_CHECK_TEXT);
   }, []);
 
-  // Escuta mudanças no estado da verificação
+  // Escuta mudanças no estado da verificação (modo Texto apenas)
   useEffect(() => {
-    // Atualiza toast baseado no status
+    if (inputMode !== 'text') return;
+
     if (verificationState.status === 'finished') {
       setToast({
         type: 'success',
@@ -58,7 +68,6 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         isVisible: true
       });
 
-      // Auto-hide toast após 2 segundos e redirecionar
       setTimeout(() => {
         setToast(prev => ({ ...prev, isVisible: false }));
         router.push('/results');
@@ -70,7 +79,6 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         isVisible: true
       });
 
-      // Auto-hide toast após 5 segundos
       setTimeout(() => {
         setToast(prev => ({ ...prev, isVisible: false }));
       }, 5000);
@@ -85,7 +93,35 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
         setToast(prev => ({ ...prev, isVisible: false }));
       }, 5000);
     }
-  }, [verificationState.status, verificationState.error, router]);
+  }, [verificationState.status, verificationState.error, router, inputMode]);
+
+  const handleStartLive = useCallback(async ({ deviceId }: LiveStartRequest) => {
+    setStartingLive(true);
+    try {
+      await liveSessionController.start({
+        apiKeys: {
+          google: apiKeys?.google,
+          tavily: apiKeys?.tavily,
+        },
+        deviceId: deviceId || undefined,
+        micMessages: t.live.micErrors,
+      });
+      router.push('/live');
+    } catch (error) {
+      console.error('❌ Erro ao iniciar Live:', error);
+      setToast({
+        type: 'error',
+        message:
+          error instanceof Error ? error.message : t.errors.internalError,
+        isVisible: true,
+      });
+      setTimeout(() => {
+        setToast((prev) => ({ ...prev, isVisible: false }));
+      }, 6000);
+    } finally {
+      setStartingLive(false);
+    }
+  }, [apiKeys?.google, apiKeys?.tavily, router, t.errors.internalError, t.live.micErrors]);
 
   // Mantém a conexão entre páginas para não interromper o stream de resultados
   // (não desconectar no unmount)
@@ -236,15 +272,31 @@ const HomePage: React.FC<HomePageProps> = ({ className, router: propRouter }) =>
               <HeroSection className="max-w-[629px] mx-auto lg:mx-0" />
             </div>
 
-            {/* Formulário de Verificação - Lado Direito */}
+            {/* Entrada Texto / Live - Lado Direito */}
             <div className="order-2 lg:order-2">
-              <div className="max-w-[571px] mx-auto lg:mx-0">
-                <VerificationForm
-                  onUseExample={handleUseExample}
-                  onCheckFacts={handleCheckFacts}
-                  onTextChange={handleTextChange}
-                  value={textValue}
+              <div className="max-w-[571px] mx-auto lg:mx-0 flex flex-col gap-4">
+                <ModeToggle
+                  mode={inputMode}
+                  onModeChange={setInputMode}
+                  disabled={startingLive || verificationState.status === 'processing' || verificationState.status === 'connecting'}
                 />
+
+                {inputMode === 'text' ? (
+                  <VerificationForm
+                    onUseExample={handleUseExample}
+                    onCheckFacts={handleCheckFacts}
+                    onTextChange={handleTextChange}
+                    value={textValue}
+                  />
+                ) : (
+                  <>
+                    <LiveSetupPanel
+                      onStart={handleStartLive}
+                      starting={startingLive}
+                    />
+                    <LiveAudioControls className="mt-1" />
+                  </>
+                )}
               </div>
             </div>
 

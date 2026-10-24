@@ -6,6 +6,9 @@
   "engines": {
     "node": ">= 22.11 <= 23"
   },
+  "imports": {
+    "#/*": "./src/*"
+  },
   "scripts": {
     "start": "node build/src/main.js",
     "dev": "node --import tsx src/main.ts",
@@ -16,8 +19,14 @@
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "pnpm clean && tsc -p tsconfig.release.json && tsc-alias -p tsconfig.alias.json",
     "lint": "eslint .",
+    "pretest": "pnpm --filter @veritas/shared build:if-needed",
     "test": "vitest run unit --config __tests__/vitest.config.ts",
     "test:coverage": "vitest run unit --config __tests__/vitest.config.ts --coverage.enabled --coverage.all",
+    "eval:factual": "tsx eval/factual/runner.ts",
+    "eval:transcription": "tsx eval/transcription/run-transcription.ts",
+    "eval:speakers": "tsx eval/speakers-claims/run-speakers-claims.ts",
+    "eval:evidence": "tsx eval/evidence/run-evidence.ts",
+    "eval:all": "pnpm eval:factual && pnpm eval:transcription && pnpm eval:speakers && pnpm eval:evidence",
     "prettier": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --write",
     "prettier:check": "prettier \"{src,__{tests}__}/**/*.{ts,mts}\" --config .prettierrc --check",
     "test:watch": "vitest unit"
@@ -38,6 +47,7 @@
     "globals": "~15.14",
     "prettier": "~3.4",
     "rimraf": "~6.0",
+    "socket.io-client": "^4.8.1",
     "ts-api-utils": "~2.0",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
@@ -53,6 +63,7 @@
     "@langchain/google-genai": "^0.2.16",
     "@langchain/openai": "^0.6.11",
     "@langchain/tavily": "^0.1.5",
+    "@veritas/shared": "workspace:*",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",

@@ -211,6 +211,228 @@
   },
   "tagline": {
     "text": "Automate fact-checking"
+  },
+  "liveCard": {
+    "unknownSpeaker": "Authorship not confirmed",
+    "transcriptUnconfirmed": "Transcript not confirmed",
+    "verdictAriaPrefix": "Verdict",
+    "status": {
+      "DETECTED": "Detected",
+      "QUEUED": "Queued",
+      "RESEARCHING": "Searching sources",
+      "EVALUATING": "Weighing evidence",
+      "COMPLETED": "Completed",
+      "FAILED": "Technical failure",
+      "CANCELLED": "Cancelled",
+      "DEFERRED": "Deferred",
+      "BLOCKED": "Blocked"
+    },
+    "verdict": {
+      "SUPPORTED": "Supported",
+      "FALSE": "False",
+      "MISLEADING": "Misleading",
+      "INCONCLUSIVE": "Inconclusive"
+    },
+    "mechanisms": {
+      "FALSE_ORIGIN_ATTRIBUTION": "False attribution of origin or authorship",
+      "MISATTRIBUTED_AGGREGATE": "Aggregate figure attributed to the wrong universe",
+      "OMITTED_TIME_LIMIT": "Omitted duration or deadline",
+      "PROGRAM_CONFLATION": "Conflation of programs or institutions",
+      "INCOMPATIBLE_COMPARISON": "Comparison of incompatible measures",
+      "UNSUPPORTED_CAUSALITY": "Unsupported causality",
+      "SELECTIVE_PERIOD": "Selective time window",
+      "OVERGENERALIZATION": "Unwarranted generalization",
+      "SELECTIVE_EVIDENCE": "Selective use of evidence"
+    },
+    "mechanismEvidenceLabel": "Evidence that shows the mechanism",
+    "sections": {
+      "conclusion": "Conclusion",
+      "contradiction": "Where is the contradiction?",
+      "whatSaid": "What the statement suggests",
+      "whatFound": "What the evidence shows",
+      "trueComponent": "What is true in the statement",
+      "distortion": "What the distortion changes",
+      "supportedAspects": "What the statement gets right",
+      "missing": "What was missing",
+      "mechanism": "How the statement can mislead",
+      "mechanismHint": "Mechanisms describe the distance between the statement and the evidence; they do not assess intent."
+    },
+    "card": {
+      "quoteAriaLabel": "Original quote",
+      "timestampAriaLabel": "Statement time: {{timestamp}}",
+      "revision": "Revision {{revision}}",
+      "select": "Select verification"
+    },
+    "notices": {
+      "DETECTED": {
+        "title": "Statement detected",
+        "body": "The verification was registered and there is no conclusion yet."
+      },
+      "QUEUED": {
+        "title": "Queued",
+        "body": "Waiting for research capacity to start the verification."
+      },
+      "RESEARCHING": {
+        "title": "Searching sources",
+        "body": "The statement is being compared with public documents and data."
+      },
+      "EVALUATING": {
+        "title": "Weighing evidence",
+        "body": "The evidence found is being compared against the statement."
+      },
+      "FAILED": {
+        "title": "Technical failure",
+        "body": "The verification could not be completed because of a technical failure. This does not mean the statement is true or false."
+      },
+      "CANCELLED": {
+        "title": "Verification cancelled",
+        "body": "The verification was cancelled before completion; there is no conclusion."
+      },
+      "DEFERRED": {
+        "title": "Verification deferred",
+        "body": "No capacity or quota was available. The verification did not run and there is no conclusion."
+      },
+      "BLOCKED": {
+        "title": "Verification blocked",
+        "body": "The transcript has uncertain passages that may change the meaning of the statement. Fix or confirm the transcript to resume the verification."
+      },
+      "incomplete": {
+        "title": "Incomplete result",
+        "body": "The verification finished without a valid verdict. Nothing is shown as a conclusion."
+      }
+    },
+    "evidence": {
+      "show": "See evidence and sources",
+      "hide": "Hide evidence and sources",
+      "count": "{{count}} references",
+      "countOne": "{{count}} reference",
+      "title": "Documents and evidence",
+      "groups": {
+        "SUPPORTS": "Evidence that supports",
+        "REFUTES": "Evidence that contradicts",
+        "CONTEXTUALIZES": "Contextual evidence"
+      },
+      "primarySources": "Primary sources",
+      "primarySourceTag": "Primary source",
+      "excerpt": "Excerpt",
+      "location": "Location in the document",
+      "publishedAt": "Published on",
+      "accessedAt": "Accessed on",
+      "unverifiedTitle": "Unverified evidence",
+      "unverifiedBody": "These excerpts were not inspected by the verifier and are not used as proof.",
+      "empty": "No inspected evidence",
+      "emptyHint": "This verification registered no evidence with an identifiable source.",
+      "linkHint": "Opens in a new tab"
+    },
+    "limitations": {
+      "title": "Limits of the conclusion"
+    },
+    "revision": {
+      "label": "Revision {{revision}}",
+      "statusLabel": "Status: {{status}}",
+      "updatedAt": "Updated on {{date}}",
+      "note": "Reviewable result: corrections to the transcript, authorship or evidence can invalidate this conclusion."
+    }
+  },
+  "live": {
+    "modeToggleAria": "Input mode",
+    "modeLive": "Live audio",
+    "modeText": "Paste text",
+    "controls": {
+      "start": "Start listening",
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop",
+      "pauseDisabled": "Capture is not active to pause",
+      "resumeDisabled": "Capture is not paused",
+      "stopDisabled": "No active session to stop"
+    },
+    "status": {
+      "idle": "Ready to listen",
+      "requesting_permission": "Requesting microphone access…",
+      "connecting": "Connecting session…",
+      "listening": "Listening",
+      "paused": "Paused",
+      "ending": "Ending and draining queue…",
+      "ended": "Session ended",
+      "reconnecting": "Reconnecting…",
+      "permission_error": "Microphone access denied",
+      "unsupported": "Microphone unavailable in this browser",
+      "no_audio": "No audio from the microphone",
+      "connection_error": "Connection failure",
+      "session_error": "Live session error"
+    },
+    "feedback": {
+      "capture_active": "Capture active",
+      "no_audio": "Audio missing",
+      "transcript_delayed": "Transcript delayed",
+      "research_saturated": "Research saturated",
+      "gap": "Audio gap recorded",
+      "permission_error": "Permission required",
+      "unsupported": "Unsupported",
+      "connection_error": "Connection error"
+    },
+    "setup": {
+      "eyebrow": "Veritas Live",
+      "title": "Listen through the microphone",
+      "description": "After you click, the browser will ask for microphone access. Veritas listens to the room where the conversation happens.",
+      "sourceLabel": "Microphone",
+      "sourceMic": "Microphone",
+      "defaultMic": "System default microphone",
+      "unnamedMic": "Microphone {{index}}",
+      "showDevices": "Show available microphones",
+      "loadingDevices": "Looking for microphones…",
+      "consentLabel": "I confirm the people in the room know the conversation will be recorded by the microphone and sent to Veritas for transcription and fact-checking.",
+      "consentRequired": "Check the consent box to start",
+      "sourceHint": "Keep the microphone close to the speakers. If the debate plays on this computer, use the speakers (not headphones).",
+      "privacyNote": "Only microphone audio is sent, and only while the session is active."
+    },
+    "transcript": {
+      "title": "Transcript",
+      "subtitle": "Continuous updates",
+      "empty": "Waiting for the first speech…",
+      "unknownSpeaker": "Unknown authorship",
+      "unconfirmedSpeaker": "unconfirmed",
+      "speechTimeHint": "Speech time in the capture (not processing time)",
+      "revisionConflict": "Revision conflict",
+      "correct": "Correct speech",
+      "correctLabel": "Corrected segment text",
+      "saveCorrection": "Save correction",
+      "claimChip": "Claim",
+      "revision": "Rev. {{revision}}",
+      "gapsNotice": "{{count}} audio gap(s) flagged — missing samples are not invented.",
+      "status": {
+        "PROVISIONAL": "Partial",
+        "FINAL": "Final",
+        "BLOCKED": "Blocked"
+      },
+      "uncertainty": {
+        "NUMBER": "Uncertain number",
+        "NEGATION": "Uncertain negation",
+        "SUBJECT": "Uncertain subject",
+        "OVERLAP": "Overlap",
+        "LOW_CONFIDENCE": "Low confidence",
+        "TRANSCRIPTION_ERROR": "Transcription error"
+      }
+    },
+    "workspace": {
+      "eyebrow": "Veritas / Automatic listening",
+      "title": "Live accompaniment",
+      "intro": "Progressive transcript alongside verifications. Audio comes from the microphone; Text mode remains available at entry.",
+      "resultsTitle": "Verifications",
+      "resultsEmpty": "Detected claims will appear here.",
+      "claimCount": "{{count}} claims",
+      "claimCountOne": "{{count}} claim"
+    },
+    "micErrors": {
+      "UNSUPPORTED": "This browser can't access the microphone. Use a recent version of Chrome, Edge, Safari or Firefox.",
+      "INSECURE_CONTEXT": "The microphone only works on secure pages. Open Veritas on https:// or http://localhost.",
+      "PERMISSION_DENIED": "Microphone access was denied. Allow the microphone in the site permissions (icon next to the address bar) and try again.",
+      "NO_DEVICE": "No microphone found. Connect a microphone and try again.",
+      "DEVICE_IN_USE": "The microphone is in use by another app or blocked by the system. Close the other app and try again.",
+      "DEVICE_DISCONNECTED": "The microphone was disconnected. Listening has ended; reconnect it and start again.",
+      "NO_AUDIO_TRACK": "The microphone sent no audio. Try another microphone.",
+      "CAPTURE_FAILED": "Could not access the microphone."
+    }
   }
 }
-
