@@ -1,13 +1,19 @@
 import { create } from 'zustand';
 import type {
+  Claim,
   FactCheckResult,
+  LiveCaptureFeedback,
+  LiveGapData,
+  LiveMetricsData,
+  LiveSessionState,
   SessionSnapshotData,
+  SpeakerMapping,
+  TranscriptSegment,
   Verification,
   VerificationInvalidatedData,
   VerificationState,
   VerificationStatus,
 } from '../types/api';
-import type { SpeakerMapping, TranscriptSegment } from '@veritas/shared';
 import {
   applySessionSnapshotVerifications,
   applyVerificationInvalidation,
@@ -15,12 +21,14 @@ import {
   factCheckResultToVerification,
   upsertByRevision,
 } from './verificationSync';
+import {
+  applySpeakerMappings,
+  mergeSnapshotClaims,
+  mergeSnapshotSegments,
+  upsertTranscriptSegment,
+} from './transcriptSync';
 
-type FactCheckStoreState = VerificationState & {
-  transcriptSegments: TranscriptSegment[];
-  speakerMappings: SpeakerMapping[];
-  speakerMappingRevision: number;
-};
+type FactCheckStoreState = VerificationState;
 
 interface FactCheckStoreActions {
   update: (updates: Partial<FactCheckStoreState>) => void;
@@ -31,11 +39,27 @@ interface FactCheckStoreActions {
   upsertVerification: (verification: Verification) => void;
   invalidateVerification: (payload: VerificationInvalidatedData) => void;
   applySessionSnapshot: (snapshot: SessionSnapshotData) => void;
-  upsertTranscriptSegment: (segment: TranscriptSegment) => void;
-  setSpeakerMappings: (mappings: SpeakerMapping[], revision: number) => void;
+  upsertSegment: (
+    segment: TranscriptSegment,
+    options?: { treatStaleAsConflict?: boolean },
+  ) => void;
+  upsertClaim: (claim: Claim) => void;
+  setSpeakerMappings: (
+    mappings: readonly SpeakerMapping[],
+    revision: number,
+  ) => void;
+  setLiveSessionState: (
+    state: LiveSessionState | null,
+    extras?: { message?: string; reason?: string },
+  ) => void;
+  setCaptureFeedback: (feedback: LiveCaptureFeedback, error?: string) => void;
+  pushLiveGap: (gap: LiveGapData) => void;
+  setLiveMetrics: (metrics: LiveMetricsData) => void;
+  clearSegmentConflict: (segmentId: string) => void;
   rememberEventId: (eventId: string) => boolean;
   advanceCursor: (eventSeq: number) => void;
   reset: () => void;
+  resetLiveTranscript: () => void;
 }
 
 export type FactCheckStore = FactCheckStoreState & FactCheckStoreActions;
@@ -44,14 +68,21 @@ const initialState: FactCheckStoreState = {
   status: 'idle',
   results: [],
   verifications: [],
-  transcriptSegments: [],
-  speakerMappings: [],
-  speakerMappingRevision: 0,
   sessionId: null,
   eventCursor: 0,
   seenEventIds: [],
   processedText: '',
   fingerprint: null,
+  liveSessionState: null,
+  segments: [],
+  speakerMappings: [],
+  speakerMappingRevision: 0,
+  claims: [],
+  segmentConflicts: [],
+  liveGaps: [],
+  liveMetrics: null,
+  captureFeedback: 'idle',
+  lastTranscriptAt: null,
 };
 
 export const useFactCheckStore = create<FactCheckStore>((set, get) => ({
@@ -136,26 +167,130 @@ export const useFactCheckStore = create<FactCheckStore>((set, get) => ({
       return {
         ...state,
         sessionId: snapshot.sessionId,
-        transcriptSegments: snapshot.segments,
+        liveSessionState: snapshot.state,
         verifications: merged.items,
+        segments: mergeSnapshotSegments(state.segments, snapshot),
+        claims: mergeSnapshotClaims(state.claims, snapshot),
         eventCursor: Math.max(state.eventCursor, merged.cursor),
       };
     }),
-  upsertTranscriptSegment: (segment) =>
+  upsertSegment: (segment, options) =>
     set((state) => {
-      if (state.sessionId !== null && segment.sessionId !== state.sessionId) {
+      const result = upsertTranscriptSegment(
+        state.segments,
+        segment,
+        state.sessionId,
+        options,
+      );
+      if (!result.applied && !result.conflict) {
         return state;
       }
-      const index = state.transcriptSegments.findIndex((item) => item.id === segment.id);
-      if (index === -1) {
-        return { transcriptSegments: [...state.transcriptSegments, segment] };
-      }
-      if (state.transcriptSegments[index].revision >= segment.revision) return state;
-      const transcriptSegments = [...state.transcriptSegments];
-      transcriptSegments[index] = segment;
-      return { transcriptSegments };
+
+      const conflicts = result.conflict
+        ? state.segmentConflicts.includes(segment.id)
+          ? state.segmentConflicts
+          : [...state.segmentConflicts, segment.id]
+        : state.segmentConflicts.filter((id) => id !== segment.id);
+
+      return {
+        ...state,
+        segments: result.applied ? result.items : state.segments,
+        segmentConflicts: conflicts,
+        lastTranscriptAt: result.applied
+          ? new Date().toISOString()
+          : state.lastTranscriptAt,
+      };
     }),
-  setSpeakerMappings: (mappings, revision) => set({ speakerMappings: mappings, speakerMappingRevision: revision }),
+  upsertClaim: (claim) =>
+    set((state) => {
+      const upserted = upsertByRevision(state.claims, claim, state.sessionId);
+      if (!upserted.applied) {
+        return state;
+      }
+      return {
+        ...state,
+        claims: upserted.items,
+      };
+    }),
+  setSpeakerMappings: (mappings, revision) =>
+    set((state) => {
+      const applied = applySpeakerMappings(
+        state.speakerMappings,
+        state.speakerMappingRevision,
+        mappings,
+        revision,
+      );
+      if (!applied.applied) {
+        return state;
+      }
+      return {
+        ...state,
+        speakerMappings: applied.mappings,
+        speakerMappingRevision: applied.revision,
+      };
+    }),
+  setLiveSessionState: (liveSessionState, extras) =>
+    set((state) => ({
+      ...state,
+      liveSessionState,
+      message: extras?.message ?? extras?.reason ?? state.message,
+      ...(liveSessionState === 'ERROR'
+        ? { status: 'error' as const, error: extras?.reason ?? state.error }
+        : {}),
+      ...(liveSessionState === 'ENDED'
+        ? { status: 'finished' as const, captureFeedback: 'ended' as const }
+        : {}),
+      ...(liveSessionState === 'ENDING'
+        ? { captureFeedback: 'ending' as const, status: 'processing' as const }
+        : {}),
+      ...(liveSessionState === 'LISTENING'
+        ? { status: 'processing' as const }
+        : {}),
+      ...(liveSessionState === 'PAUSED'
+        ? { captureFeedback: 'paused' as const, status: 'processing' as const }
+        : {}),
+    })),
+  setCaptureFeedback: (captureFeedback, error) =>
+    set((state) => ({
+      ...state,
+      captureFeedback,
+      ...(error !== undefined
+        ? { error, status: 'error' as const, message: error }
+        : {}),
+    })),
+  pushLiveGap: (gap) =>
+    set((state) => {
+      if (state.sessionId !== null && gap.sessionId !== state.sessionId) {
+        return state;
+      }
+      const exists = state.liveGaps.some(
+        (item) =>
+          item.fromSample === gap.fromSample &&
+          item.toSample === gap.toSample &&
+          item.reason === gap.reason,
+      );
+      if (exists) return state;
+      return {
+        ...state,
+        liveGaps: [...state.liveGaps, gap].slice(-100),
+      };
+    }),
+  setLiveMetrics: (liveMetrics) =>
+    set((state) => {
+      if (
+        state.sessionId !== null &&
+        liveMetrics.sessionId !== undefined &&
+        liveMetrics.sessionId !== state.sessionId
+      ) {
+        return state;
+      }
+      return { ...state, liveMetrics };
+    }),
+  clearSegmentConflict: (segmentId) =>
+    set((state) => ({
+      ...state,
+      segmentConflicts: state.segmentConflicts.filter((id) => id !== segmentId),
+    })),
   rememberEventId: (eventId) => {
     const state = get();
     if (state.seenEventIds.includes(eventId)) {
@@ -174,6 +309,20 @@ export const useFactCheckStore = create<FactCheckStore>((set, get) => ({
   reset: () =>
     set(() => ({
       ...initialState,
+    })),
+  resetLiveTranscript: () =>
+    set((state) => ({
+      ...state,
+      segments: [],
+      claims: [],
+      segmentConflicts: [],
+      liveGaps: [],
+      liveMetrics: null,
+      speakerMappings: [],
+      speakerMappingRevision: 0,
+      lastTranscriptAt: null,
+      liveSessionState: null,
+      captureFeedback: 'idle',
     })),
 }));
 

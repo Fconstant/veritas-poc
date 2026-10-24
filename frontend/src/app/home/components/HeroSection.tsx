@@ -50,13 +50,9 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className }) => {
         <div className="flex items-center gap-2">
           <Volume2 className="size-4 md:size-5 text-[var(--purple-accent)] flex-shrink-0" />
           <span className="font-normal text-[var(--text-muted)] text-xs md:text-sm whitespace-nowrap">
-            {t.hero.audio}
+            {t.live.modeLive}
           </span>
         </div>
-
-        <span className="font-normal text-[var(--text-muted)] text-xs md:text-sm ml-1">
-          {t.hero.comingSoon}
-        </span>
       </div>
     </div>
   );
