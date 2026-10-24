@@ -333,6 +333,91 @@
       "updatedAt": "Updated on {{date}}",
       "note": "Reviewable result: corrections to the transcript, authorship or evidence can invalidate this conclusion."
     }
+  },
+  "live": {
+    "modeToggleAria": "Input mode",
+    "modeLive": "Live audio",
+    "modeText": "Paste text",
+    "controls": {
+      "start": "Start listening",
+      "pause": "Pause",
+      "resume": "Resume",
+      "stop": "Stop",
+      "pauseDisabled": "Capture is not active to pause",
+      "resumeDisabled": "Capture is not paused",
+      "stopDisabled": "No active session to stop"
+    },
+    "status": {
+      "idle": "Ready to listen",
+      "requesting_permission": "Requesting tab share…",
+      "connecting": "Connecting session…",
+      "listening": "Listening",
+      "paused": "Paused",
+      "ending": "Ending and draining queue…",
+      "ended": "Session ended",
+      "reconnecting": "Reconnecting…",
+      "permission_error": "Capture permission denied",
+      "unsupported": "Browser cannot capture tab audio",
+      "no_audio": "No audio on the shared tab",
+      "connection_error": "Connection failure",
+      "session_error": "Live session error"
+    },
+    "feedback": {
+      "capture_active": "Capture active",
+      "no_audio": "Audio missing",
+      "transcript_delayed": "Transcript delayed",
+      "research_saturated": "Research saturated",
+      "gap": "Audio gap recorded",
+      "permission_error": "Permission required",
+      "unsupported": "Unsupported",
+      "connection_error": "Connection error"
+    },
+    "setup": {
+      "eyebrow": "Veritas Live",
+      "title": "Automatic tab listening",
+      "description": "After your click, the browser will ask to share a tab with audio. Capture video is never sent.",
+      "sourceLabel": "Audio source",
+      "sourceTab": "Browser tab (desktop)",
+      "sourceHint": "Enable “Share tab audio” in the browser picker. Microphone and mobile capture are out of this pilot.",
+      "privacyNote": "No video is transmitted. Audio is only processed while the session is active and with your consent."
+    },
+    "transcript": {
+      "title": "Transcript",
+      "subtitle": "Continuous updates",
+      "empty": "Waiting for the first speech…",
+      "unknownSpeaker": "Unknown authorship",
+      "unconfirmedSpeaker": "unconfirmed",
+      "speechTimeHint": "Speech time in the capture (not processing time)",
+      "revisionConflict": "Revision conflict",
+      "correct": "Correct speech",
+      "correctLabel": "Corrected segment text",
+      "saveCorrection": "Save correction",
+      "claimChip": "Claim",
+      "revision": "Rev. {{revision}}",
+      "gapsNotice": "{{count}} audio gap(s) flagged — missing samples are not invented.",
+      "status": {
+        "PROVISIONAL": "Partial",
+        "FINAL": "Final",
+        "BLOCKED": "Blocked"
+      },
+      "uncertainty": {
+        "NUMBER": "Uncertain number",
+        "NEGATION": "Uncertain negation",
+        "SUBJECT": "Uncertain subject",
+        "OVERLAP": "Overlap",
+        "LOW_CONFIDENCE": "Low confidence",
+        "TRANSCRIPTION_ERROR": "Transcription error"
+      }
+    },
+    "workspace": {
+      "eyebrow": "Veritas / Automatic listening",
+      "title": "Live accompaniment",
+      "intro": "Progressive transcript alongside verifications. Capture a tab with audio; Text mode remains available at entry.",
+      "resultsTitle": "Verifications",
+      "resultsEmpty": "Detected claims will appear here.",
+      "claimCount": "{{count}} claims",
+      "claimCountOne": "{{count}} claim"
+    }
   }
 }
 

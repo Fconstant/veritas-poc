@@ -2,25 +2,31 @@ import { z } from 'zod';
 import type {
   AudioChunk,
   AudioChunkAckEvent,
+  Claim,
   ClaimDetectedEvent,
   ClaimStatusUpdatedEvent,
   CorrectTranscript,
   DeleteSession,
   ExportSession,
+  LiveGapData,
   LiveGapEvent,
+  LiveMetricsData,
   LiveMetricsEvent,
   LiveSessionControl,
   LiveSessionEndedEvent,
   LiveSessionStartedEvent,
+  LiveSessionState,
   LiveSessionStateEvent,
   ResumeSession,
   RetryVerification,
   SessionSnapshotEvent,
+  SpeakerMapping,
   SpeakerMappingUpdatedEvent,
   StartLiveSession,
   TranscriptFinalEvent,
   TranscriptPartialEvent,
   TranscriptRevisedEvent,
+  TranscriptSegment,
   UpdateSpeakerMapping,
   Verification,
   VerificationInvalidatedEvent,
@@ -142,6 +148,22 @@ export type VerificationStatus =
   | 'error'
   | 'interrupted';
 
+/**
+ * Local capture / transport feedback distinct from server `LiveSessionState`
+ * (LIVE-007: captura ativa, áudio ausente, atraso e saturação separados).
+ */
+export type LiveCaptureFeedback =
+  | 'idle'
+  | 'requesting_permission'
+  | 'capturing'
+  | 'paused'
+  | 'no_audio'
+  | 'permission_error'
+  | 'unsupported'
+  | 'connection_error'
+  | 'ending'
+  | 'ended';
+
 export interface VerificationState {
   status: VerificationStatus;
   message?: string;
@@ -162,4 +184,24 @@ export interface VerificationState {
   error?: string;
   processedText: string;
   fingerprint: string | null;
+  /** Server-authoritative live session state (LIVE-001/007). */
+  liveSessionState: LiveSessionState | null;
+  /** Progressive transcript segments (upsert by id+revision). */
+  segments: TranscriptSegment[];
+  /** Confirmed / provisional speaker name mappings. */
+  speakerMappings: SpeakerMapping[];
+  /** Mapping list revision from SPEAKER_MAPPING_UPDATED. */
+  speakerMappingRevision: number;
+  /** Detected claims used to highlight transcript spans (LIVE-026). */
+  claims: Claim[];
+  /** Segment ids whose local correction conflicted with a concurrent revision. */
+  segmentConflicts: string[];
+  /** Explicit audio / transport gaps (LIVE_GAP). */
+  liveGaps: LiveGapData[];
+  /** Last live metrics snapshot (queue depth, deferred research). */
+  liveMetrics: LiveMetricsData | null;
+  /** Local capture UI feedback (permission, share ended, …). */
+  captureFeedback: LiveCaptureFeedback;
+  /** Wall-clock of last applied TRANSCRIPT_* event (detect delay). */
+  lastTranscriptAt: string | null;
 }

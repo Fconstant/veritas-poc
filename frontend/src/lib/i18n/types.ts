@@ -292,5 +292,60 @@ export interface TranslationKeys {
     text: string;
   };
   liveCard: LiveCardTranslations;
+  live: {
+    modeToggleAria: string;
+    modeLive: string;
+    modeText: string;
+    controls: {
+      start: string;
+      pause: string;
+      resume: string;
+      stop: string;
+      pauseDisabled: string;
+      resumeDisabled: string;
+      stopDisabled: string;
+    };
+    status: Record<string, string>;
+    feedback: Record<string, string>;
+    setup: {
+      eyebrow: string;
+      title: string;
+      description: string;
+      sourceLabel: string;
+      sourceTab: string;
+      sourceHint: string;
+      privacyNote: string;
+    };
+    transcript: {
+      title: string;
+      subtitle: string;
+      empty: string;
+      unknownSpeaker: string;
+      unconfirmedSpeaker: string;
+      speechTimeHint: string;
+      revisionConflict: string;
+      correct: string;
+      correctLabel: string;
+      saveCorrection: string;
+      claimChip: string;
+      revision: string;
+      gapsNotice: string;
+      status: {
+        PROVISIONAL: string;
+        FINAL: string;
+        BLOCKED: string;
+      };
+      uncertainty: Record<string, string>;
+    };
+    workspace: {
+      eyebrow: string;
+      title: string;
+      intro: string;
+      resultsTitle: string;
+      resultsEmpty: string;
+      claimCount: string;
+      claimCountOne: string;
+    };
+  };
 }
 

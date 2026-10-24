@@ -1,16 +1,22 @@
 import { io, Socket } from 'socket.io-client';
 import CryptoJS from 'crypto-js';
 import type {
+  AudioChunk,
   ClaimDetectedEvent,
   ClaimStatusUpdatedEvent,
+  CorrectTranscript,
   EventEnvelope,
+  LiveSessionControl,
   SessionSnapshotEvent,
+  SpeakerMappingUpdatedEvent,
+  StartLiveSession,
+  TranscriptFinalEvent,
+  TranscriptPartialEvent,
+  TranscriptRevisedEvent,
+  UpdateSpeakerMapping,
   VerificationInvalidatedEvent,
   VerificationResultEvent,
-  TranscriptSegment,
 } from '@veritas/shared';
-import { AudioChunker } from '../audio/audioStream';
-import { startTabAudioCapture, type TabAudioCapture } from '../audio/tabCapture';
 import { API_CONFIG } from '../config/api';
 import {
   FactCheckRequest,
@@ -28,14 +34,13 @@ type RequestOptions = Partial<Omit<FactCheckRequest, 'fingerprint' | 'apiKeys'>>
   apiKeys?: { google?: string; tavily?: string };
 };
 
+export type AudioChunkAckListener = (chunkSeq: number, accepted: boolean) => void;
+
 const pendingClaimId = (claimId: string) => `claim-pending-${claimId}`;
 
 export class FactCheckService {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
-  private liveSessionId: string | null = null;
-  private audioChunker: AudioChunker | null = null;
-  private tabCapture: TabAudioCapture | null = null;
-  private removeCaptureEndedListener: (() => void) | null = null;
+  private audioChunkAckListeners = new Set<AudioChunkAckListener>();
 
   constructor(private backendUrl: string = API_CONFIG.BACKEND_URL) {}
 
@@ -136,77 +141,75 @@ export class FactCheckService {
 
     socket.on('LIVE_SESSION_STARTED', (event) => {
       if (!this.acceptEnvelope(event.envelope)) return;
-      factCheckStore.setState({
+      const store = useFactCheckStore.getState();
+      store.update({
         sessionId: event.data.sessionId,
         status: 'processing',
         message: event.data.state,
       });
-    });
-
-    const applyTranscript = (event: { envelope: EventEnvelope; data: { segment: TranscriptSegment } }) => {
-      if (!this.acceptEnvelope(event.envelope)) return;
-      useFactCheckStore.getState().upsertTranscriptSegment(event.data.segment);
-    };
-    socket.on('TRANSCRIPT_PARTIAL', applyTranscript);
-    socket.on('TRANSCRIPT_FINAL', applyTranscript);
-    socket.on('TRANSCRIPT_REVISED', applyTranscript);
-
-    socket.on('SPEAKER_MAPPING_UPDATED', (event) => {
-      if (!this.acceptEnvelope(event.envelope)) return;
-      useFactCheckStore.getState().setSpeakerMappings(event.data.mappings, event.data.revision);
-    });
-
-    socket.on('AUDIO_CHUNK_ACK', (event) => {
-      if (!this.acceptEnvelope(event.envelope)) return;
-      if (event.data.sessionId === this.liveSessionId) {
-        if (event.data.accepted) this.audioChunker?.ack(event.data.chunkSeq);
-        else this.audioChunker?.fail(event.data.chunkSeq);
-      }
+      store.setLiveSessionState(event.data.state);
     });
 
     socket.on('LIVE_SESSION_STATE', (event) => {
       if (!this.acceptEnvelope(event.envelope)) return;
-      const state = event.data.state;
+      const store = useFactCheckStore.getState();
+      store.update({ sessionId: event.data.sessionId });
       // ENDING = draining research — not the same as captura encerrada.
-      if (state === 'ENDING') {
-        factCheckStore.setState({
-          sessionId: event.data.sessionId,
-          status: 'processing',
-          message: event.data.reason ?? 'Encerrando captura; drenando fila…',
-        });
-        return;
-      }
-      if (state === 'ENDED') {
-        factCheckStore.setState({
-          sessionId: event.data.sessionId,
-          status: 'finished',
-          message: event.data.reason,
-        });
-        return;
-      }
-      if (state === 'ERROR') {
-        if (this.liveSessionId === event.data.sessionId) {
-          void this.audioChunker?.stop({ flush: false });
-          this.audioChunker = null;
-          this.removeCaptureEndedListener?.();
-          this.removeCaptureEndedListener = null;
-          this.tabCapture?.stop();
-          this.tabCapture = null;
-          this.liveSessionId = null;
-        }
-        factCheckStore.setState({
-          sessionId: event.data.sessionId,
-          status: 'error',
-          error: event.data.reason,
-          message: event.data.reason,
-        });
-        return;
-      }
-      factCheckStore.setState({
-        sessionId: event.data.sessionId,
-        status: 'processing',
-        message: state,
+      store.setLiveSessionState(event.data.state, {
+        reason: event.data.reason,
+        message:
+          event.data.state === 'ENDING'
+            ? (event.data.reason ?? 'Encerrando captura; drenando fila…')
+            : event.data.reason,
       });
+    });
+
+    socket.on('TRANSCRIPT_PARTIAL', (event: TranscriptPartialEvent) => {
+      if (!this.acceptEnvelope(event.envelope)) return;
+      useFactCheckStore.getState().upsertSegment(event.data.segment);
+    });
+
+    socket.on('TRANSCRIPT_FINAL', (event: TranscriptFinalEvent) => {
+      if (!this.acceptEnvelope(event.envelope)) return;
+      useFactCheckStore.getState().upsertSegment(event.data.segment);
+    });
+
+    socket.on('TRANSCRIPT_REVISED', (event: TranscriptRevisedEvent) => {
+      if (!this.acceptEnvelope(event.envelope)) return;
+      // Concurrent correction: a stale/equal revision after a local edit is a conflict.
+      useFactCheckStore.getState().upsertSegment(event.data.segment, {
+        treatStaleAsConflict: true,
+      });
+    });
+
+    socket.on('SPEAKER_MAPPING_UPDATED', (event: SpeakerMappingUpdatedEvent) => {
+      if (!this.acceptEnvelope(event.envelope)) return;
+      if (
+        useFactCheckStore.getState().sessionId !== null &&
+        event.data.sessionId !== useFactCheckStore.getState().sessionId
+      ) {
+        return;
+      }
+      useFactCheckStore
+        .getState()
+        .setSpeakerMappings(event.data.mappings, event.data.revision);
+    });
+
+    socket.on('LIVE_GAP', (event) => {
+      if (!this.acceptEnvelope(event.envelope)) return;
+      useFactCheckStore.getState().pushLiveGap(event.data);
+    });
+
+    socket.on('LIVE_METRICS', (event) => {
+      if (!this.acceptEnvelope(event.envelope)) return;
+      useFactCheckStore.getState().setLiveMetrics(event.data);
+    });
+
+    socket.on('AUDIO_CHUNK_ACK', (event) => {
+      if (!this.acceptEnvelope(event.envelope)) return;
+      for (const listener of this.audioChunkAckListeners) {
+        listener(event.data.chunkSeq, event.data.accepted);
+      }
     });
 
     socket.on('VERIFICATION_RESULT', (event: VerificationResultEvent) => {
@@ -239,6 +242,7 @@ export class FactCheckService {
     socket.on('CLAIM_DETECTED', (event: ClaimDetectedEvent) => {
       if (!this.acceptEnvelope(event.envelope)) return;
       const claim = event.data.claim;
+      useFactCheckStore.getState().upsertClaim(claim);
       // In-flight card: never COMPLETED / never carries a verdict.
       const status =
         claim.status === 'COMPLETED' || claim.status === 'FAILED'
@@ -303,21 +307,65 @@ export class FactCheckService {
 
     socket.on('LIVE_SESSION_ENDED', (event) => {
       if (!this.acceptEnvelope(event.envelope)) return;
-      if (this.liveSessionId === event.data.sessionId) {
-        void this.audioChunker?.stop({ flush: false });
-        this.audioChunker = null;
-        this.removeCaptureEndedListener?.();
-        this.removeCaptureEndedListener = null;
-        this.tabCapture?.stop();
-        this.tabCapture = null;
-        this.liveSessionId = null;
-      }
-      factCheckStore.setState({
+      const store = useFactCheckStore.getState();
+      store.update({
         sessionId: event.data.sessionId,
         status: 'finished',
         message: event.data.reason,
       });
+      store.setLiveSessionState('ENDED', { reason: event.data.reason });
     });
+  }
+
+  public onAudioChunkAck(listener: AudioChunkAckListener): () => void {
+    this.audioChunkAckListeners.add(listener);
+    return () => {
+      this.audioChunkAckListeners.delete(listener);
+    };
+  }
+
+  public async ensureConnected(): Promise<void> {
+    if (!this.isConnected()) {
+      await this.connect();
+    }
+  }
+
+  public startLiveSession(payload: StartLiveSession): void {
+    if (!this.socket?.connected) {
+      throw new Error('Conexão com o backend não está disponível.');
+    }
+    this.socket.emit('START_LIVE_SESSION', payload);
+  }
+
+  public sendAudioChunk(payload: AudioChunk, audio: ArrayBuffer): void {
+    if (!this.socket?.connected) {
+      throw new Error('Conexão com o backend não está disponível.');
+    }
+    this.socket.emit('AUDIO_CHUNK', payload, audio);
+  }
+
+  public pauseLiveSession(payload: LiveSessionControl): void {
+    this.socket?.emit('PAUSE_LIVE_SESSION', payload);
+  }
+
+  public resumeLiveSession(payload: LiveSessionControl): void {
+    this.socket?.emit('RESUME_LIVE_SESSION', payload);
+  }
+
+  public endLiveSession(payload: LiveSessionControl): void {
+    this.socket?.emit('END_LIVE_SESSION', payload);
+  }
+
+  public cancelLiveSession(payload: LiveSessionControl): void {
+    this.socket?.emit('CANCEL_LIVE_SESSION', payload);
+  }
+
+  public correctTranscript(payload: CorrectTranscript): void {
+    this.socket?.emit('CORRECT_TRANSCRIPT', payload);
+  }
+
+  public updateSpeakerMapping(payload: UpdateSpeakerMapping): void {
+    this.socket?.emit('UPDATE_SPEAKER_MAPPING', payload);
   }
 
   private async connect(): Promise<void> {
@@ -342,6 +390,13 @@ export class FactCheckService {
         console.log('🔗 Socket ID:', this.socket?.id);
         console.log('🌐 URL:', this.backendUrl);
 
+        const state = useFactCheckStore.getState();
+        if (state.sessionId) {
+          this.socket?.emit('RESUME_SESSION', {
+            sessionId: state.sessionId,
+            cursor: state.eventCursor,
+          });
+        }
         resolve();
       });
 
@@ -364,163 +419,8 @@ export class FactCheckService {
 
       this.socket.on('disconnect', (reason) => {
         console.log('Desconectado do backend:', reason);
-        if (this.liveSessionId !== null) {
-          void this.audioChunker?.stop({ flush: false });
-          this.audioChunker = null;
-          this.removeCaptureEndedListener?.();
-          this.removeCaptureEndedListener = null;
-          this.tabCapture?.stop();
-          this.tabCapture = null;
-          this.liveSessionId = null;
-          factCheckStore.setState({ status: 'interrupted', message: 'A conexão caiu. A captura foi interrompida; inicie uma nova sessão.' });
-        }
       });
     });
-  }
-
-  /** Starts a live session after the user explicitly selects a tab and grants audio capture. */
-  public async startLiveCapture(apiKeys: { google?: string; tavily?: string }): Promise<void> {
-    if (this.liveSessionId !== null) throw new Error('Já existe uma captura ao vivo ativa.');
-    const capture = await startTabAudioCapture();
-    this.tabCapture = capture;
-    try {
-      await this.connect();
-      const socket = this.socket;
-      if (!socket) throw new Error('Conexão ao vivo indisponível.');
-      const sessionId = globalThis.crypto?.randomUUID?.() ?? `live-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-      this.liveSessionId = sessionId;
-      factCheckStore.setState({
-        sessionId,
-        status: 'connecting',
-        error: undefined,
-        transcriptSegments: [],
-        speakerMappings: [],
-        speakerMappingRevision: 0,
-        verifications: [],
-        eventCursor: 0,
-        seenEventIds: [],
-      });
-
-      await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          cleanup();
-          reject(new Error('O servidor não confirmou o início da sessão ao vivo.'));
-        }, 15_000);
-        const onStarted = (event: { data: { sessionId: string } }) => {
-          if (event.data.sessionId !== sessionId) return;
-          cleanup();
-          resolve();
-        };
-        const onState = (event: { data: { sessionId: string; state: string; reason?: string } }) => {
-          if (event.data.sessionId !== sessionId || event.data.state !== 'ERROR') return;
-          cleanup();
-          reject(new Error(event.data.reason ?? 'Não foi possível iniciar a captura.'));
-        };
-        const cleanup = () => {
-          clearTimeout(timeout);
-          socket.off('LIVE_SESSION_STARTED', onStarted);
-          socket.off('LIVE_SESSION_STATE', onState);
-        };
-        socket.on('LIVE_SESSION_STARTED', onStarted);
-        socket.on('LIVE_SESSION_STATE', onState);
-        socket.emit('START_LIVE_SESSION', {
-          sessionId,
-          source: 'TAB',
-          language: 'pt-BR',
-          consent: true,
-          apiKeys,
-        });
-      });
-
-      this.audioChunker = new AudioChunker({
-        onChunk: (meta, buffer) => {
-          const activeSocket = this.socket;
-          const activeSessionId = this.liveSessionId;
-          if (!activeSocket?.connected || !activeSessionId) return;
-          activeSocket.emit('AUDIO_CHUNK', {
-            ...meta,
-            sessionId: activeSessionId,
-            capturedAt: this.audioChunker?.capturedAt ?? new Date().toISOString(),
-          }, buffer);
-        },
-        onGap: (gap) => {
-          factCheckStore.setState({ message: `Trecho de áudio perdido (${gap.fromSample}–${gap.toSample}); a transcrição pode ter uma lacuna.` });
-        },
-        onError: (error) => {
-          factCheckStore.setState({ status: 'error', error: error.message, message: error.message });
-        },
-      });
-      await this.audioChunker.start(capture.stream);
-      this.removeCaptureEndedListener = capture.onEnded(() => {
-        void this.endLiveCapture('tab_share_ended');
-      });
-      factCheckStore.setState({ status: 'processing', message: 'Capturando áudio da aba selecionada.' });
-    } catch (error) {
-      if (this.liveSessionId !== null) {
-        this.socket?.emit('CANCEL_LIVE_SESSION', { sessionId: this.liveSessionId });
-      }
-      this.liveSessionId = null;
-      this.tabCapture?.stop();
-      this.tabCapture = null;
-      this.audioChunker = null;
-      throw error;
-    }
-  }
-
-  public pauseLiveCapture(): void {
-    const sessionId = this.liveSessionId;
-    if (!sessionId) return;
-    this.audioChunker?.pause();
-    this.socket?.emit('PAUSE_LIVE_SESSION', { sessionId });
-  }
-
-  public updateSpeakerMapping(speakerId: string, participantName: string): void {
-    const sessionId = this.liveSessionId;
-    const name = participantName.trim();
-    if (!sessionId || !name) return;
-    const state = useFactCheckStore.getState();
-    this.socket?.emit('UPDATE_SPEAKER_MAPPING', {
-      sessionId,
-      mappings: [{
-        speakerId,
-        participantName: name,
-        confirmed: true,
-        revision: state.speakerMappingRevision + 1,
-      }],
-      expectedRevision: state.speakerMappingRevision,
-    });
-  }
-
-  public correctTranscript(segmentId: string, text: string, expectedRevision: number): void {
-    const sessionId = this.liveSessionId;
-    if (!sessionId || !text.trim()) return;
-    this.socket?.emit('CORRECT_TRANSCRIPT', {
-      sessionId,
-      segmentId,
-      text: text.trim(),
-      expectedRevision,
-    });
-  }
-
-  public resumeLiveCapture(): void {
-    const sessionId = this.liveSessionId;
-    if (!sessionId) return;
-    this.audioChunker?.resume();
-    this.socket?.emit('RESUME_LIVE_SESSION', { sessionId });
-  }
-
-  public async endLiveCapture(reason = 'requested'): Promise<void> {
-    const sessionId = this.liveSessionId;
-    if (!sessionId) return;
-    this.removeCaptureEndedListener?.();
-    this.removeCaptureEndedListener = null;
-    await this.audioChunker?.stop({ flush: true });
-    this.audioChunker = null;
-    this.tabCapture?.stop();
-    this.tabCapture = null;
-    this.socket?.emit('END_LIVE_SESSION', { sessionId });
-    this.liveSessionId = null;
-    factCheckStore.setState({ status: 'processing', message: reason === 'requested' ? 'Encerrando captura e aguardando verificações.' : 'Compartilhamento de áudio encerrado.' });
   }
 
   public onStateChange(listener: (state: VerificationState) => void): () => void {
@@ -586,6 +486,16 @@ export class FactCheckService {
         message: 'Conectando ao servidor...',
         processedText: content,
         fingerprint,
+        liveSessionState: null,
+        segments: [],
+        speakerMappings: [],
+        speakerMappingRevision: 0,
+        claims: [],
+        segmentConflicts: [],
+        liveGaps: [],
+        liveMetrics: null,
+        captureFeedback: 'idle',
+        lastTranscriptAt: null,
       });
 
       const request: FactCheckRequest = {
