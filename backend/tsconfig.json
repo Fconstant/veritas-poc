@@ -20,10 +20,9 @@
     "strict": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
     "skipLibCheck": true,
     "paths": {
-      "#/*": ["src/*"]
+      "#/*": ["./src/*"]
     }
   },
   "include": ["src", "__tests__", "eval"],
