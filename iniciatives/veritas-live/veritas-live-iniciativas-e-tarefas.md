@@ -2,8 +2,8 @@
 
 - **Versão:** 1.1
 - **Origem:** PRD Veritas Live v1.2 e Especificação de verificações v1.1
-- **Repositório:** https://github.com/Fconstant/veritas-poc
-- **Status:** Planejamento revisado; implementação e validação pendentes
+- **Repositório:** https://github.com/andzvedo/veritas-poc
+- **Status:** Implementação parcial no código; aceite das tarefas continua pendente de evidência
 
 ---
 
@@ -35,14 +35,24 @@ A implementação deve preservar o modo de verificação manual existente.
 
 ### Convenção de tarefas
 
-Os IDs `LIVE-001` a `LIVE-039` são preservados. Esta revisão acrescenta `LIVE-000` (qualificação), `LIVE-040` (revisões) e `LIVE-041` (gate do piloto), totalizando 42 tarefas. Nenhuma tarefa é considerada implementada por esta edição.
+Os IDs `LIVE-001` a `LIVE-039` são preservados. Esta revisão acrescenta `LIVE-000` (qualificação), `LIVE-040` (revisões) e `LIVE-041` (gate do piloto), totalizando 42 tarefas. O código cobre partes das tarefas; nenhuma é marcada como concluída sem cumprir os critérios de aceite e registrar evidências.
 
-Documentos normativos: [PRD v1.2](veritas-live-prd-v1.1.md) e [Especificação de verificações v1.1](veritas-live-especificacao-de-verificacoes-v1.0.md). Os nomes dos arquivos são mantidos para preservar links.
+Documentos normativos: [PRD v1.2](veritas-live-prd.md) e [Especificação de verificações v1.1](veritas-live-especificacao-de-verificacoes.md). Os nomes dos arquivos são mantidos para preservar links.
 
 Prioridades:
 
 - **P0:** obrigatório para o MVP funcional.
 - **P1:** necessário para a experiência completa, mas pode ser entregue depois do primeiro piloto.
+
+### Estado da implementação observado
+
+O commit `8b01ec5d18eef0bad0644aa07888566b3f507e7a` acrescenta adaptadores intercambiáveis, controles de orçamento e um harness/corpus factual offline ao percurso existente de áudio → transcrição → claim → pesquisa → card. A suíte automatizada usa mocks em parte do fluxo e o corpus local é um ponto de partida; isso não comprova captura real, qualidade de fala/autoria, precisão factual geral, latência-alvo nem ensaio de duas horas.
+
+Esta rodada conecta a interface ao fluxo de áudio e corrige entrada de socket, autoria apresentada, sincronização de revisão, citação literal, falhas de recuperação documental e encerramento. Os checkboxes abaixo continuam sendo critérios, não uma declaração automática de aceite. O sistema não retoma sessão em socket novo: por segurança, a interface encerra a captura e orienta iniciar outra sessão quando a conexão cai.
+
+Na branch desta PR, passaram 333 testes do backend, 69 do frontend, avaliação factual offline (10/10), lint, typechecks e builds de backend/frontend. Esses resultados cobrem contratos e fixtures; não substituem captura real, provedores externos ou validação independente.
+
+Permanecem gates explícitos: qualificação de navegador/player/modelos e validação do orçamento (LIVE-000), diarização contínua avaliada (LIVE-010/034), benchmark documental independente com referências revisadas (LIVE-024/035), medição de custo/latência e ensaio prolongado (LIVE-036/041), prova reproduzível de conteúdo-fonte e revisão de segurança/privacidade (LIVE-038). Histórico persistente e mobile seguem P1 (LIVE-029/030/031).
 
 ### Definition of Done geral
 
