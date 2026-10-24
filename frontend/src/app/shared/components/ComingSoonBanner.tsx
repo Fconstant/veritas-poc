@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { FileText, AudioLines } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/lib/i18n/I18nContext';
 
@@ -32,19 +32,12 @@ export const ComingSoonBanner: React.FC<ComingSoonBannerProps> = ({ className })
         className
       )}
     >
-      {/* Text Files */}
+      {/* Text files still upcoming; live tab audio is available via ModeToggle. */}
       <div className="flex items-center gap-1">
         <FileText className="w-5 h-5" style={{ color: 'var(--purple-accent)' }} />
         <p className="text-sm leading-6 text-[var(--text-muted)]">
-          <span className="font-semibold">{t.comingSoon.textFiles}</span> {t.comingSoon.and}
-        </p>
-      </div>
-
-      {/* Audio */}
-      <div className="flex items-center gap-1">
-        <AudioLines className="w-5 h-5" style={{ color: 'var(--purple-accent)' }} />
-        <p className="text-sm leading-6 text-[var(--text-muted)]">
-          <span className="font-semibold">{t.comingSoon.audio}</span> {t.comingSoon.message}
+          <span className="font-semibold">{t.comingSoon.textFiles}</span>{' '}
+          {t.comingSoon.message}
         </p>
       </div>
     </div>
