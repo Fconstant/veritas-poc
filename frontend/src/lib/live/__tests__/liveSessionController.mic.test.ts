@@ -24,6 +24,10 @@ function installServiceStubs() {
   const service = factCheckService as unknown as Record<string, unknown>;
   service.ensureConnected = async () => {};
   service.onAudioChunkAck = () => () => {};
+  service.startLiveSessionAwait = async (payload: unknown) => {
+    calls.push(['startLiveSessionAwait', payload]);
+    return { state: 'LISTENING' };
+  };
   for (const name of [
     'startLiveSession',
     'endLiveSession',
@@ -80,12 +84,81 @@ test('controller: starts the session with source MIC from the microphone', async
     createChunker: () => chunker,
   });
 
-  const start = calls.find(([name]) => name === 'startLiveSession');
+  const start = calls.find(([name]) => name === 'startLiveSessionAwait');
   assert.ok(start);
   assert.equal((start[1] as { source: string }).source, 'MIC');
   assert.equal(state.started, 1);
   assert.equal(useFactCheckStore.getState().captureFeedback, 'capturing');
   await controller.stop();
+});
+
+test('controller: awaits server session before starting the chunker', async () => {
+  const calls = installServiceStubs();
+  const track = new FakeTrack();
+  const order: string[] = [];
+  const service = factCheckService as unknown as Record<string, unknown>;
+  service.startLiveSessionAwait = async (payload: unknown) => {
+    order.push('session');
+    calls.push(['startLiveSessionAwait', payload]);
+    return { state: 'LISTENING' };
+  };
+  const chunker = {
+    capturedAt: null,
+    start: async () => {
+      order.push('chunker');
+    },
+    stop: async () => {},
+    pause: () => {},
+    resume: async () => {},
+    ack: () => true,
+    fail: () => ({}),
+  } as unknown as AudioChunker;
+  const controller = new LiveSessionController();
+
+  await controller.start({
+    createSessionId: () => 'session-order',
+    startCapture: () =>
+      startMicCapture({ isSecureContext: true, mediaDevices: micDevices(track) }),
+    createChunker: () => chunker,
+  });
+
+  assert.deepEqual(order, ['session', 'chunker']);
+  await controller.stop();
+});
+
+test('controller: surfaces transcription unavailable without starting chunker', async () => {
+  installServiceStubs();
+  const track = new FakeTrack();
+  const { chunker, state } = fakeChunker();
+  const service = factCheckService as unknown as Record<string, unknown>;
+  let awaited = false;
+  service.startLiveSessionAwait = async () => {
+    awaited = true;
+    throw new Error(
+      'Transcrição indisponível: whisper.cpp não foi encontrado',
+    );
+  };
+  const controller = new LiveSessionController();
+
+  await assert.rejects(
+    controller.start({
+      createSessionId: () => 'session-no-asr',
+      startCapture: () =>
+        startMicCapture({
+          isSecureContext: true,
+          mediaDevices: micDevices(track),
+        }),
+      createChunker: () => chunker,
+    }),
+  );
+
+  assert.equal(awaited, true);
+  assert.equal(state.started, 0);
+  assert.match(
+    useFactCheckStore.getState().error ?? '',
+    /Transcrição indisponível/,
+  );
+  assert.equal(controller.getPhase(), 'error');
 });
 
 test('controller: unplugged mic shows localized error and ends the session', async () => {

@@ -34,6 +34,8 @@ const LiveWorkspace: React.FC<LiveWorkspaceProps> = ({ className }) => {
   const claims = useFactCheckStore((s) => s.claims);
   const status = useFactCheckStore((s) => s.status);
   const liveSessionState = useFactCheckStore((s) => s.liveSessionState);
+  const sessionError = useFactCheckStore((s) => s.error);
+  const sessionMessage = useFactCheckStore((s) => s.message);
 
   const displayVerifications = selectDisplayVerifications(
     verifications,
@@ -192,6 +194,11 @@ const LiveWorkspace: React.FC<LiveWorkspaceProps> = ({ className }) => {
               verifications={displayVerifications}
               selectedResultId={selectedClaimId}
               onResultClick={setSelectedClaimId}
+              errorMessage={
+                panelStatus === 'error'
+                  ? (sessionError ?? sessionMessage ?? undefined)
+                  : undefined
+              }
               className="rounded-[19px] border border-[#dfdbe5] bg-white shadow-[0_8px_36px_rgba(31,14,57,0.04)]"
             />
           </div>

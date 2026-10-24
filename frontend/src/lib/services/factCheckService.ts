@@ -337,6 +337,80 @@ export class FactCheckService {
     this.socket.emit('START_LIVE_SESSION', payload);
   }
 
+  /**
+   * Starts a live session and waits until the server confirms
+   * `LIVE_SESSION_STARTED` (or rejects with `LIVE_SESSION_STATE` ERROR).
+   * Callers must not stream `AUDIO_CHUNK` before this resolves — early chunks
+   * used to miss ACKs and cascade into local "saturated" gaps.
+   */
+  public startLiveSessionAwait(
+    payload: StartLiveSession,
+    options: { timeoutMs?: number } = {},
+  ): Promise<{ state: string; resumeToken?: string }> {
+    if (!this.socket?.connected) {
+      return Promise.reject(
+        new Error('Conexão com o backend não está disponível.'),
+      );
+    }
+    const socket = this.socket;
+    const timeoutMs = options.timeoutMs ?? 30_000;
+
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const timer = setTimeout(() => {
+        finish(() =>
+          reject(
+            new Error(
+              'Tempo esgotado ao iniciar a sessão ao vivo. Verifique o backend e a transcrição (whisper.cpp).',
+            ),
+          ),
+        );
+      }, timeoutMs);
+
+      const finish = (action: () => void): void => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        socket.off('LIVE_SESSION_STARTED', onStarted);
+        socket.off('LIVE_SESSION_STATE', onState);
+        action();
+      };
+
+      const onStarted = (event: {
+        data: { sessionId: string; state: string; resumeToken?: string };
+      }): void => {
+        if (event.data.sessionId !== payload.sessionId) return;
+        finish(() =>
+          resolve({
+            state: event.data.state,
+            ...(event.data.resumeToken !== undefined
+              ? { resumeToken: event.data.resumeToken }
+              : {}),
+          }),
+        );
+      };
+
+      const onState = (event: {
+        data: { sessionId: string; state: string; reason?: string };
+      }): void => {
+        if (event.data.sessionId !== payload.sessionId) return;
+        if (event.data.state !== 'ERROR') return;
+        finish(() =>
+          reject(
+            new Error(
+              event.data.reason?.trim() ||
+                'Não foi possível iniciar a sessão ao vivo.',
+            ),
+          ),
+        );
+      };
+
+      socket.on('LIVE_SESSION_STARTED', onStarted);
+      socket.on('LIVE_SESSION_STATE', onState);
+      socket.emit('START_LIVE_SESSION', payload);
+    });
+  }
+
   public sendAudioChunk(payload: AudioChunk, audio: ArrayBuffer): void {
     if (!this.socket?.connected) {
       throw new Error('Conexão com o backend não está disponível.');

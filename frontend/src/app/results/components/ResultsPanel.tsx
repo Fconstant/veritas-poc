@@ -18,6 +18,8 @@ interface ResultsPanelProps {
   onCopyPlainText?: () => void;
   onResultClick?: (resultId: string) => void;
   selectedResultId?: string;
+  /** When set, replaces the generic verification error copy (e.g. live transcription). */
+  errorMessage?: string;
 }
 
 const ResultsPanel: React.FC<ResultsPanelProps> = ({
@@ -29,6 +31,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   onCopyPlainText,
   onResultClick,
   selectedResultId,
+  errorMessage,
 }) => {
   const { t } = useI18n();
 
@@ -107,16 +110,17 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     }
 
     if (status === 'error') {
+      const detail = errorMessage?.trim();
       return (
-        <div className="flex flex-col items-center justify-center gap-4">
+        <div className="flex flex-col items-center justify-center gap-4 px-2">
           <div className="relative box-border flex shrink-0 items-center gap-2 rounded-2xl bg-[var(--text-error-bg)] p-6">
             <div className="relative size-12 shrink-0 overflow-clip">
               <AlertCircle className="size-12 text-[var(--text-error)]" />
             </div>
           </div>
-          <div className="relative flex shrink-0 flex-col justify-center overflow-hidden overflow-ellipsis whitespace-nowrap font-['Inter'] text-sm font-normal not-italic leading-[0] text-[var(--text-active)]">
-            <p className="overflow-hidden overflow-ellipsis leading-6">
-              {t.results.messages.error}
+          <div className="relative flex max-w-xl shrink-0 flex-col justify-center font-['Inter'] text-sm font-normal not-italic text-[var(--text-active)]">
+            <p className="leading-6 text-center whitespace-pre-wrap break-words">
+              {detail && detail.length > 0 ? detail : t.results.messages.error}
             </p>
           </div>
         </div>

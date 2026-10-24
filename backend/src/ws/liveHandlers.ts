@@ -15,6 +15,7 @@ import {
   LIVE_ID_SCHEMA,
   LIVE_PAYLOAD_LIMITS,
   LIVE_SESSION_CONTROL_SCHEMA,
+  PROTOCOL_VERSION,
   RESUME_SESSION_SCHEMA,
   RETRY_VERIFICATION_SCHEMA,
   START_LIVE_SESSION_SCHEMA,
@@ -44,7 +45,11 @@ import {
   liveSessionRegistry,
 } from '#/live/sessionRegistry.js';
 import { RevisionConflictError } from '#/live/revisionLedger.js';
-import { createTranscriptionProvider } from '#/live/transcription.js';
+import {
+  createTranscriptionProvider,
+  DEFAULT_UNAVAILABLE_TRANSCRIPTION_MESSAGE,
+  UnavailableTranscriptionProvider,
+} from '#/live/transcription.js';
 import { SpeechSegmenterError } from '#/live/speechSegments.js';
 import {
   DEFAULT_LIVE_RATE_LIMITS,
@@ -85,7 +90,7 @@ const emitLiveError = (
 ): void => {
   socket.emit('LIVE_SESSION_STATE', {
     envelope: {
-      protocolVersion: 1,
+      protocolVersion: PROTOCOL_VERSION,
       eventId: `err-${Date.now().toString(36)}`,
       ...(sessionId === undefined ? {} : { sessionId }),
       eventSeq: 0,
@@ -98,6 +103,51 @@ const emitLiveError = (
     },
   });
 };
+
+/**
+ * Reject an audio chunk with an explicit ACK so the client frees its in-flight
+ * window. Silent drops (no ACK) saturate flow control and become local gaps.
+ */
+const emitChunkNack = (
+  socket: LiveSocket,
+  sessionId: string | undefined,
+  chunkSeq: unknown,
+): void => {
+  if (
+    sessionId === undefined ||
+    typeof chunkSeq !== 'number' ||
+    !Number.isFinite(chunkSeq) ||
+    chunkSeq < 0
+  ) {
+    return;
+  }
+  socket.emit('AUDIO_CHUNK_ACK', {
+    envelope: {
+      protocolVersion: PROTOCOL_VERSION,
+      eventId: `nack-${Date.now().toString(36)}-${String(chunkSeq)}`,
+      sessionId,
+      eventSeq: 0,
+      emittedAt: new Date().toISOString(),
+    },
+    data: {
+      sessionId,
+      chunkSeq,
+      accepted: false,
+    },
+  });
+};
+
+const chunkSeqOf = (payload: unknown): unknown =>
+  typeof payload === 'object' && payload !== null
+    ? (payload as { chunkSeq?: unknown }).chunkSeq
+    : undefined;
+
+const transcriptionUnavailableMessage = (
+  transcription: Awaited<ReturnType<typeof createTranscriptionProvider>>,
+): string =>
+  transcription instanceof UnavailableTranscriptionProvider
+    ? transcription.reason
+    : DEFAULT_UNAVAILABLE_TRANSCRIPTION_MESSAGE;
 
 const bindEmit = (socket: LiveSocket): LivePipelineEmit => ({
   LIVE_SESSION_STARTED: (event) => {
@@ -295,25 +345,47 @@ export function attachLiveSessionHandlers(
       try {
         const googleKey = data.apiKeys?.google?.trim() ?? '';
         const tavilyKey = data.apiKeys?.tavily?.trim() ?? '';
-        const transcription = await createTranscription({
-          googleApiKey: googleKey.length > 0 ? googleKey : undefined,
-          env,
-        });
-        const diarization = createDiarization(env);
-
         const overrides = options.pipelineOverrides ?? {};
+        const transcription =
+          overrides.transcription ??
+          (await createTranscription({
+            googleApiKey: googleKey.length > 0 ? googleKey : undefined,
+            env,
+          }));
+        // Fail at START with an actionable reason — never open LISTENING and
+        // turn the first speech window into silent client-side audio gaps.
+        if (
+          transcription.name === 'unavailable' ||
+          !(await transcription.isAvailable())
+        ) {
+          emitLiveError(
+            socket,
+            data.sessionId,
+            transcriptionUnavailableMessage(transcription),
+          );
+          return;
+        }
+        const diarization = createDiarization(env);
+        const {
+          transcription: _checkedTranscription,
+          diarization: overrideDiarization,
+          apiKeys: overrideApiKeys,
+          ...restOverrides
+        } = overrides;
+        void _checkedTranscription;
+
         const pipeline = new LivePipeline({
           sessionId: data.sessionId,
           ownerSocketId: socket.id,
           source: data.source,
           language: data.language,
-          transcription: overrides.transcription ?? transcription,
-          diarization: overrides.diarization ?? diarization,
+          transcription,
+          diarization: overrideDiarization ?? diarization,
           emit: bindEmit(socket),
           apiKeys: {
             ...(googleKey.length > 0 ? { google: googleKey } : {}),
             ...(tavilyKey.length > 0 ? { tavily: tavilyKey } : {}),
-            ...overrides.apiKeys,
+            ...overrideApiKeys,
           },
           ...(googleKey.length > 0
             ? {
@@ -324,7 +396,7 @@ export function attachLiveSessionHandlers(
           ...(tavilyKey.length > 0
             ? { researchProvider: createTavilyProvider({ apiKey: tavilyKey }) }
             : {}),
-          ...overrides,
+          ...restOverrides,
         });
 
         const resumeToken = registry.register(pipeline);
@@ -360,14 +432,17 @@ export function attachLiveSessionHandlers(
     'AUDIO_CHUNK',
     guard('AUDIO_CHUNK', (payload: unknown, audio: unknown) => {
       if (!allow('audio', payload)) {
+        emitChunkNack(socket, sessionIdOf(payload), chunkSeqOf(payload));
         return;
       }
       const parsed = AUDIO_CHUNK_SCHEMA.safeParse(payload);
       if (!parsed.success) {
+        emitChunkNack(socket, sessionIdOf(payload), chunkSeqOf(payload));
         return;
       }
       const pcm = toPcmBuffer(audio);
       if (pcm === undefined) {
+        emitChunkNack(socket, parsed.data.sessionId, parsed.data.chunkSeq);
         emitLiveError(
           socket,
           parsed.data.sessionId,
@@ -375,8 +450,12 @@ export function attachLiveSessionHandlers(
         );
         return;
       }
-      const pipeline = requireOwned(registry, socket, parsed.data.sessionId);
+      // Soft-reject when the session is not ready yet (START is async): ACK so
+      // the client can retry instead of saturating flow-control into local gaps.
+      // Do not flip the session to ERROR — that race used to poison the UI.
+      const pipeline = registry.getOwned(parsed.data.sessionId, socket.id);
       if (pipeline === undefined) {
+        emitChunkNack(socket, parsed.data.sessionId, parsed.data.chunkSeq);
         return;
       }
       const { sessionId, ...meta } = parsed.data;

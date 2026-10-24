@@ -138,6 +138,31 @@ export class LiveSessionController {
       );
     });
 
+    // Register the server session before the chunker emits AUDIO_CHUNK.
+    // START is async on the backend (transcription probe); streaming earlier
+    // caused missing ACKs → saturated flow control → dozens of local gaps.
+    store.setLiveSessionState('CONNECTING');
+    store.setStatus('processing', 'CONNECTING');
+
+    try {
+      await factCheckService.startLiveSessionAwait({
+        sessionId,
+        source: 'MIC',
+        language: options.language ?? 'pt-BR',
+        consent: true,
+        apiKeys: options.apiKeys,
+      });
+    } catch (error) {
+      await this.teardownCapture({ flush: false });
+      this.failLocal(
+        'connection_error',
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível iniciar a sessão ao vivo.',
+      );
+      throw error;
+    }
+
     try {
       await chunker.start(capture.stream, {
         onChunk: (meta, buffer) => this.emitChunk(meta, buffer),
@@ -151,20 +176,13 @@ export class LiveSessionController {
       });
     } catch (error) {
       await this.teardownCapture({ flush: false });
+      if (sessionId) {
+        factCheckService.cancelLiveSession({ sessionId });
+      }
       this.handleCaptureStartError(error);
       throw error;
     }
 
-    factCheckService.startLiveSession({
-      sessionId,
-      source: 'MIC',
-      language: options.language ?? 'pt-BR',
-      consent: true,
-      apiKeys: options.apiKeys,
-    });
-
-    store.setLiveSessionState('CONNECTING');
-    store.setStatus('processing', 'CONNECTING');
     this.phase = 'running';
     return sessionId;
   }
